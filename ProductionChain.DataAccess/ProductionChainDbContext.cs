@@ -102,15 +102,15 @@ public class ProductionChainDbContext : DbContext
         modelBuilder.Entity<ProductionTask>(b =>
         {
             b.HasOne(pt => pt.ProductionOrders)//либо наоборот!!
-                .WithMany(po => po.Tasks)
+                .WithMany(po => po.ProductionTask)
                 .HasForeignKey(pt => pt.ProductionOrdersId);
 
             b.HasOne(pt => pt.Employee)
-                .WithMany()
+                .WithMany(e => e.ProductionTask)
                 .HasForeignKey(pt => pt.EmployeeId);
 
             b.HasOne(pt => pt.ProductionStage)
-                .WithMany(ps => ps.Tasks)
+                .WithMany(ps => ps.ProductionTask)
                 .HasForeignKey(pt => pt.ProductionStageId);
         });
     }

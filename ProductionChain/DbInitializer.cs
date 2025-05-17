@@ -14,6 +14,6 @@ public class DbInitializer
 
     public void Initialize()
     {
-        _dbContext.Database.Migrate();
+        _dbContext.Database.EnsureCreated();
     }
 }

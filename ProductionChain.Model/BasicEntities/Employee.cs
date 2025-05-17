@@ -15,5 +15,5 @@ public class Employee
 
     public required EmployeePositionType Position { get; set; }
 
-    public virtual ICollection<ProductionTask> Tasks { get; set; } = new List<ProductionTask>();
+    public virtual ICollection<ProductionTask> ProductionTask { get; set; } = new List<ProductionTask>();
 }
