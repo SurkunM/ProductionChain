@@ -1,0 +1,5 @@
+﻿namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
+
+public class UpdateProductionHistoryHandler
+{
+}

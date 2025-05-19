@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ProductionChain.BusinessLogic\ProductionChain.BusinessLogic.csproj" />
     <ProjectReference Include="..\ProductionChain.Contracts\ProductionChain.Contracts.csproj" />
     <ProjectReference Include="..\ProductionChain.DataAccess\ProductionChain.DataAccess.csproj" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionChain", "ProductionChain\ProductionChain.csproj", "{C03FC424-2528-4056-99DD-0E8D862837F9}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionChain.Model", "ProductionChain.Model\ProductionChain.Model.csproj", "{5A656FAE-3B8A-4AC5-A9F5-1A3E15214CB5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionChain.Contracts", "ProductionChain.Contracts\ProductionChain.Contracts.csproj", "{225ED63E-EE7B-4B3A-AEF7-555A59DBA895}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionChain.BusinessLogic", "ProductionChain.BusinessLogic\ProductionChain.BusinessLogic.csproj", "{5A4D94B7-4934-4D94-B0D6-B34B24176F73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{225ED63E-EE7B-4B3A-AEF7-555A59DBA895}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{225ED63E-EE7B-4B3A-AEF7-555A59DBA895}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{225ED63E-EE7B-4B3A-AEF7-555A59DBA895}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A4D94B7-4934-4D94-B0D6-B34B24176F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A4D94B7-4934-4D94-B0D6-B34B24176F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A4D94B7-4934-4D94-B0D6-B34B24176F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A4D94B7-4934-4D94-B0D6-B34B24176F73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
