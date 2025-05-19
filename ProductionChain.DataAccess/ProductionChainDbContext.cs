@@ -31,11 +31,9 @@ public class ProductionChainDbContext : DbContext
         modelBuilder.Entity<Employee>(b =>
         {
             b.Property(b => b.FirstName)
-                .IsRequired()
                 .HasMaxLength(50);
 
             b.Property(b => b.LastName)
-                .IsRequired()
                 .HasMaxLength(50);
 
             b.Property(b => b.MiddleName)
@@ -52,7 +50,6 @@ public class ProductionChainDbContext : DbContext
         modelBuilder.Entity<Order>(b =>
         {
             b.Property(b => b.Customer)
-                .IsRequired()
                 .HasMaxLength(100);
 
             b.HasOne(o => o.Product)
@@ -63,18 +60,15 @@ public class ProductionChainDbContext : DbContext
         modelBuilder.Entity<Product>(b =>
         {
             b.Property(b => b.Name)
-                .IsRequired()
                 .HasMaxLength(100);
 
             b.Property(b => b.Model)
-                .IsRequired()
                 .HasMaxLength(100);
         });
 
         modelBuilder.Entity<ProductionStage>(b =>
         {
             b.Property(b => b.Name)
-                .IsRequired()
                 .HasMaxLength(50);
         });
 
@@ -101,7 +95,7 @@ public class ProductionChainDbContext : DbContext
 
         modelBuilder.Entity<ProductionTask>(b =>
         {
-            b.HasOne(pt => pt.ProductionOrders)//либо наоборот!!
+            b.HasOne(pt => pt.ProductionOrders)
                 .WithMany(po => po.ProductionTask)
                 .HasForeignKey(pt => pt.ProductionOrdersId);
 

@@ -5,33 +5,34 @@ namespace ProductionChain.DataAccess.Repositories.BaseAbstractions;
 
 public class BaseEfRepository<T> : IRepository<T> where T : class
 {
-    protected ProductionChainDbContext _dbContext;
+    protected ProductionChainDbContext DbContext;
 
-    protected DbSet<T> _dbSet;
+    protected DbSet<T> DbSet;
 
     public BaseEfRepository(ProductionChainDbContext dbContext)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _dbSet = _dbContext.Set<T>();
+        DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        DbSet = DbContext.Set<T>();
     }
 
     public Task CreateAsync(T entity)
     {
-        throw new NotImplementedException();
+        return DbSet.AddAsync(entity).AsTask();
     }
 
-    public Task DeleteAsync(T entity)
+    public void Delete(T entity)
     {
-        throw new NotImplementedException();
+        if (DbContext.Entry(entity).State == EntityState.Detached)
+        {
+            DbSet.Attach(entity);
+        }
+
+        DbSet.Remove(entity);
     }
 
-    public Task SaveAsync()
+    public void Update(T entity)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateAsync(T entity)
-    {
-        throw new NotImplementedException();
+        DbSet.Attach(entity);
+        DbContext.Entry(entity).State = EntityState.Modified;
     }
 }
