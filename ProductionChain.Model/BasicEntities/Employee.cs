@@ -13,7 +13,7 @@ public class Employee
 
     public string? MiddleName { get; set; }
 
-    public required EmployeePositionType Position { get; set; }
+    public required string Position { get; set; }
 
     public virtual ICollection<ProductionTask> ProductionTask { get; set; } = new List<ProductionTask>();
 }

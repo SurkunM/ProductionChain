@@ -10,5 +10,5 @@ public class EmployeeStatus
 
     public virtual required Employee Employee { get; set; }
 
-    public EmployeeStatusType StatusType { get; set; }
+    public required string StatusType { get; set; }
 }

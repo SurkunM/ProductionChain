@@ -16,5 +16,5 @@ public class Order
 
     public int Count { get; set; }
 
-    public required ProgressStatusType StageType { get; set; }
+    public required string StageType { get; set; }
 }

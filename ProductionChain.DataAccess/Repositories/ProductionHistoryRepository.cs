@@ -7,9 +7,9 @@ namespace ProductionChain.DataAccess.Repositories;
 
 public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, IProductionHistoryRepository
 {
-    private readonly ILogger<ProductionStagesRepository> _logger;
+    private readonly ILogger<ProductionHistoryRepository> _logger;
 
-    public ProductionHistoryRepository(ProductionChainDbContext dbContext, ILogger<ProductionStagesRepository> logger) : base(dbContext)
+    public ProductionHistoryRepository(ProductionChainDbContext dbContext, ILogger<ProductionHistoryRepository> logger) : base(dbContext)
     {
         _logger = logger;
     }

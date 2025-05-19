@@ -14,8 +14,6 @@ public class ProductionChainDbContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<ProductionStage> ProductionStages { get; set; }
-
     public virtual DbSet<Warehouse> Warehouse { get; set; }
 
     public virtual DbSet<ProductionHistory> ProductionHistory { get; set; }
@@ -66,12 +64,6 @@ public class ProductionChainDbContext : DbContext
                 .HasMaxLength(100);
         });
 
-        modelBuilder.Entity<ProductionStage>(b =>
-        {
-            b.Property(b => b.Name)
-                .HasMaxLength(50);
-        });
-
         modelBuilder.Entity<Warehouse>(b =>
         {
             b.HasOne(w => w.Product)
@@ -102,10 +94,6 @@ public class ProductionChainDbContext : DbContext
             b.HasOne(pt => pt.Employee)
                 .WithMany(e => e.ProductionTask)
                 .HasForeignKey(pt => pt.EmployeeId);
-
-            b.HasOne(pt => pt.ProductionStage)
-                .WithMany(ps => ps.ProductionTask)
-                .HasForeignKey(pt => pt.ProductionStageId);
         });
     }
 }

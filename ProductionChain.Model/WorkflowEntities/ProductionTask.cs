@@ -1,4 +1,5 @@
 ﻿using ProductionChain.Model.BasicEntities;
+using ProductionChain.Model.Enums;
 
 namespace ProductionChain.Model.WorkflowEntities;
 
@@ -14,9 +15,7 @@ public class ProductionTask
 
     public virtual required Employee Employee { get; set; }
 
-    public int ProductionStageId { get; set; }
-
-    public virtual required ProductionStage ProductionStage { get; set; }
+    public required ProductionStageType ProductionStage { get; set; }
 
     public DateTime? StartTime { get; set; }
 
