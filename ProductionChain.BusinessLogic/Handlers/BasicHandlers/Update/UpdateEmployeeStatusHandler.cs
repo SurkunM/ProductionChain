@@ -1,5 +1,5 @@
 ﻿namespace ProductionChain.BusinessLogic.Handlers.BasicHandlers.Update;
 
-public class UpdateEmployeeHandler
+public class UpdateEmployeeStatusHandler
 {
 }
