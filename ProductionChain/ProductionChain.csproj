@@ -21,4 +21,8 @@
     <ProjectReference Include="..\ProductionChain.DataAccess\ProductionChain.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="frontend\src\assets\" />
+  </ItemGroup>
+
 </Project>

@@ -1,30 +1,29 @@
 <template>
-    <nav>
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
-    </nav>
-  <router-view/>
+    <v-card  id="app">
+        <v-layout>
+            <v-navigation-drawer>
+                <!--expand-on-hover
+                rail-->
+
+                <v-list density="compact" nav>
+                    <v-list-item prepend-icon="mdi-home" to="/" title="Главная"></v-list-item>
+                    <v-divider></v-divider>
+
+                    <v-list-item prepend-icon="mdi-layers-triple" to="/orders" title="Заказы"></v-list-item>
+                    <v-list-item prepend-icon="mdi-home-silo" to="/warehouse" title="Склад"></v-list-item>
+                    <v-list-item prepend-icon="mdi-cog-play" to="/task" title="Задачи"></v-list-item>
+                    <v-list-item prepend-icon="mdi-cog-transfer" to="/productionOrders" title="Очередь задач"></v-list-item>
+                    <v-list-item prepend-icon="mdi-av-timer" to="/history" title="История задач"></v-list-item>
+
+                    <v-divider></v-divider>
+                    <v-list-item prepend-icon="mdi-account-hard-hat-outline" to="/employees" title="Сотрудники"></v-list-item>
+                    <v-list-item prepend-icon="mdi-clipboard-edit-outline" to="/products" title="Продукция"></v-list-item>
+                </v-list>
+            </v-navigation-drawer>
+
+            <v-main>
+                <router-view />
+            </v-main>
+        </v-layout>
+    </v-card>
 </template>
-
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
