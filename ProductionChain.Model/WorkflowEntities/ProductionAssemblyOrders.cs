@@ -3,9 +3,13 @@ using ProductionChain.Model.Enums;
 
 namespace ProductionChain.Model.WorkflowEntities;
 
-public class ProductionOrders
+public class ProductionAssemblyOrders
 {
     public int Id { get; set; }
+
+    public int OrderId { get; set; }
+
+    public virtual required Order Order { get; set; }
 
     public int ProductId { get; set; }
 
@@ -15,5 +19,5 @@ public class ProductionOrders
 
     public required ProgressStatusType StatusType { get; set; }
 
-    public virtual ICollection<ProductionTask> ProductionTask { get; set; } = new List<ProductionTask>();
+    public virtual ICollection<ProductionAssemblyTask> AssemblyTask { get; set; } = new List<ProductionAssemblyTask>();
 }

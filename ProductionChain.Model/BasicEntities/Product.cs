@@ -10,9 +10,13 @@ public class Product
 
     public required string Model { get; set; }
 
-    public virtual ICollection<ProductionOrders> ProductionOrders { get; set; } = new List<ProductionOrders>();
-
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<Warehouse> Warehouses { get; set; } = new List<Warehouse>();
+    public virtual ICollection<ProductionAssemblyOrders> AssemblyOrders { get; set; } = new List<ProductionAssemblyOrders>();
+
+    public virtual ICollection<ProductionAssemblyTask> AssemblyTask { get; set; } = new List<ProductionAssemblyTask>();
+
+    public virtual ICollection<ProductionAssemblyWarehouse> AssemblyWarehouse { get; set; } = new List<ProductionAssemblyWarehouse>();
+
+    public virtual ICollection<ComponentsWarehouse> ComponentsWarehouse { get; set; } = new List<ComponentsWarehouse>();
 }

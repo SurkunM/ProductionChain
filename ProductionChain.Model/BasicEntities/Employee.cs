@@ -1,5 +1,4 @@
-﻿using ProductionChain.Model.Enums;
-using ProductionChain.Model.WorkflowEntities;
+﻿using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.Model.BasicEntities;
 
@@ -15,5 +14,5 @@ public class Employee
 
     public required string Position { get; set; }
 
-    public virtual ICollection<ProductionTask> ProductionTask { get; set; } = new List<ProductionTask>();
+    public virtual ICollection<ProductionAssemblyTask> AssemblyTasks { get; set; } = new List<ProductionAssemblyTask>();
 }

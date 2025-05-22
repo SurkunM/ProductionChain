@@ -1,5 +1,5 @@
 ﻿namespace ProductionChain.Contracts.IRepositories;
 
-public interface IProductionTasksRepository
+public interface IProductionAssemblyHistoryRepository
 {
 }

@@ -1,6 +1,8 @@
-﻿namespace ProductionChain.Model.BasicEntities;
+﻿using ProductionChain.Model.BasicEntities;
 
-public class Warehouse
+namespace ProductionChain.Model.WorkflowEntities;
+
+public class ProductionAssemblyWarehouse
 {
     public int Id { get; set; }
 

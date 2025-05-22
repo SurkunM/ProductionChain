@@ -1,6 +1,4 @@
-﻿using ProductionChain.Model.Enums;
-
-namespace ProductionChain.Model.BasicEntities;
+﻿namespace ProductionChain.Model.BasicEntities;
 
 public class EmployeeStatus
 {

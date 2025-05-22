@@ -1,5 +1,5 @@
 ﻿namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 
-public class AddProductToWarehouseHandler
+public class CreateProductInAssemblyWarehouseHandler
 {
 }

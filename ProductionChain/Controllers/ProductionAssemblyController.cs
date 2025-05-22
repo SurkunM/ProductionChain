@@ -8,39 +8,39 @@ namespace ProductionChain.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class ProductionChainController : ControllerBase
+public class ProductionAssemblyController : ControllerBase
 {
     private readonly GetProductionHistoriesHandler _getProductionHistoriesHandler;
     private readonly GetProductionOrdersHandler _getProductionOrdersHandler;
     private readonly GetProductionTasksHandler _getProductionTasksHandler;
-    private readonly GetProductsToWarehouseHandler _getProductsToWarehouseHandler;
+    private readonly GetAssemblyWarehouseHandler _getProductsToWarehouseHandler;
 
     private readonly CreateProductionHistoryHandler _createProductionHistoryHandler;
     private readonly CreateProductionOrderHandler _createProductionOrderHandler;
     private readonly CreateProductionTaskHandler _createProductionTaskHandler;
-    private readonly AddProductToWarehouseHandler _addProductToWarehouseHandler;
+    private readonly CreateProductInAssemblyWarehouseHandler _addProductToWarehouseHandler;
 
     private readonly UpdateProductionHistoryHandler _updateProductionHistoryHandler;
     private readonly UpdateProductionOrderHandler _updateProductionOrderHandler;
     private readonly UpdateProductionTaskHandler _updateProductionTaskHandler;
-    private readonly UpdateProductToWarehouseHandler _updateProductToWarehouseHandler;
+    private readonly UpdateAssemblyWarehouseHandler _updateProductToWarehouseHandler;
 
     private readonly DeleteProductionHistoryHandler _deleteProductionHistoryHandler;
     private readonly DeleteProductionOrderHandler _deleteProductionOrderHandler;
     private readonly DeleteProductionTaskHandler _deleteProductionTaskHandler;
-    private readonly DeleteProductToWarehouseHandler _deleteProductToWarehouseHandler;
+    private readonly DeleteProductToAssemblyWarehouseHandler _deleteProductToWarehouseHandler;
 
-    private readonly ILogger<ProductionChainController> _logger;
+    private readonly ILogger<ProductionAssemblyController> _logger;
 
-    public ProductionChainController(GetProductionHistoriesHandler getProductionHistoriesHandler, GetProductionOrdersHandler getProductionOrdersHandler,
-        GetProductionTasksHandler getProductionTasksHandler, GetProductsToWarehouseHandler getProductsToWarehouseHandler,
+    public ProductionAssemblyController(GetProductionHistoriesHandler getProductionHistoriesHandler, GetProductionOrdersHandler getProductionOrdersHandler,
+        GetProductionTasksHandler getProductionTasksHandler, GetAssemblyWarehouseHandler getProductsToWarehouseHandler,
         CreateProductionHistoryHandler createProductionHistoryHandler, CreateProductionOrderHandler createProductionOrderHandler,
-        CreateProductionTaskHandler createProductionTaskHandler, AddProductToWarehouseHandler addProductToWarehouseHandler,
+        CreateProductionTaskHandler createProductionTaskHandler, CreateProductInAssemblyWarehouseHandler addProductToWarehouseHandler,
         UpdateProductionHistoryHandler updateProductionHistoryHandler, UpdateProductionOrderHandler updateProductionOrderHandler,
-        UpdateProductionTaskHandler updateProductionTaskHandler, UpdateProductToWarehouseHandler updateProductToWarehouseHandler,
+        UpdateProductionTaskHandler updateProductionTaskHandler, UpdateAssemblyWarehouseHandler updateProductToWarehouseHandler,
         DeleteProductionHistoryHandler deleteProductionHistoryHandler, DeleteProductionOrderHandler deleteProductionOrderHandler,
-        DeleteProductionTaskHandler deleteProductionTaskHandler, DeleteProductToWarehouseHandler deleteProductToWarehouseHandler,
-        ILogger<ProductionChainController> logger)
+        DeleteProductionTaskHandler deleteProductionTaskHandler, DeleteProductToAssemblyWarehouseHandler deleteProductToWarehouseHandler,
+        ILogger<ProductionAssemblyController> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
