@@ -25,7 +25,12 @@ const routes = [
     {
         path: "/warehouse",
         name: "warehouse",
-        component: () => import("../components/WarehouseTab.vue")
+        component: () => import("../components/ComponentsWarehouseTab.vue")
+    },
+    {
+        path: "/assemblywarehouse",
+        name: "assemblywarehouse",
+        component: () => import("../components/AssemblyWarehouseTab.vue")
     },
     {
         path: "/productionOrders",

@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-card title="Задачи"
+    <v-card title="Склад готовой продкуции"
             flat>
         <template v-slot:text>
             <v-text-field v-model="term"
@@ -11,53 +11,43 @@
         </template>
 
         <v-data-table :headers="headers"
-                      :items="tasks"
+                      :items="items"
                       :search="term"
                       hide-default-footer
-                      :items-per-page="tasksPerPage"
-                      no-data-text="Список пуст">
-        </v-data-table>
+                      :items-per-page="productsPerPage"
+                      no-data-text="Список пуст"></v-data-table>
     </v-card>
 </template>
 <script>
     export default {
         data() {
             return {
-                tasksPerPage: 5,
+                productsPerPage: 5,
                 term: "",
                 headers: [
-                    { value: "id", title: "№", align: 'center' },
+                    { value: "id", title: "№" },
                     { value: "name", title: "Название" },
                     { value: "model", title: "Модель" },
-                    { value: "lastName", title: "Фамилия" },
-                    { value: "count", title: "шт" },
-                    { value: "DateAt", title: "Начало" }
-
+                    { value: "count", title: "шт" }
                 ],
-                tasks: [
+                items: [
                     {
                         id: 1,
-                        lastName: "Астахов",
                         name: "БП 1000",
                         model: 159,
-                        count: 100,
-                        DateAt: "2025/04/01 13:40"
+                        count: 25
                     },
                     {
                         id: 2,
-                        lastName: "Иванова",
-                        name: "БП 1000",
-                        model: 159,
-                        count: 100,
-                        DateAt: "2025/04/01 8:14"
+                        name: "БП 2000",
+                        model: 237,
+                        count: 25
                     },
                     {
                         id: 3,
-                        lastName: "Борисов",
-                        name: "БП 1000",
-                        model: 159,
-                        count: 100,
-                        DateAt: "2025/04/01 10:20"
+                        name: "БС 1000",
+                        model: 262,
+                        count: 25
                     }
                 ]
             }
