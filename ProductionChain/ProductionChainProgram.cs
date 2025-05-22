@@ -15,11 +15,11 @@ using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
 
 namespace ProductionChain
 {
-    public class ProductionChainProgram//TODO: 1. создать данные бд, создать handler-ы (начато) надо в DI
+    public class ProductionChainProgram
     {
-        public static void Main(string[] args)//TODO: 2. Создать фронтенд
+        public static void Main(string[] args)//TODO: 1. Создать фронтенд
         {
-            var builder = WebApplication.CreateBuilder(args);//TODO: 3. Реализовать методы в серверной части для получения данных(Задача. кто делает. стадия пайка)
+            var builder = WebApplication.CreateBuilder(args);//TODO: 3. Реализовать методы в серверной части для получения данных(Задача. кто делает.)
 
             builder.Services.AddDbContext<ProductionChainDbContext>(options =>
             {
@@ -39,49 +39,46 @@ namespace ProductionChain
             builder.Services.AddTransient<IEmployeeStatusesRepository, EmployeeStatusesRepository>();
 
             builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
-            builder.Services.AddTransient<IProductionStagesRepository, ProductionStagesRepository>();
 
             builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
-            builder.Services.AddTransient<IWarehouseRepository, WarehouseRepository>();
+            builder.Services.AddTransient<IComponentsWarehouseRepository, ComponentsWarehouseRepository>();
 
-            builder.Services.AddTransient<IProductionHistoryRepository, ProductionHistoryRepository>();
-            builder.Services.AddTransient<IProductionOrdersRepository, ProductionOrdersRepository>();
-            builder.Services.AddTransient<IProductionTasksRepository, ProductionTasksRepository>();
+            builder.Services.AddTransient<IProductionAssemblyHistoryRepository, ProductionAssemblyHistoryRepository>();
+            builder.Services.AddTransient<IProductionAssemblyOrdersRepository, ProductionAssemblyOrdersRepository>();
+            builder.Services.AddTransient<IProductionAssemblyTasksRepository, ProductionAssemblyTasksRepository>();
+            builder.Services.AddTransient<IProductionAssemblyWarehouseRepository, ProductionAssemblyWarehouseRepository>();
 
-            builder.Services.AddTransient<CreateEmployeeHandler>();
             builder.Services.AddTransient<CreateOrderHandler>();
-            builder.Services.AddTransient<CreateProductHandler>();
             builder.Services.AddTransient<CreateProductionHistoryHandler>();
             builder.Services.AddTransient<CreateProductionOrderHandler>();
             builder.Services.AddTransient<CreateProductionTaskHandler>();
-            builder.Services.AddTransient<AddProductToWarehouseHandler>();
+            builder.Services.AddTransient<CreateProductInAssemblyWarehouseHandler>();
 
             builder.Services.AddTransient<GetEmployeesHandler>();
+            builder.Services.AddTransient<GetEmployeesStatusesHandler>();
             builder.Services.AddTransient<GetOrdersHandler>();
             builder.Services.AddTransient<GetProductsHandler>();
+
             builder.Services.AddTransient<GetProductionHistoriesHandler>();
             builder.Services.AddTransient<GetProductionOrdersHandler>();
             builder.Services.AddTransient<GetProductionTasksHandler>();
-            builder.Services.AddTransient<GetProductsToWarehouseHandler>();
+            builder.Services.AddTransient<GetAssemblyWarehouseHandler>();
+            builder.Services.AddTransient<GetComponentsWarehouseHandler>();
 
-            builder.Services.AddTransient<UpdateEmployeeHandler>();
+            builder.Services.AddTransient<UpdateEmployeeStatusHandler>();
             builder.Services.AddTransient<UpdateOrderHandler>();
-            builder.Services.AddTransient<UpdateProductHandler>();
             builder.Services.AddTransient<UpdateProductionHistoryHandler>();
             builder.Services.AddTransient<UpdateProductionOrderHandler>();
             builder.Services.AddTransient<UpdateProductionTaskHandler>();
-            builder.Services.AddTransient<UpdateProductToWarehouseHandler>();
+            builder.Services.AddTransient<UpdateAssemblyWarehouseHandler>();
 
-            builder.Services.AddTransient<DeleteEmployeeHandler>();
             builder.Services.AddTransient<DeleteOrderHandler>();
-            builder.Services.AddTransient<DeleteProductHandler>();
             builder.Services.AddTransient<DeleteProductionHistoryHandler>();
             builder.Services.AddTransient<DeleteProductionOrderHandler>();
             builder.Services.AddTransient<DeleteProductionTaskHandler>();
-            builder.Services.AddTransient<DeleteProductToWarehouseHandler>();
+            builder.Services.AddTransient<DeleteProductToAssemblyWarehouseHandler>();
 
             //jobs ...
-
 
             var app = builder.Build();
 
@@ -90,7 +87,7 @@ namespace ProductionChain
                 try
                 {
                     var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-                    dbInitializer.Initialize();
+                    //dbInitializer.Initialize();
                 }
                 catch (Exception ex)
                 {
@@ -103,7 +100,7 @@ namespace ProductionChain
 
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                //app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
