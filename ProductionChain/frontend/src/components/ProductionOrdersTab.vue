@@ -12,7 +12,9 @@
 
         <v-data-table :headers="headers"
                       :items="orders"
-                      :search="term">
+                      :search="term"
+                      hide-default-footer
+                      no-data-text="Список пуст">
 
             <template v-slot:[`item.status`]="{ value }">
                 <v-chip :border="`${getColor(value)} thin opacity-25`"

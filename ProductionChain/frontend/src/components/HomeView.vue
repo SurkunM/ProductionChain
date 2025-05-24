@@ -1,159 +1,92 @@
 ﻿<template>
-    <v-card-title class="bg-grey-darken-1 ">
-        <h2 class="me-4">
-            <v-icon icon="mdi-account-plus" size="small"></v-icon>
-            Новый контакт
-        </h2>
-    </v-card-title>
+    <v-card title="Заказы"
+            flat>
+        <v-data-table :headers="headers"
+                      :items="orders"
+                      hide-default-footer
+                      no-data-text="Список пуст">
 
-    <v-alert text="Контакт успешно создан" type="success" variant="outlined" v-show="isShowSuccessAlert"></v-alert>
+            <template v-slot:[`item.status`]="{ value }">
+                <v-chip :border="`${getColor(value)} thin opacity-25`"
+                        :color="getColor(value)"
+                        :text="value"
+                        size="small"></v-chip>
+            </template>
 
-    <form @submit.prevent="submitForm" class="mx-4 my-4">
-        <v-text-field v-model.trim="contact.lastName"
-                      :error-messages="errors.lastName"
-                      @change="checkLastNameFieldComplete"
-                      autocomplete="off"
-                      label="Фамилия">
-        </v-text-field>
-
-        <v-text-field v-model.trim="contact.firstName"
-                      :error-messages="errors.firstName"
-                      @change="checkFirstNameFieldComplete"
-                      autocomplete="off"
-                      label="Имя">
-        </v-text-field>
-
-        <v-text-field v-model.trim="contact.phone"
-                      :error-messages="errors.phone"
-                      @change="checkPhoneFieldComplete"
-                      autocomplete="off"
-                      label="Телефон"
-                      class="mb-3">
-        </v-text-field>
-
-        <v-btn class="me-4" color="info" type="submit">Сохранить</v-btn>
-        <v-btn color="secondary" @click="resetForm">Очистить</v-btn>
-    </form>
+            <template v-slot:[`item.actions`]="{ item }">
+                <div>
+                    <template v-if="!item.inProgress">
+                        <v-btn size="small" color="info" @click="edit(item.id)" class="me-2">Начать</v-btn>
+                    </template>
+                </div>
+            </template>
+        </v-data-table>
+    </v-card>
 </template>
-
 <script>
     export default {
         data() {
             return {
-                isShowSuccessAlert: false,
-
-                contact: {
-                    firstName: "",
-                    lastName: "",
-                    phone: "",
-                    isChecked: false
-                },
-
-                errors: {
-                    firstName: "",
-                    lastName: "",
-                    phone: ""
-                }
+                headers: [
+                    { value: "id", title: "№", width: "15%" },
+                    { value: "name", title: "Изделие", width: "25%" },
+                    { value: "count", title: "шт", width: "15%" },
+                    { value: "status", title: "Статус", width: "20%" },
+                    { value: "actions", title: "", width: "25%" },
+                ],
+                orders: [
+                    {
+                        id: 1,
+                        name: "БП 1000",
+                        count: 159,
+                        status: "в очереди",
+                        inProgress: false
+                    },
+                    {
+                        id: 9,
+                        name: "БП 2000",
+                        count: 237,
+                        status: "в очереди",
+                        inProgress: false
+                    },
+                    {
+                        id: 3,
+                        name: "БП 3000",
+                        count: 262,
+                        status: "в очереди",
+                        inProgress: false
+                    },
+                    {
+                        id: 4,
+                        name: "БС 1000",
+                        count: 305,
+                        status: "выполняется",
+                        inProgress: true
+                    },
+                    {
+                        id: 16,
+                        name: "БС 1000",
+                        count: 356,
+                        status: "завершен",
+                        inProgress: true
+                    }
+                ]
             }
         },
-
         methods: {
-            checkFieldsIsvalid(contact) {
-                let isValid = true;
-
-                if (contact.firstName.length === 0) {
-                    this.errors.firstName = "Заполните поле Имя";
-                    isValid = false;
+            getColor(state) {
+                if (state === "в очереди") {
+                    return "error";
                 }
-
-                if (contact.lastName.length === 0) {
-                    this.errors.lastName = "Заполните поле Фамилия";
-                    isValid = false;
+                else if (state === "выполняется") {
+                    return "warning";
                 }
-
-                if (contact.phone.length === 0) {
-                    this.errors.phone = "Заполните поле Телефон";
-                    isValid = false;
-                }
-
-                const phoneNumber = Number(contact.phone);
-
-                if (isNaN(phoneNumber) || phoneNumber < 0) {
-                    this.errors.phone = "Неверный формат номера телефона";
-                    isValid = false;
-                }
-
-                return isValid;
-            },
-
-            checkFirstNameFieldComplete() {
-                if (this.contact.firstName.length > 0) {
-                    this.errors.firstName = "";
+                else {
+                    return "success";
                 }
             },
-
-            checkLastNameFieldComplete() {
-                if (this.contact.lastName.length > 0) {
-                    this.errors.lastName = "";
-                }
-            },
-
-            checkPhoneFieldComplete() {
-                if (this.contact.phone.length > 0) {
-                    this.errors.phone = "";
-                }
-            },
-
-            setExistPhoneInvalid() {
-                this.errors.phone = "Номер телефона уже существует";
-            },
-
-            submitForm() {
-                if (!this.checkFieldsIsvalid(this.contact)) {
-                    return;
-                }
-
-                const createdContact = {
-                    firstName: this.contact.firstName,
-                    lastName: this.contact.lastName,
-                    phone: this.contact.phone
-                };
-
-                this.$store.dispatch("createContact", createdContact)
-                    .then(() => {
-                        this.resetForm();
-                        this.showSuccessAlert();
-                    })
-                    .catch(error => {
-                        if (error.response?.status === 400) {
-                            this.checkFieldsIsvalid(createdContact);
-                        }
-                        else if (error.response?.status === 409) {
-                            this.setExistPhoneInvalid();
-                        }
-                    });
-            },
-
-            resetForm() {
-                this.contact = {
-                    firstName: "",
-                    lastName: "",
-                    phone: ""
-                };
-
-                this.errors = {
-                    firstName: "",
-                    lastName: "",
-                    phone: ""
-                };
-            },
-
-            showSuccessAlert() {
-                this.isShowSuccessAlert = true;
-
-                setTimeout(() => {
-                    this.isShowSuccessAlert = false;
-                }, 1500);
+            edit(id) {
+                console.log(id);
             }
         }
     }
