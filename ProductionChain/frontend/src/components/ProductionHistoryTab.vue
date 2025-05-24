@@ -1,6 +1,23 @@
 ﻿<template>
     <v-card title="История"
             flat>
+        <v-progress-linear v-if="isLoading"
+                           indeterminate
+                           color="primary"
+                           height="4">
+        </v-progress-linear>
+
+        <v-alert type="success" variant="outlined" v-show="isShowSuccessAlert">
+            <template v-slot:text>
+                <span v-text="alertText"></span>
+            </template>
+        </v-alert>
+        <v-alert type="error" variant="outlined" v-show="isShowErrorAlert">
+            <template v-slot:text>
+                <span v-text="alertText"></span>
+            </template>
+        </v-alert>
+
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
@@ -11,45 +28,92 @@
         </template>
 
         <v-data-table :headers="headers"
-                      :items="tasks"
+                      :items="histories"
                       :search="term"
                       hide-default-footer
                       :items-per-page="itemsPerPage"
-                      no-data-text="Список пуст"></v-data-table>
+                      no-data-text="Список пуст">
+        </v-data-table>
+
+        <v-pagination v-model="currentPage"
+                      :length="pagesCount"
+                      @update:modelValue="switchPage"
+                      circle
+                      color="primary">
+        </v-pagination>
     </v-card>
 </template>
 <script>
     export default {
         data() {
             return {
-                itemsPerPage: 5,
                 term: "",
+                currentPage: 1,
+
+                sortByColumn: "lastName",
+                sortDesc: false,
+
                 headers: [
                     { value: "id", title: "№" },
                     { value: "orderId", title: "Id заказа" },
                     { value: "lastName", title: "Сотрудник" },
                     { value: "product", title: "Продукция" },
                 ],
-                tasks: [
-                    {
-                        id: 1,
-                        lastName: "Астахов А.В",
-                        product: "БП 3000",
-                        orderId: 2,
-                    },
-                    {
-                        id: 2,
-                        lastName: "Иванова Н.Н",
-                        product: "БП 2000",
-                        orderId: 1,
-                    },
-                    {
-                        id: 3,
-                        lastName: "Борисов Г.С",
-                        product: "БС 1000",
-                        orderId: 1,
-                    }
-                ]
+
+                isShowSuccessAlert: false,
+                isShowErrorAlert: false,
+                alertText: "",
+            }
+        },
+
+        created() {
+            this.$store.dispatch("loadHistories")
+                .catch(() => {
+                    this.showErrorAlert("Ошибка! Не удалось загрузить список историй задач.");
+                });
+        },
+
+        computed: {
+            histories() {
+                return this.$store.getters.histories;
+            },
+
+            itemsPerPage() {
+                return this.$store.getters.pageSize;
+            },
+
+            pagesCount() {
+                return Math.ceil(this.$store.getters.pageItemsCount / this.itemsPerPage);
+            },
+
+            isLoading() {
+                return this.$store.getters.isLoading;
+            }
+        },
+
+        methods: {
+            switchPage(nextPage) {
+                this.$store.dispatch("navigateToPage", nextPage);
+            },
+
+            showSuccessAlert(text) {
+                this.alertText = text;
+                this.isShowSuccessAlert = true;
+
+                setTimeout(() => {
+                    this.alertText = "";
+                    this.isShowSuccessAlert = false;
+                }, 2000);
+            },
+
+            showErrorAlert(text) {
+                this.alertText = text;
+                this.isShowErrorAlert = true;
+
+                setTimeout(() => {
+                    this.alertText = "";
+                    this.isShowErrorAlert = false;
+                }, 2000);
             }
         }
     }

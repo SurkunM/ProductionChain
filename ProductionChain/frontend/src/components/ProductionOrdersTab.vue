@@ -1,6 +1,23 @@
 ﻿<template>
     <v-card title="Очередь производства"
             flat>
+        <v-progress-linear v-if="isLoading"
+                           indeterminate
+                           color="primary"
+                           height="4">
+        </v-progress-linear>
+
+        <v-alert type="success" variant="outlined" v-show="isShowSuccessAlert">
+            <template v-slot:text>
+                <span v-text="alertText"></span>
+            </template>
+        </v-alert>
+        <v-alert type="error" variant="outlined" v-show="isShowErrorAlert">
+            <template v-slot:text>
+                <span v-text="alertText"></span>
+            </template>
+        </v-alert>
+
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
@@ -11,9 +28,10 @@
         </template>
 
         <v-data-table :headers="headers"
-                      :items="orders"
+                      :items="productionOrders"
                       :search="term"
                       hide-default-footer
+                      :items-per-page="itemsPerPage"
                       no-data-text="Список пуст">
 
             <template v-slot:[`item.status`]="{ value }">
@@ -31,6 +49,13 @@
                 </div>
             </template>
         </v-data-table>
+
+        <v-pagination v-model="currentPage"
+                      :length="pagesCount"
+                      @update:modelValue="switchPage"
+                      circle
+                      color="primary">
+        </v-pagination>
     </v-card>
 </template>
 <script>
@@ -38,6 +63,11 @@
         data() {
             return {
                 term: "",
+                currentPage: 1,
+
+                sortByColumn: "lastName",
+                sortDesc: false,
+
                 headers: [
                     { value: "id", title: "№", width: "15%" },
                     { value: "name", title: "Изделие", width: "25%" },
@@ -45,45 +75,38 @@
                     { value: "status", title: "Статус", width: "20%" },
                     { value: "actions", title: "", width: "25%" },
                 ],
-                orders: [
-                    {
-                        id: 1,
-                        name: "БП 1000",
-                        count: 159,
-                        status: "в очереди",
-                        inProgress: false
-                    },
-                    {
-                        id: 9,
-                        name: "БП 2000",
-                        count: 237,
-                        status: "в очереди",
-                        inProgress: false
-                    },
-                    {
-                        id: 3,
-                        name: "БП 3000",
-                        count: 262,
-                        status: "в очереди",
-                        inProgress: false
-                    },
-                    {
-                        id: 4,
-                        name: "БС 1000",
-                        count: 305,
-                        status: "выполняется",
-                        inProgress: true
-                    },
-                    {
-                        id: 16,
-                        name: "БС 1000",
-                        count: 356,
-                        status: "завершен",
-                        inProgress: true
-                    }
-                ]
+
+                isShowSuccessAlert: false,
+                isShowErrorAlert: false,
+                alertText: "",
             }
         },
+
+        created() {
+            this.$store.dispatch("loadProductionOrders")
+                .catch(() => {
+                    this.showErrorAlert("Ошибка! Не удалось загрузить список производственных заказов.");
+                });
+        },
+
+        computed: {
+            productionOrders() {
+                return this.$store.getters.productionOrders;
+            },
+
+            itemsPerPage() {
+                return this.$store.getters.pageSize;
+            },
+
+            pagesCount() {
+                return Math.ceil(this.$store.getters.pageItemsCount / this.itemsPerPage);
+            },
+
+            isLoading() {
+                return this.$store.getters.isLoading;
+            }
+        },
+
         methods: {
             getColor(state) {
                 if (state === "в очереди") {
@@ -96,8 +119,33 @@
                     return "success";
                 }
             },
+
             edit(id) {
                 console.log(id);
+            },
+
+            switchPage(nextPage) {
+                this.$store.dispatch("navigateToPage", nextPage);
+            },
+
+            showSuccessAlert(text) {
+                this.alertText = text;
+                this.isShowSuccessAlert = true;
+
+                setTimeout(() => {
+                    this.alertText = "";
+                    this.isShowSuccessAlert = false;
+                }, 2000);
+            },
+
+            showErrorAlert(text) {
+                this.alertText = text;
+                this.isShowErrorAlert = true;
+
+                setTimeout(() => {
+                    this.alertText = "";
+                    this.isShowErrorAlert = false;
+                }, 2000);
             }
         }
     }

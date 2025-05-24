@@ -1,6 +1,23 @@
 ﻿<template>
     <v-card title="Склад компонентов"
             flat>
+        <v-progress-linear v-if="isLoading"
+                           indeterminate
+                           color="primary"
+                           height="4">
+        </v-progress-linear>
+
+        <v-alert type="success" variant="outlined" v-show="isShowSuccessAlert">
+            <template v-slot:text>
+                <span v-text="alertText"></span>
+            </template>
+        </v-alert>
+        <v-alert type="error" variant="outlined" v-show="isShowErrorAlert">
+            <template v-slot:text>
+                <span v-text="alertText"></span>
+            </template>
+        </v-alert>
+
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
@@ -14,16 +31,28 @@
                       :items="items"
                       :search="term"
                       hide-default-footer
-                      :items-per-page="productsPerPage"
-                      no-data-text="Список пуст"></v-data-table>
+                      :items-per-page="itemsPerPage"
+                      no-data-text="Список пуст">
+        </v-data-table>
+
+        <v-pagination v-model="currentPage"
+                      :length="pagesCount"
+                      @update:modelValue="switchPage"
+                      circle
+                      color="primary">
+        </v-pagination>
     </v-card>
 </template>
 <script>
     export default {
         data() {
             return {
-                productsPerPage: 5,
                 term: "",
+                currentPage: 1,
+
+                sortByColumn: "name",
+                sortDesc: false,
+
                 headers: [
                     { value: "id", title: "№" },
                     { value: "name", title: "Название компонента" },
@@ -31,36 +60,61 @@
                     { value: "productModel", title: "Модель" },
                     { value: "count", title: "шт" }
                 ],
-                items: [
-                    {
-                        id: 1,
-                        name: "Печатная плата",
-                        productName: "БП 1000",
-                        productModel: 159,
-                        count: 25
-                    },
-                    {
-                        id: 2,
-                        name: "Диодная плата",
-                        productName: "БП 1000",
-                        productModel: 237,
-                        count: 25
-                    },
-                    {
-                        id: 3,
-                        name: "Радиатор",
-                        productName: "БС 1000",
-                        productModel: 262,
-                        count: 25
-                    },
-                    {
-                        id: 3,
-                        name: "Корпус",
-                        productName: "БС 1000",
-                        productModel: 262,
-                        count: 25
-                    }
-                ]
+
+                isShowSuccessAlert: false,
+                isShowErrorAlert: false,
+                alertText: "",
+            }
+        },
+
+        created() {
+            this.$store.dispatch("loadComponentsWarehouseItems")
+                .catch(() => {
+                    this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
+                });
+        },
+
+        computed: {
+            items() {
+                return this.$store.getters.componentsWarehouseTabItems;
+            },
+
+            itemsPerPage() {
+                return this.$store.getters.pageSize;
+            },
+
+            pagesCount() {
+                return Math.ceil(this.$store.getters.pageItemsCount / this.itemsPerPage);
+            },
+
+            isLoading() {
+                return this.$store.getters.isLoading;
+            }
+        },
+
+        methods: {
+            switchPage(nextPage) {
+                this.$store.dispatch("navigateToPage", nextPage);
+            },
+
+            showSuccessAlert(text) {
+                this.alertText = text;
+                this.isShowSuccessAlert = true;
+
+                setTimeout(() => {
+                    this.alertText = "";
+                    this.isShowSuccessAlert = false;
+                }, 2000);
+            },
+
+            showErrorAlert(text) {
+                this.alertText = text;
+                this.isShowErrorAlert = true;
+
+                setTimeout(() => {
+                    this.alertText = "";
+                    this.isShowErrorAlert = false;
+                }, 2000);
             }
         }
     }
