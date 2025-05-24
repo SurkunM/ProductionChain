@@ -112,7 +112,7 @@
                     return "warning"
                 }
 
-                if (state === "свободен"){
+                if (state === "свободен") {
                     return "success";
                 }
             },
@@ -140,6 +140,6 @@
                     this.isShowErrorAlert = false;
                 }, 2000);
             }
-        }        
+        }
     }
 </script>

@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../components/HomeView.vue";
+import HomeTab from "../components/HomeTab.vue";
 
 const routes = [
     {
         path: "/",
         name: "home",
-        component: HomeView
+        component: HomeTab
     },
     {
         path: "/employees",
@@ -16,6 +16,11 @@ const routes = [
         path: "/products",
         name: "products",
         component: () => import("../components/ProductsTab.vue")
+    },
+    {
+        path: "/orders",
+        name: "orders",
+        component: () => import("../components/OrdersTab.vue")
     },
     {
         path: "/warehouse",

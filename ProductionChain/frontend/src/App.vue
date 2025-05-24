@@ -7,10 +7,11 @@
 
                 <v-list density="compact" nav>
                     <v-list-item prepend-icon="mdi-home" to="/" title="Главная"></v-list-item>
-                    <v-divider></v-divider>
-                    <v-list-item prepend-icon="mdi-cog-play" to="/productionOrders" title="Производство"></v-list-item>
 
-                    <!--<v-list-item prepend-icon="mdi-layers-triple" to="/orders" title="Заказы"></v-list-item>-->
+                    <v-divider></v-divider>
+                    <v-list-item prepend-icon="mdi-layers-triple" to="/orders" title="Заказы"></v-list-item>
+
+                    <v-list-item prepend-icon="mdi-cog-play" to="/productionOrders" title="Производство"></v-list-item>
                     <v-list-item prepend-icon="mdi-home-silo" to="/warehouse" title="Склад КП"></v-list-item>
                     <v-list-item prepend-icon="mdi-home-silo" to="/assemblywarehouse" title="Склад ГП"></v-list-item>
 
