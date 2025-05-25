@@ -83,12 +83,6 @@ public class ProductionAssemblyController : ControllerBase
         return BadRequest();
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddProductToWarehouse()
-    {
-        return BadRequest();
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetProductionHistory()
     {
@@ -108,7 +102,13 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProductsToWarehouse()
+    public async Task<IActionResult> GetAssemblyWarehouseItems()
+    {
+        return Ok();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetComponentsWarehouseItems()
     {
         return Ok();
     }
@@ -132,7 +132,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateProductToWarehouse()
+    public async Task<IActionResult> UpdateAssemblyWarehouseItem()
     {
         return BadRequest();
     }

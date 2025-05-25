@@ -8,7 +8,7 @@ public class ProductionChainDbContext : DbContext
 {
     public virtual DbSet<Employee> Employees { get; set; }
 
-    public virtual DbSet<EmployeeStatus> EmployeeStatuses { get; set; }
+    //public virtual DbSet<EmployeeStatus> EmployeeStatuses { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
@@ -43,17 +43,6 @@ public class ProductionChainDbContext : DbContext
                 .HasMaxLength(50);
         });
 
-        modelBuilder.Entity<EmployeeStatus>(b =>
-        {
-            b.Property(b => b.StatusType)
-                .HasMaxLength(50);
-
-            b.HasOne(es => es.Employee)
-                .WithMany()
-                .HasForeignKey(es => es.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict);
-        });
-
         modelBuilder.Entity<Order>(b =>
         {
             b.Property(b => b.Customer)
@@ -76,7 +65,7 @@ public class ProductionChainDbContext : DbContext
 
         modelBuilder.Entity<ComponentsWarehouse>(b =>
         {
-            b.Property(b => b.Name)
+            b.Property(b => b.Type)
                 .HasMaxLength(100);
 
             b.HasOne(cw => cw.Product)

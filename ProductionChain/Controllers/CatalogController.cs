@@ -3,7 +3,7 @@ using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Update;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers;
+using ProductionChain.Contracts.QueryParameters;
 
 namespace ProductionChain.Controllers;
 
@@ -14,7 +14,7 @@ public class CatalogController : ControllerBase
     private readonly GetEmployeesHandler _getEmployeesHandler;
     private readonly GetProductsHandler _getProductsHandler;
     private readonly GetOrdersHandler _getOrdersHandler;
-    private readonly GetEmployeesStatusesHandler _getEmployeesStatusesHandler;
+    //private readonly GetEmployeesStatusesHandler _getEmployeesStatusesHandler;
 
     private readonly CreateOrderHandler _createOrderHandler;
 
@@ -25,7 +25,7 @@ public class CatalogController : ControllerBase
 
     private readonly ILogger<CatalogController> _logger;
 
-    public CatalogController(GetEmployeesHandler getEmployeesHandler, GetEmployeesStatusesHandler getEmployeesStatusesHandler,
+    public CatalogController(GetEmployeesHandler getEmployeesHandler, 
         GetProductsHandler getProductsHandler, GetOrdersHandler getOrdersHandler,
         CreateOrderHandler createOrderHandler, UpdateEmployeeStatusHandler updateEmployeeStatusHandler,
         UpdateOrderHandler updateOrderHandler, DeleteOrderHandler deleteOrderHandler,
@@ -34,7 +34,7 @@ public class CatalogController : ControllerBase
         _createOrderHandler = createOrderHandler ?? throw new ArgumentNullException(nameof(createOrderHandler));
 
         _getEmployeesHandler = getEmployeesHandler ?? throw new ArgumentNullException(nameof(getEmployeesHandler));
-        _getEmployeesStatusesHandler = getEmployeesStatusesHandler ?? throw new ArgumentNullException(nameof(getEmployeesStatusesHandler));
+       // _getEmployeesStatusesHandler = getEmployeesStatusesHandler ?? throw new ArgumentNullException(nameof(getEmployeesStatusesHandler));
         _getProductsHandler = getProductsHandler ?? throw new ArgumentNullException(nameof(getProductsHandler));
         _getOrdersHandler = getOrdersHandler ?? throw new ArgumentNullException(nameof(getOrdersHandler));
 
@@ -53,27 +53,75 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetEmployees()
+    public async Task<IActionResult> GetEmployees([FromQuery] GetQueryParameters queryParameters)
     {
-        return Ok();
+        if (!ModelState.IsValid)
+        {
+            _logger.LogError("Ошибка! При запросе на получение списка сотрудников переданы не корректные параметры страницы.");
+
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var employees = await _getEmployeesHandler.HandleAsync(queryParameters);
+
+            return Ok(employees);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Запрос на получение списка сотрудников не выполнен.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }       
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProducts()
+    public async Task<IActionResult> GetProducts([FromQuery] GetQueryParameters queryParameters)
     {
-        return Ok();
+        if (!ModelState.IsValid)
+        {
+            _logger.LogError("Ошибка! При запросе на получение списка продукции, переданы не корректные параметры страницы.");
+
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var products = await _getProductsHandler.HandleAsync(queryParameters);
+
+            return Ok(products);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Запрос на получение списка продукции не выполнен.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetOrders()
+    public async Task<IActionResult> GetOrders([FromQuery] GetQueryParameters queryParameters)
     {
-        return Ok();
-    }
+        if (!ModelState.IsValid)
+        {
+            _logger.LogError("Ошибка! При запросе на получение списка заказов, переданы не корректные параметры страницы.");
 
-    [HttpGet]
-    public async Task<IActionResult> GetEmployeesStatuses()
-    {
-        return Ok();
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var orders = await _getOrdersHandler.HandleAsync(queryParameters);
+
+            return Ok(orders);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Запрос на получение списка заказов не выполнен.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpPost]
