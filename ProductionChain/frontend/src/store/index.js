@@ -4,7 +4,6 @@ import axios from "axios";
 export default createStore({
     state: {
         employees: [],
-        employeesStatuses: [],
 
         products: [],
         orders: [],
@@ -33,10 +32,6 @@ export default createStore({
 
         employees(state) {
             return state.employees;
-        },
-
-        employeesStatuses(state) {
-            return state.employeesStatuses;
         },
 
         products(state) {
@@ -78,10 +73,6 @@ export default createStore({
     mutations: {
         setEmployees(state, employees) {
             state.employees = employees;
-        },
-
-        setEmployeesStatuses(state, statuses) {
-            state.employeesStatuses = statuses;
         },
 
         setProducts(state, products) {
@@ -150,30 +141,11 @@ export default createStore({
             }).then(response => {
                 commit("setEmployees", response.data.employees);
                 commit("setPageItemsCount", response.data.totalCount);
-            }).finally(() => {
+            }).catch(response => console.log(response))
+                .finally(() => {
                 commit("setIsLoading", false);
             });
         },
-
-        loadEmployeesStatus({ commit, state }) {
-            commit("setIsLoading", true);
-
-            return axios.get("/api/Catalog/GetEmployeesStatuses", {
-                params: {
-                    term: state.term,
-                    sortBy: state.sortByColumn,
-                    isDescending: state.isDescending,
-                    pageNumber: state.pageNumber,
-                    pageSize: state.pageSize
-                }
-            }).then(response => {
-                commit("setEmployeesStatuses", response.data.employeesStatuses);
-                commit("setPageItemsCount", response.data.totalCount);
-            }).finally(() => {
-                commit("setIsLoading", false);
-            });
-        },
-
 
         loadProducts({ commit, state }) {
             commit("setIsLoading", true);

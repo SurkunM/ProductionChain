@@ -35,7 +35,7 @@
                       :items-per-page="itemsPerPage"
                       no-data-text="Список пуст">
 
-            <template v-slot:[`item.state`]="{ value }">
+            <template v-slot:[`item.status`]="{ value }">
                 <v-chip :border="`${getColor(value)} thin opacity-25`"
                         :color="getColor(value)"
                         :text="value"
@@ -63,12 +63,12 @@
                 sortDesc: false,
 
                 headers: [
-                    { value: "id", title: "№" },
+                    { value: "index", title: "№" },
                     { value: "lastName", title: "Фамилия" },
                     { value: "firstName", title: "Имя" },
                     { value: "middlename", title: "Отчество" },
                     { value: "position", title: "Должность" },
-                    { value: "state", title: "Состояние" }
+                    { value: "status", title: "Состояние" }
                 ],
 
                 isShowSuccessAlert: false,
@@ -103,16 +103,16 @@
         },
 
         methods: {
-            getColor(state) {
-                if (state === "отгул") {
+            getColor(status) {
+                if (status === "OnLeave") {
                     return "error";
                 }
 
-                if (state === "занят") {
+                if (status === "Busy") {
                     return "warning"
                 }
 
-                if (state === "свободен") {
+                if (status === "Available") {
                     return "success";
                 }
             },

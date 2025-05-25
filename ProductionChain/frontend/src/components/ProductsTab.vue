@@ -54,9 +54,9 @@
                 sortDesc: false,
 
                 headers: [
-                    { value: 'id', title: '№' },
-                    { value: 'name', title: 'Название' },
-                    { value: 'model', title: 'Модель' },
+                    { value: "index", title: "№" },
+                    { value: "name", title: "Название" },
+                    { value: "model", title: "Модель" },
                 ],
 
                 isShowSuccessAlert: false,

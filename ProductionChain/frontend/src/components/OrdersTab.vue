@@ -18,6 +18,15 @@
             </template>
         </v-alert>
 
+        <template v-slot:text>
+            <v-text-field v-model="term"
+                          label="Найти"
+                          prepend-inner-icon="mdi-magnify"
+                          variant="outlined"
+                          hide-details
+                          single-line></v-text-field>
+        </template>
+
         <v-data-table :headers="headers"
                       :items="orders"
                       hide-default-footer
@@ -34,7 +43,7 @@
             <template v-slot:[`item.actions`]="{ item }">
                 <div>
                     <template v-if="!item.inProgress">
-                        <v-btn size="small" color="info" @click="edit(item.id)" class="me-2">Начать</v-btn>
+                        <v-btn size="small" color="info" @click="edit(item.id)">Начать</v-btn>
                     </template>
                 </div>
             </template>
@@ -59,11 +68,13 @@
                 sortDesc: false,
 
                 headers: [
-                    { value: "id", title: "№", width: "15%" },
-                    { value: "name", title: "Изделие", width: "25%" },
-                    { value: "count", title: "шт", width: "15%" },
-                    { value: "status", title: "Статус", width: "20%" },
-                    { value: "actions", title: "", width: "25%" },
+                    { value: "index", title: "№", width: "10%" },
+                    { value: "customer", title: "Заказчик", width: "15%" },
+                    { value: "productName", title: "Изделие", width: "20%" },
+                    { value: "productModel", title: "Модель", width: "15%" },
+                    { value: "count", title: "шт", width: "10%" },
+                    { value: "status", title: "Статус", width: "15%" },
+                    { value: "actions", title: "", width: "10%" },
                 ],
 
                 isShowSuccessAlert: false,
@@ -98,14 +109,16 @@
         },
 
         methods: {
-            getColor(state) {
-                if (state === "в очереди") {
+            getColor(status) {
+                if (status === "Pending") {
                     return "error";
                 }
-                else if (state === "выполняется") {
+
+                if (status === "InProgress") {
                     return "warning";
                 }
-                else {
+
+                if (status === "Done") {
                     return "success";
                 }
             },
