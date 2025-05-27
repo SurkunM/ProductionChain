@@ -1,5 +1,23 @@
-﻿namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
+﻿using ProductionChain.Contracts.IRepositories;
+using ProductionChain.Contracts.IUnitOfWork;
+using ProductionChain.Contracts.QueryParameters;
+using ProductionChain.Contracts.Responses;
+
+namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
 
 public class GetProductionTasksHandler
 {
+    private readonly IUnitOfWork _unitOfWork;
+
+    public GetProductionTasksHandler(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+
+    public Task<ProductionTasksPage> HandleAsync(GetQueryParameters queryParameters)
+    {
+        var tasksRepository = _unitOfWork.GetRepository<IProductionAssemblyTasksRepository>();
+
+        return tasksRepository.GetTasksAsync(queryParameters);
+    }
 }
