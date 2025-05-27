@@ -28,9 +28,9 @@ public class ProductsRepository : BaseEfRepository<Product>, IProductsRepository
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            queryParameters.Term = queryParameters.Term.Trim().ToUpper();
-            queryDbSet = queryDbSet.Where(e => e.Name.ToUpper().Contains(queryParameters.Term)
-                || e.Model.ToUpper().Contains(queryParameters.Term));
+            queryParameters.Term = queryParameters.Term.Trim();
+            queryDbSet = queryDbSet.Where(e => e.Name.Contains(queryParameters.Term)
+                || e.Model.Contains(queryParameters.Term));
         }
 
         var orderByExpression = string.IsNullOrEmpty(queryParameters.SortBy)
@@ -44,20 +44,15 @@ public class ProductsRepository : BaseEfRepository<Product>, IProductsRepository
         var productsDtoSorted = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select((c) => new ProductsDto
+            .Select(p => new ProductsDto
             {
-                Id = c.Id,
-                Name = c.Name,
-                Model = c.Model
+                Id = p.Id,
+                Name = p.Name,
+                Model = p.Model
             })
             .ToListAsync();
 
-        for (int i = 0; i < productsDtoSorted.Count; i++)
-        {
-            productsDtoSorted[i].Index = (queryParameters.PageNumber - 1) * queryParameters.PageSize + i + 1; ;
-        }
-
-        var totalCount = await DbSet.CountAsync();
+        var totalCount = DbSet.Count();
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {

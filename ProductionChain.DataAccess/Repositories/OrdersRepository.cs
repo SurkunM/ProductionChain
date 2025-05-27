@@ -28,10 +28,10 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            queryParameters.Term = queryParameters.Term.Trim().ToUpper();
-            queryDbSet = queryDbSet.Where(o => o.Customer.ToUpper().Contains(queryParameters.Term)
-                || o.Product.Name.ToUpper().Contains(queryParameters.Term)
-                || o.Product.Model.ToUpper().Contains(queryParameters.Term));
+            queryParameters.Term = queryParameters.Term.Trim();
+            queryDbSet = queryDbSet.Where(o => o.Customer.Contains(queryParameters.Term)
+                || o.Product.Name.Contains(queryParameters.Term)
+                || o.Product.Model.Contains(queryParameters.Term));
         }
 
         var orderByExpression = string.IsNullOrEmpty(queryParameters.SortBy)
@@ -45,24 +45,19 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
         var ordersDtoSorted = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select((c) => new OrdersDto
+            .Select(o => new OrdersDto
             {
-                Id = c.Id,
-                Customer = c.Customer,
-                ProductName = c.Product.Name,
-                ProductModel = c.Product.Model,
-                Count = c.Count,
-                Status = c.StageType.ToString(),
-                CreateAt = c.CreatedAt
+                Id = o.Id,
+                Customer = o.Customer,
+                ProductName = o.Product.Name,
+                ProductModel = o.Product.Model,
+                Count = o.Count,
+                Status = o.StageType.ToString(),
+                CreateAt = o.CreatedAt
             })
             .ToListAsync();
 
-        for (int i = 0; i < ordersDtoSorted.Count; i++)
-        {
-            ordersDtoSorted[i].Index = (queryParameters.PageNumber - 1) * queryParameters.PageSize + i + 1; ;
-        }
-
-        var totalCount = await DbSet.CountAsync();
+        var totalCount = DbSet.Count();
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {

@@ -28,13 +28,13 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            queryParameters.Term = queryParameters.Term.Trim().ToUpper();
-            queryDbSet = queryDbSet.Where(e => e.FirstName.ToUpper().Contains(queryParameters.Term)
-                || e.LastName.ToUpper().Contains(queryParameters.Term)
-                || (e.MiddleName != null && e.MiddleName.ToUpper().Contains(queryParameters.Term)));
+            queryParameters.Term = queryParameters.Term.Trim();
+            queryDbSet = queryDbSet.Where(e => e.FirstName.Contains(queryParameters.Term)
+                || e.LastName.Contains(queryParameters.Term)
+                || (e.MiddleName != null && e.MiddleName.Contains(queryParameters.Term)));
         }
 
-        var orderByExpression = string.IsNullOrEmpty(queryParameters.SortBy) 
+        var orderByExpression = string.IsNullOrEmpty(queryParameters.SortBy)
             ? CreateSortExpression(_defaultPropertyBySorting)
             : CreateSortExpression(queryParameters.SortBy);
 
@@ -45,23 +45,18 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
         var employeesDtoSorted = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select((c) => new EmployeeDto
+            .Select(e => new EmployeeDto
             {
-                Id = c.Id,
-                FirstName = c.FirstName,
-                LastName = c.LastName,
-                MiddleName = c.MiddleName,
-                Position = c.Position.ToString(),
-                Status = c.Status.ToString()
+                Id = e.Id,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                MiddleName = e.MiddleName,
+                Position = e.Position.ToString(),
+                Status = e.Status.ToString()
             })
             .ToListAsync();
 
-        for (int i = 0; i < employeesDtoSorted.Count; i++)
-        {
-            employeesDtoSorted[i].Index = (queryParameters.PageNumber - 1) * queryParameters.PageSize + i + 1; ;
-        }
-
-        var totalCount = await DbSet.CountAsync();
+        var totalCount = DbSet.Count();
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {

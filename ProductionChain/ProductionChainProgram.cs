@@ -1,9 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using ProductionChain.Contracts.IRepositories;
-using ProductionChain.Contracts.IUnitOfWork;
-using ProductionChain.DataAccess;
-using ProductionChain.DataAccess.Repositories;
-using ProductionChain.DataAccess.UnitOfWork;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
@@ -12,6 +7,11 @@ using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
+using ProductionChain.Contracts.IRepositories;
+using ProductionChain.Contracts.IUnitOfWork;
+using ProductionChain.DataAccess;
+using ProductionChain.DataAccess.Repositories;
+using ProductionChain.DataAccess.UnitOfWork;
 
 namespace ProductionChain
 {
@@ -36,17 +36,17 @@ namespace ProductionChain
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
-            builder.Services.AddTransient<IEmployeeStatusesRepository, EmployeeStatusesRepository>();
+            //builder.Services.AddTransient<IEmployeeStatusesRepository, EmployeeStatusesRepository>();
 
             builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 
             builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
-            builder.Services.AddTransient<IComponentsWarehouseRepository, ComponentsWarehouseRepository>();
 
             builder.Services.AddTransient<IProductionAssemblyHistoryRepository, ProductionAssemblyHistoryRepository>();
             builder.Services.AddTransient<IProductionAssemblyOrdersRepository, ProductionAssemblyOrdersRepository>();
             builder.Services.AddTransient<IProductionAssemblyTasksRepository, ProductionAssemblyTasksRepository>();
             builder.Services.AddTransient<IProductionAssemblyWarehouseRepository, ProductionAssemblyWarehouseRepository>();
+            builder.Services.AddTransient<IComponentsWarehouseRepository, ComponentsWarehouseRepository>();
 
             builder.Services.AddTransient<CreateOrderHandler>();
             builder.Services.AddTransient<CreateProductionHistoryHandler>();
@@ -55,17 +55,17 @@ namespace ProductionChain
             builder.Services.AddTransient<CreateProductInAssemblyWarehouseHandler>();
 
             builder.Services.AddTransient<GetEmployeesHandler>();
-            builder.Services.AddTransient<GetEmployeesStatusesHandler>();
+            //builder.Services.AddTransient<GetEmployeesStatusesHandler>(); Удалить
             builder.Services.AddTransient<GetOrdersHandler>();
             builder.Services.AddTransient<GetProductsHandler>();
 
             builder.Services.AddTransient<GetProductionHistoriesHandler>();
             builder.Services.AddTransient<GetProductionOrdersHandler>();
             builder.Services.AddTransient<GetProductionTasksHandler>();
-            builder.Services.AddTransient<GetAssemblyWarehouseHandler>();
-            builder.Services.AddTransient<GetComponentsWarehouseHandler>();
+            builder.Services.AddTransient<GetAssemblyWarehouseItemsHandler>();
+            builder.Services.AddTransient<GetComponentsWarehouseItemsHandler>();
 
-            builder.Services.AddTransient<UpdateEmployeeStatusHandler>();
+            builder.Services.AddTransient<UpdateEmployeeStatusHandler>();//Удалить
             builder.Services.AddTransient<UpdateOrderHandler>();
             builder.Services.AddTransient<UpdateProductionHistoryHandler>();
             builder.Services.AddTransient<UpdateProductionOrderHandler>();
