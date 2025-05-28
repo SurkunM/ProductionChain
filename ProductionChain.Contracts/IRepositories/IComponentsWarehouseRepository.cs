@@ -1,9 +1,10 @@
 ﻿using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.Contracts.Responses;
+using ProductionChain.Contracts.ResponsesPages;
+using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.Contracts.IRepositories;
 
-public interface IComponentsWarehouseRepository
+public interface IComponentsWarehouseRepository : IRepository<ComponentsWarehouse>
 {
     Task<ComponentsWarehousePage> GetComponentsAsync(GetQueryParameters queryParameters);
 }

@@ -1,9 +1,10 @@
 ﻿using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.Contracts.Responses;
+using ProductionChain.Contracts.ResponsesPages;
+using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.Contracts.IRepositories;
 
-public interface IProductionAssemblyTasksRepository
+public interface IProductionAssemblyTasksRepository : IRepository<ProductionAssemblyTask>
 {
     Task<ProductionTasksPage> GetTasksAsync(GetQueryParameters queryParameters);
 }

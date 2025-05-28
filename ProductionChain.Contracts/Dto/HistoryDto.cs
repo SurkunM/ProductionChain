@@ -1,6 +1,6 @@
 ﻿namespace ProductionChain.Contracts.Dto;
 
-public class HistoriesDto
+public class HistoryDto
 {
     public int Id { get; set; }
 

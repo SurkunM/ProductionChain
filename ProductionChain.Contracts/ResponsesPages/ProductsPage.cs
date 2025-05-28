@@ -1,6 +1,6 @@
 ﻿using ProductionChain.Contracts.Dto;
 
-namespace ProductionChain.Contracts.Responses;
+namespace ProductionChain.Contracts.ResponsesPages;
 
 public class ProductsPage
 {

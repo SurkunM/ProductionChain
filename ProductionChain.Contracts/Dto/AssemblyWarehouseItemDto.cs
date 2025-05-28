@@ -1,6 +1,6 @@
 ﻿namespace ProductionChain.Contracts.Dto;
 
-public class AssemblyWarehouseDto
+public class AssemblyWarehouseItemDto
 {
     public int Id { get; set; }
 

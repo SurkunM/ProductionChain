@@ -1,10 +1,8 @@
 ﻿namespace ProductionChain.Contracts.Dto;
 
-public class OrdersDto
+public class ProductionOrderDto
 {
     public int Id { get; set; }
-
-    public required string Customer { get; set; }
 
     public required string ProductName { get; set; }
 
@@ -13,6 +11,4 @@ public class OrdersDto
     public int Count { get; set; }
 
     public required string Status { get; set; }
-
-    public DateTime? CreateAt { get; set; }
 }
