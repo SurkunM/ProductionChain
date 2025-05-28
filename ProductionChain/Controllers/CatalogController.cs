@@ -3,6 +3,10 @@ using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Update;
+using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
+using ProductionChain.Contracts.Dto;
+using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 
 namespace ProductionChain.Controllers;
@@ -47,9 +51,33 @@ public class CatalogController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrder()
+    public async Task<IActionResult> CreateOrder(OrderRequest orderRequest)
     {
-        return BadRequest();
+        if (orderRequest is null)
+        {
+            _logger.LogError("Ошибка! Объект orderRequest пуст.");
+
+            return BadRequest("Объект \"Новый заказ\" пуст.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            _logger.LogError("Ошибка! Переданы не корректные данные для создания заказа. {orderRequest}", orderRequest);
+            return UnprocessableEntity(ModelState);
+        }
+
+        try
+        {
+            await _createOrderHandler.HandleAsync(orderRequest);
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Заказ не создан.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpGet]

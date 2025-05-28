@@ -85,7 +85,7 @@ public class ProductionChainDbContext : DbContext
         modelBuilder.Entity<ProductionAssemblyOrders>(b =>
         {
             b.HasOne(ao => ao.Product)
-                .WithMany(p => p.AssemblyOrders)
+                .WithMany(p => p.ProductionOrders)
                 .HasForeignKey(ao => ao.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -97,9 +97,9 @@ public class ProductionChainDbContext : DbContext
 
         modelBuilder.Entity<ProductionAssemblyTask>(b =>
         {
-            b.HasOne(at => at.AssemblyOrders)
+            b.HasOne(at => at.ProductionOrder)
                 .WithMany(po => po.AssemblyTask)
-                .HasForeignKey(at => at.AssemblyOrdersId)
+                .HasForeignKey(at => at.ProductionOrderId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             b.HasOne(at => at.Employee)

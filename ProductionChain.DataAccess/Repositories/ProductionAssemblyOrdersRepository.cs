@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using ProductionChain.Contracts.Dto;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.Contracts.Responses;
+using ProductionChain.Contracts.ResponsesPages;
 using ProductionChain.DataAccess.Repositories.BaseAbstractions;
 using ProductionChain.Model.WorkflowEntities;
 using System.Linq.Expressions;
@@ -44,7 +44,7 @@ public class ProductionAssemblyOrdersRepository : BaseEfRepository<ProductionAss
         var productionOrdersDtoSorted = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(po => new ProductionOrdersDto
+            .Select(po => new ProductionOrderDto
             {
                 Id = po.Id,
                 ProductName = po.Product.Name,

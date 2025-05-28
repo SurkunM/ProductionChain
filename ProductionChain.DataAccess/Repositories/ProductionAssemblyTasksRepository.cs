@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.Contracts.Responses;
+using ProductionChain.Contracts.ResponsesPages;
 using ProductionChain.DataAccess.Repositories.BaseAbstractions;
 using ProductionChain.Model.WorkflowEntities;
+using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -45,13 +46,22 @@ public class ProductionAssemblyTasksRepository : BaseEfRepository<ProductionAsse
         var tasksDtoSorted = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(t => new TasksDto
+            .Select(t => new ProductionTaskResponse
             {
                 Id = t.Id,
+                ProductionOrderId = t.ProductionOrderId,
+
+                EmployeeLastName = t.Employee.LastName,
+                EmployeeFirstName = t.Employee.FirstName,
+                EmployeeMiddleName = t.Employee.MiddleName,
+
                 ProductName = t.Product.Name,
-                EmployeeName = t.Employee.LastName,
-                Count = t.Count,
-                Status = t.ProgressStatus.ToString()
+                ProductModel = t.Product.Model,
+                ProductsCount = t.Count,
+
+                Status = t.ProgressStatus.ToString(),
+                StartTime = t.StartTime,
+                EndTime = t.EndTime
             })
             .ToListAsync();
 

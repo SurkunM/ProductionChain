@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using ProductionChain.Contracts.Dto;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.Contracts.Responses;
+using ProductionChain.Contracts.ResponsesPages;
 using ProductionChain.DataAccess.Repositories.BaseAbstractions;
 using ProductionChain.Model.WorkflowEntities;
 using System.Linq.Expressions;
@@ -44,7 +44,7 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
         var componentsWarehouseDtoSorted = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(cw => new ComponentsWarehouseItemsDto
+            .Select(cw => new ComponentsWarehouseItemDto
             {
                 Id = cw.Id,
                 ProductName = cw.Product.Name,
@@ -67,7 +67,6 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
             Total = totalCount
         };
     }
-
 
     private Expression<Func<ComponentsWarehouse, object>> CreateSortExpression(string propertyName)
     {

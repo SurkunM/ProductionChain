@@ -12,7 +12,7 @@ public class Product
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<ProductionAssemblyOrders> AssemblyOrders { get; set; } = new List<ProductionAssemblyOrders>();
+    public virtual ICollection<ProductionAssemblyOrders> ProductionOrders { get; set; } = new List<ProductionAssemblyOrders>();
 
     public virtual ICollection<ProductionAssemblyTask> AssemblyTask { get; set; } = new List<ProductionAssemblyTask>();
 

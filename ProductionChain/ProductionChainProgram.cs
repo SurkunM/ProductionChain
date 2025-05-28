@@ -17,9 +17,9 @@ namespace ProductionChain
 {
     public class ProductionChainProgram
     {
-        public static void Main(string[] args)//TODO: 1. Создать фронтенд
+        public static void Main(string[] args)//TODO: 1. Сделать создание productionOrders. Создать DTO(request, response) Mapping ToModel ToDto
         {
-            var builder = WebApplication.CreateBuilder(args);//TODO: 3. Реализовать методы в серверной части для получения данных(Задача. кто делает.)
+            var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<ProductionChainDbContext>(options =>
             {
@@ -52,7 +52,7 @@ namespace ProductionChain
             builder.Services.AddTransient<CreateProductionHistoryHandler>();
             builder.Services.AddTransient<CreateProductionOrderHandler>();
             builder.Services.AddTransient<CreateProductionTaskHandler>();
-            builder.Services.AddTransient<CreateProductInAssemblyWarehouseHandler>();
+            builder.Services.AddTransient<CreateAssemblyWarehouseItemHandler>();
 
             builder.Services.AddTransient<GetEmployeesHandler>();
             //builder.Services.AddTransient<GetEmployeesStatusesHandler>(); Удалить
@@ -70,13 +70,13 @@ namespace ProductionChain
             builder.Services.AddTransient<UpdateProductionHistoryHandler>();
             builder.Services.AddTransient<UpdateProductionOrderHandler>();
             builder.Services.AddTransient<UpdateProductionTaskHandler>();
-            builder.Services.AddTransient<UpdateAssemblyWarehouseHandler>();
+            builder.Services.AddTransient<UpdateAssemblyWarehouseItemHandler>();
 
             builder.Services.AddTransient<DeleteOrderHandler>();
             builder.Services.AddTransient<DeleteProductionHistoryHandler>();
             builder.Services.AddTransient<DeleteProductionOrderHandler>();
             builder.Services.AddTransient<DeleteProductionTaskHandler>();
-            builder.Services.AddTransient<DeleteProductToAssemblyWarehouseHandler>();
+            builder.Services.AddTransient<DeleteAssemblyWarehouseItemHandler>();
 
             //jobs ...
 
