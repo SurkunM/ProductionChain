@@ -1,5 +1,5 @@
 ﻿namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 
-public class DeleteProductToAssemblyWarehouseHandler
+public class DeleteAssemblyWarehouseItemHandler
 {
 }

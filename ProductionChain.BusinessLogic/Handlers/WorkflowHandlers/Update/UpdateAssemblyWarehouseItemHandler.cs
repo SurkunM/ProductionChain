@@ -1,5 +1,5 @@
 ﻿namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
 
-public class UpdateAssemblyWarehouseHandler
+public class UpdateAssemblyWarehouseItemHandler
 {
 }

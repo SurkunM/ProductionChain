@@ -1,7 +1,7 @@
 ﻿using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.Contracts.Responses;
+using ProductionChain.Contracts.ResponsesPages;
 
 namespace ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
 
