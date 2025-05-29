@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
@@ -213,9 +214,9 @@ public class ProductionAssemblyController : ControllerBase
 
         try
         {
-            var isCreate = await _createProductionHistoryHandler.HandleAsync(productionHistoriesRequest);
+            var isCreated = await _createProductionHistoryHandler.HandleAsync(productionHistoriesRequest);
 
-            if (!isCreate)
+            if (!isCreated)
             {
                 _logger.LogError("Ошибка! Не удалось найти все сущности для создания истории.");
 
@@ -251,9 +252,9 @@ public class ProductionAssemblyController : ControllerBase
 
         try
         {
-            var isCreate = await _createProductionOrderHandler.HandleAsync(productionOrdersRequest);
+            var isCreated = await _createProductionOrderHandler.HandleAsync(productionOrdersRequest);
 
-            if (!isCreate)
+            if (!isCreated)
             {
                 _logger.LogError("Ошибка! Не удалось найти все сущности для создания производственной задачи.");
 
@@ -289,9 +290,9 @@ public class ProductionAssemblyController : ControllerBase
 
         try
         {
-            var isCreate = await _createProductionTaskHandler.HandleAsync(productionTaskRequest);
+            var isCreated = await _createProductionTaskHandler.HandleAsync(productionTaskRequest);
 
-            if (!isCreate)
+            if (!isCreated)
             {
                 _logger.LogError("Ошибка! Не удалось найти все сущности для создания задачи");
 
@@ -327,9 +328,9 @@ public class ProductionAssemblyController : ControllerBase
 
         try
         {
-            var isCreate = await _createAssemblyWarehouseItemHandler.HandleAsync(warehouseItemRequest);
+            var isCreated = await _createAssemblyWarehouseItemHandler.HandleAsync(warehouseItemRequest);
 
-            if (!isCreate)
+            if (!isCreated)
             {
                 _logger.LogError("Ошибка! Не удалось найти все сущности для создания позиции в складе сборки.");
 
@@ -358,9 +359,9 @@ public class ProductionAssemblyController : ControllerBase
 
         try
         {
-            var isUpdate = await _updateProductionOrderHandler.HandleAsync(productionOrdersRequest);
+            var isUpdated = await _updateProductionOrderHandler.HandleAsync(productionOrdersRequest);
 
-            if (!isUpdate)
+            if (!isUpdated)
             {
                 _logger.LogError("Ошибка! Не удалось внести изменения в производственный заказ.");
 
@@ -389,9 +390,9 @@ public class ProductionAssemblyController : ControllerBase
 
         try
         {
-            var isUpdate = await _updateProductionTaskHandler.HandleAsync(productionTaskRequest);
+            var isUpdated = await _updateProductionTaskHandler.HandleAsync(productionTaskRequest);
 
-            if (!isUpdate)
+            if (!isUpdated)
             {
                 _logger.LogError("Ошибка! Не удалось внести изменения в производственную задачу.");
 
@@ -420,9 +421,9 @@ public class ProductionAssemblyController : ControllerBase
 
         try
         {
-            var isUpdate = await _updateAssemblyWarehouseItemHandler.HandleAsync(assemblyWarehouseRequest);
+            var isUpdated = await _updateAssemblyWarehouseItemHandler.HandleAsync(assemblyWarehouseRequest);
 
-            if (!isUpdate)
+            if (!isUpdated)
             {
                 _logger.LogError("Ошибка! Не удалось внести изменения в склад сборки.");
 
@@ -451,9 +452,9 @@ public class ProductionAssemblyController : ControllerBase
 
         try
         {
-            var isUpdate = await _updateComponentsWarehouseItemsHandler.HandleAsync(componentsWarehouseRequest);
+            var isUpdated = await _updateComponentsWarehouseItemsHandler.HandleAsync(componentsWarehouseRequest);
 
-            if (!isUpdate)
+            if (!isUpdated)
             {
                 _logger.LogError("Ошибка! Не удалось внести изменения в склад компонентов.");
 
@@ -471,20 +472,126 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpDelete]
+    public async Task<IActionResult> DeleteProductionHistory([FromBody] int id)
+    {
+        if (id < 0)
+        {
+            _logger.LogError("Передано значение id меньше нуля. id={id}", id);
+
+            BadRequest("Передано не корректное значение.");
+        }
+
+        try
+        {
+            var isDeleted = await _deleteProductionHistoryHandler.HandleAsync(id);
+
+            if (!isDeleted)
+            {
+                _logger.LogError("Ошибка! История для удаления не существует. id={id}", id);
+
+                return BadRequest("История для удаления не существует.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Удаление истории не выполнено.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
+    }
+
+    [HttpDelete]
     public async Task<IActionResult> DeleteProductionOrder([FromBody] int id)
     {
-        return BadRequest();
+        if (id < 0)
+        {
+            _logger.LogError("Передано значение id меньше нуля. id={id}", id);
+
+            BadRequest("Передано не корректное значение.");
+        }
+
+        try
+        {
+            var isDeleted = await _deleteProductionOrderHandler.HandleAsync(id);
+
+            if (!isDeleted)
+            {
+                _logger.LogError("Ошибка! Производственный заказ для удаления не существует. id={id}", id);
+
+                return BadRequest("Производственный заказ для удаления не существует.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Удаление производственного заказа не выполнено.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteProductionTask([FromBody] int id)
     {
-        return BadRequest();
+        if (id < 0)
+        {
+            _logger.LogError("Передано значение id меньше нуля. id={id}", id);
+
+            BadRequest("Передано не корректное значение.");
+        }
+
+        try
+        {
+            var isDeleted = await _deleteProductionTaskHandler.HandleAsync(id);
+
+            if (!isDeleted)
+            {
+                _logger.LogError("Ошибка! Задача для удаления не существует. id={id}", id);
+
+                return BadRequest("Задача для удаления не существует.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Удаление задачи не выполнено.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteProductToWarehouse([FromBody] int id)
+    public async Task<IActionResult> DeleteAssemblyWarehouseItem([FromBody] int id)
     {
-        return BadRequest();
+        if (id < 0)
+        {
+            _logger.LogError("Передано значение id меньше нуля. id={id}", id);
+
+            BadRequest("Передано не корректное значение.");
+        }
+
+        try
+        {
+            var isDeleted = await _deleteAssemblyWarehouseItemHandler.HandleAsync(id);
+
+            if (!isDeleted)
+            {
+                _logger.LogError("Ошибка! Позиция для удаления в складе сборки не существует. id={id}", id);
+
+                return BadRequest("Позиция для удаления в складе сборки не существует.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Удаление позиции в складе сборки не выполнено.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 }

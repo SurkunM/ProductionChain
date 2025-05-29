@@ -16,11 +16,12 @@ public class DeleteOrderHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> DeleteOrderHandleAsync(int id)
+    public async Task<bool> HandleAsync(int id)
     {
         try
         {
             _unitOfWork.BeginTransaction();
+
             var ordersRepository = _unitOfWork.GetRepository<IOrdersRepository>();
 
             var order = await ordersRepository.GetByIdAsync(id);
@@ -40,7 +41,7 @@ public class DeleteOrderHandler
         {
             _unitOfWork.RollbackTransaction();
 
-            _logger.LogError(ex, "Ошибка! При удалении контакта из БД произошла ошибка. Транзакция отменена");
+            _logger.LogError(ex, "Ошибка! При удалении заказа из БД произошла ошибка. Транзакция отменена");
 
             throw;
         }

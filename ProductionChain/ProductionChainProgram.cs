@@ -17,7 +17,7 @@ namespace ProductionChain
 {
     public class ProductionChainProgram
     {
-        public static void Main(string[] args)//TODO: 1. Сделать создание productionOrders. Создать DTO(request, response) Mapping ToModel ToDto
+        public static void Main(string[] args)//TODO: 1. Сделать методы Delete в API
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -67,7 +67,6 @@ namespace ProductionChain
 
             builder.Services.AddTransient<UpdateEmployeeStatusHandler>();//Удалить
             builder.Services.AddTransient<UpdateOrderHandler>();
-            builder.Services.AddTransient<UpdateProductionHistoryHandler>();
             builder.Services.AddTransient<UpdateProductionOrderHandler>();
             builder.Services.AddTransient<UpdateProductionTaskHandler>();
             builder.Services.AddTransient<UpdateAssemblyWarehouseItemHandler>();

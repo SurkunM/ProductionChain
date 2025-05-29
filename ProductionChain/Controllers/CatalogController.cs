@@ -29,7 +29,7 @@ public class CatalogController : ControllerBase
 
     private readonly ILogger<CatalogController> _logger;
 
-    public CatalogController(GetEmployeesHandler getEmployeesHandler, 
+    public CatalogController(GetEmployeesHandler getEmployeesHandler,
         GetProductsHandler getProductsHandler, GetOrdersHandler getOrdersHandler,
         CreateOrderHandler createOrderHandler, UpdateEmployeeStatusHandler updateEmployeeStatusHandler,
         UpdateOrderHandler updateOrderHandler, DeleteOrderHandler deleteOrderHandler,
@@ -38,7 +38,7 @@ public class CatalogController : ControllerBase
         _createOrderHandler = createOrderHandler ?? throw new ArgumentNullException(nameof(createOrderHandler));
 
         _getEmployeesHandler = getEmployeesHandler ?? throw new ArgumentNullException(nameof(getEmployeesHandler));
-       // _getEmployeesStatusesHandler = getEmployeesStatusesHandler ?? throw new ArgumentNullException(nameof(getEmployeesStatusesHandler));
+        // _getEmployeesStatusesHandler = getEmployeesStatusesHandler ?? throw new ArgumentNullException(nameof(getEmployeesStatusesHandler));
         _getProductsHandler = getProductsHandler ?? throw new ArgumentNullException(nameof(getProductsHandler));
         _getOrdersHandler = getOrdersHandler ?? throw new ArgumentNullException(nameof(getOrdersHandler));
 
@@ -69,7 +69,14 @@ public class CatalogController : ControllerBase
 
         try
         {
-            await _createOrderHandler.HandleAsync(orderRequest);
+            var isCreated = await _createOrderHandler.HandleAsync(orderRequest);
+
+            if (!isCreated)
+            {
+                _logger.LogError("Ошибка! Не удалось найти сущность для создания заказа. ProductId={orderRequest.ProductId}", orderRequest.ProductId);
+
+                return BadRequest("Переданы не корректные данные для создания заказа.");
+            }
 
             return NoContent();
         }
@@ -102,7 +109,7 @@ public class CatalogController : ControllerBase
             _logger.LogError(ex, "Ошибка! Запрос на получение списка сотрудников не выполнен.");
 
             return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }       
+        }
     }
 
     [HttpGet]
@@ -172,13 +179,20 @@ public class CatalogController : ControllerBase
 
         try
         {
-            await _updateOrderHandler.HandleAsync(orderRequest);
+            var isUpdated = await _updateOrderHandler.HandleAsync(orderRequest);
+
+            if (!isUpdated)
+            {
+                _logger.LogError("Ошибка! Не удалось изменить заказ. Переданы не корректные параметры. ProductId={employeeRequest.Id}", orderRequest.ProductId);
+
+                return BadRequest("Переданы не корректные данные для изменения заказа.");
+            }
 
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка! Контакт не изменен.");
+            _logger.LogError(ex, "Ошибка! Заказ не изменен.");
 
             return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
         }
@@ -196,7 +210,15 @@ public class CatalogController : ControllerBase
 
         try
         {
-            await _updateEmployeeStatusHandler.HandleAsync(employeeRequest);
+            var isUpdated = await _updateEmployeeStatusHandler.HandleAsync(employeeRequest);
+
+            if (!isUpdated)
+            {
+                _logger.LogError("Ошибка! Не удалось изменить статус сотрудника. Переданы не корректные параметры. Id={employeeRequest.Id} StatusType={employeeRequest.StatusType}",
+                    employeeRequest.Id, employeeRequest.StatusType);
+
+                return BadRequest("Переданы не корректные данные для изменения статуса сотрудника.");
+            }
 
             return NoContent();
         }
@@ -220,13 +242,13 @@ public class CatalogController : ControllerBase
 
         try
         {
-            var isDelete = await _deleteOrderHandler.DeleteOrderHandleAsync(id);
+            var isDeleted = await _deleteOrderHandler.HandleAsync(id);
 
-            if (!isDelete)
+            if (!isDeleted)
             {
-                _logger.LogError("Ошибка! Контакт для удаления не найден. id={id}", id);
+                _logger.LogError("Ошибка! Заказ для удаления не существует. id={id}", id);
 
-                return BadRequest("Контакт для удаления не найден.");
+                return BadRequest("Переданный заказ для удаления не существует.");
             }
 
             return NoContent();
