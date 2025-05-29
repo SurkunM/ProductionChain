@@ -12,7 +12,5 @@ public interface IRepository<T> : IRepository
 
     void Delete(T entity);
 
-    Task<T[]> GetAll();
-
     Task<T?> GetByIdAsync(int id);
 }

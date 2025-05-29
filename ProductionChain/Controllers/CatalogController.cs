@@ -57,12 +57,13 @@ public class CatalogController : ControllerBase
         {
             _logger.LogError("Ошибка! Объект orderRequest пуст.");
 
-            return BadRequest("Объект \"Новый заказ\" пуст.");
+            return BadRequest("Передан пустой объект параметров.");
         }
 
         if (!ModelState.IsValid)
         {
             _logger.LogError("Ошибка! Переданы не корректные данные для создания заказа. {orderRequest}", orderRequest);
+
             return UnprocessableEntity(ModelState);
         }
 
@@ -153,20 +154,88 @@ public class CatalogController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateOrder()
+    public async Task<IActionResult> UpdateOrder(OrderRequest orderRequest)
     {
-        return BadRequest();
+        if (orderRequest is null)
+        {
+            _logger.LogError("Ошибка! Объект orderRequest пуст.");
+
+            return BadRequest("Передан пустой объект параметров.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            _logger.LogError("Ошибка! Не корректно заполнены поля для изменения заказа.");
+
+            return UnprocessableEntity(ModelState);
+        }
+
+        try
+        {
+            await _updateOrderHandler.HandleAsync(orderRequest);
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Контакт не изменен.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateEmployeeStatus()
+    public async Task<IActionResult> UpdateEmployeeStatus(EmployeeStateRequest employeeRequest)
     {
-        return BadRequest();
+        if (employeeRequest is null)
+        {
+            _logger.LogError("Ошибка! Объект employeeRequest пуст.");
+
+            return BadRequest("Передан пустой объект параметров.");
+        }
+
+        try
+        {
+            await _updateEmployeeStatusHandler.HandleAsync(employeeRequest);
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Статус сотрудника не изменен.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteOrder([FromBody] int id)
     {
-        return BadRequest();
+        if (id < 0)
+        {
+            _logger.LogError("Передано значение id меньше нуля. id={id}", id);
+
+            BadRequest("Передано не корректное значение.");
+        }
+
+        try
+        {
+            var isDelete = await _deleteOrderHandler.DeleteOrderHandleAsync(id);
+
+            if (!isDelete)
+            {
+                _logger.LogError("Ошибка! Контакт для удаления не найден. id={id}", id);
+
+                return BadRequest("Контакт для удаления не найден.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Удаление контакта не выполнено. id={id}", id);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 }

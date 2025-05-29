@@ -2,6 +2,8 @@
 
 public class ProductionTaskRequest
 {
+    public int Id { get; set; }
+
     public int ProductionOrderId { get; set; }
 
     public int EmployeeId { get; set; }
@@ -10,5 +12,7 @@ public class ProductionTaskRequest
 
     public int Count { get; set; }
 
-    public DateTime? StartTime { get; set; }
+    public int StatusId { get; set; }
+
+    public DateTime StartTime { get; set; }
 }

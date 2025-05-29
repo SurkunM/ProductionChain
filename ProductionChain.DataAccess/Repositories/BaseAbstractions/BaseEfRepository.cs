@@ -36,11 +36,6 @@ public class BaseEfRepository<T> : IRepository<T> where T : class
         DbContext.Entry(entity).State = EntityState.Modified;
     }
 
-    public Task<T[]> GetAll()
-    {
-        return DbSet.ToArrayAsync();
-    }
-
     public Task<T?> GetByIdAsync(int id)
     {
         return DbSet.FindAsync(id).AsTask();

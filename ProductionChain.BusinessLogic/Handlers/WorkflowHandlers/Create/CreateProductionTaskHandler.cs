@@ -32,7 +32,8 @@ public class CreateProductionTaskHandler
             return false;
         }
 
-        await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee));
+        await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee,
+            Model.Enums.ProgressStatusType.Pending, DateTime.UtcNow));
 
         await _unitOfWork.SaveAsync();
 

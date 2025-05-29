@@ -11,6 +11,7 @@ public static class MappingExtensions
     {
         return new Order
         {
+            Id = orderRequest.Id,
             Customer = orderRequest.Customer,
             Product = product,
             Count = orderRequest.Count,
@@ -19,16 +20,18 @@ public static class MappingExtensions
         };
     }
 
-    public static ProductionAssemblyTask ToTaskModel(this ProductionTaskRequest taskRequest, ProductionAssemblyOrders productionOrder, Product product, Employee employee)
+    public static ProductionAssemblyTask ToTaskModel(this ProductionTaskRequest taskRequest, ProductionAssemblyOrders productionOrder,
+            Product product, Employee employee, ProgressStatusType statusType, DateTime dateTime)
     {
         return new ProductionAssemblyTask
         {
+            Id = taskRequest.Id,
             ProductionOrder = productionOrder,
             Employee = employee,
             Product = product,
             Count = taskRequest.Count,
-            ProgressStatus = ProgressStatusType.Pending,
-            StartTime = DateTime.UtcNow
+            ProgressStatus = statusType,
+            StartTime = dateTime
         };
     }
 

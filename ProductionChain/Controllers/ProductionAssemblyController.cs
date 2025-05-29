@@ -23,10 +23,10 @@ public class ProductionAssemblyController : ControllerBase
     private readonly CreateProductionTaskHandler _createProductionTaskHandler;
     private readonly CreateAssemblyWarehouseItemHandler _createAssemblyWarehouseItemHandler;
 
-    private readonly UpdateProductionHistoryHandler _updateProductionHistoryHandler;
     private readonly UpdateProductionOrderHandler _updateProductionOrderHandler;
     private readonly UpdateProductionTaskHandler _updateProductionTaskHandler;
     private readonly UpdateAssemblyWarehouseItemHandler _updateAssemblyWarehouseItemHandler;
+    private readonly UpdateComponentsWarehouseItemsHandler _updateComponentsWarehouseItemsHandler;
 
     private readonly DeleteProductionHistoryHandler _deleteProductionHistoryHandler;
     private readonly DeleteProductionOrderHandler _deleteProductionOrderHandler;
@@ -42,8 +42,8 @@ public class ProductionAssemblyController : ControllerBase
         CreateProductionHistoryHandler createProductionHistoryHandler, CreateProductionOrderHandler createProductionOrderHandler,
         CreateProductionTaskHandler createProductionTaskHandler, CreateAssemblyWarehouseItemHandler createAssemblyWarehouseItemHandler,
 
-        UpdateProductionHistoryHandler updateProductionHistoryHandler, UpdateProductionOrderHandler updateProductionOrderHandler,
-        UpdateProductionTaskHandler updateProductionTaskHandler, UpdateAssemblyWarehouseItemHandler updateAssemblyWarehouseItemHandler,
+        UpdateProductionOrderHandler updateProductionOrderHandler, UpdateProductionTaskHandler updateProductionTaskHandler,
+        UpdateAssemblyWarehouseItemHandler updateAssemblyWarehouseItemHandler, UpdateComponentsWarehouseItemsHandler updateComponentsWarehouseItemsHandler,
 
         DeleteProductionHistoryHandler deleteProductionHistoryHandler, DeleteProductionOrderHandler deleteProductionOrderHandler,
         DeleteProductionTaskHandler deleteProductionTaskHandler, DeleteAssemblyWarehouseItemHandler deleteWarehouseItemHandler,
@@ -63,10 +63,10 @@ public class ProductionAssemblyController : ControllerBase
         _getAssemblyWarehouseItemsHandler = getAssemblyWarehouseItemsHandler ?? throw new ArgumentNullException(nameof(getAssemblyWarehouseItemsHandler));
         _getComponentsWarehouseItemsHandler = getComponentsWarehouseItemsHandler ?? throw new ArgumentNullException(nameof(getComponentsWarehouseItemsHandler));
 
-        _updateProductionHistoryHandler = updateProductionHistoryHandler ?? throw new ArgumentNullException(nameof(updateProductionHistoryHandler));
         _updateProductionOrderHandler = updateProductionOrderHandler ?? throw new ArgumentNullException(nameof(updateProductionOrderHandler));
         _updateProductionTaskHandler = updateProductionTaskHandler ?? throw new ArgumentNullException(nameof(updateProductionTaskHandler));
         _updateAssemblyWarehouseItemHandler = updateAssemblyWarehouseItemHandler ?? throw new ArgumentNullException(nameof(updateAssemblyWarehouseItemHandler));
+        _updateComponentsWarehouseItemsHandler = updateComponentsWarehouseItemsHandler ?? throw new ArgumentNullException(nameof(updateComponentsWarehouseItemsHandler));
 
         _deleteProductionHistoryHandler = deleteProductionHistoryHandler ?? throw new ArgumentNullException(nameof(deleteProductionHistoryHandler));
         _deleteProductionOrderHandler = deleteProductionOrderHandler ?? throw new ArgumentNullException(nameof(deleteProductionOrderHandler));
@@ -326,7 +326,7 @@ public class ProductionAssemblyController : ControllerBase
         }
 
         try
-        {           
+        {
             var isCreate = await _createAssemblyWarehouseItemHandler.HandleAsync(warehouseItemRequest);
 
             if (!isCreate)
@@ -347,33 +347,127 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateProductionHistory()
+    public async Task<IActionResult> UpdateProductionOrder(ProductionOrdersRequest productionOrdersRequest)
     {
-        return BadRequest();
+        if (productionOrdersRequest is null)
+        {
+            _logger.LogError("Ошибка! Объект productionOrdersRequest пуст.");
+
+            return BadRequest("Передан пустой объект параметров.");
+        }
+
+        try
+        {
+            var isUpdate = await _updateProductionOrderHandler.HandleAsync(productionOrdersRequest);
+
+            if (!isUpdate)
+            {
+                _logger.LogError("Ошибка! Не удалось внести изменения в производственный заказ.");
+
+                return BadRequest("Переданы не корректные данные для изменения производственного заказа.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Производственный заказ не изменен.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateProductionOrder()
+    public async Task<IActionResult> UpdateProductionTask(ProductionTaskRequest productionTaskRequest)
     {
-        return BadRequest();
+        if (productionTaskRequest is null)
+        {
+            _logger.LogError("Ошибка! Объект productionTaskRequest пуст.");
+
+            return BadRequest("Передан пустой объект параметров.");
+        }
+
+        try
+        {
+            var isUpdate = await _updateProductionTaskHandler.HandleAsync(productionTaskRequest);
+
+            if (!isUpdate)
+            {
+                _logger.LogError("Ошибка! Не удалось внести изменения в производственную задачу.");
+
+                return BadRequest("Переданы не корректные данные для изменения производственной задачи.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Производственная задача не изменена.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateProductionTask()
+    public async Task<IActionResult> UpdateAssemblyWarehouseItem(AssemblyWarehouseRequest assemblyWarehouseRequest)
     {
-        return BadRequest();
+        if (assemblyWarehouseRequest is null)
+        {
+            _logger.LogError("Ошибка! Объект assemblyWarehouseRequest пуст.");
+
+            return BadRequest("Передан пустой объект параметров.");
+        }
+
+        try
+        {
+            var isUpdate = await _updateAssemblyWarehouseItemHandler.HandleAsync(assemblyWarehouseRequest);
+
+            if (!isUpdate)
+            {
+                _logger.LogError("Ошибка! Не удалось внести изменения в склад сборки.");
+
+                return BadRequest("Переданы не корректные данные для изменения позиции в складе сборки.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Количество продукции в складе сборки не изменено.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateAssemblyWarehouseItem()
+    public async Task<IActionResult> UpdateComponentsWarehouseItem(ComponentsWarehouseRequest componentsWarehouseRequest)
     {
-        return BadRequest();
-    }
+        if (componentsWarehouseRequest is null)
+        {
+            _logger.LogError("Ошибка! Объект componentsWarehouseRequest пуст.");
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteProductionHistory([FromBody] int id)
-    {
-        return BadRequest();
+            return BadRequest("Передан пустой объект параметров.");
+        }
+
+        try
+        {
+            var isUpdate = await _updateComponentsWarehouseItemsHandler.HandleAsync(componentsWarehouseRequest);
+
+            if (!isUpdate)
+            {
+                _logger.LogError("Ошибка! Не удалось внести изменения в склад компонентов.");
+
+                return BadRequest("Переданы не корректные данные для изменения позиции в складе компонентов.");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка! Количество продукции в складе компонентов не изменено.");
+
+            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
+        }
     }
 
     [HttpDelete]

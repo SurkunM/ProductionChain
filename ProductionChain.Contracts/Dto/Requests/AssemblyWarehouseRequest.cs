@@ -7,4 +7,8 @@ public class AssemblyWarehouseRequest
     public int ProductId { get; set; }
 
     public int Count { get; set; }
+
+    public int AddCount { get; set; }
+
+    public int SubtractCount { get; set; }
 }
