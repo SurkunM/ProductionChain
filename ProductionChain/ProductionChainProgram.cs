@@ -17,7 +17,7 @@ namespace ProductionChain
 {
     public class ProductionChainProgram
     {
-        public static void Main(string[] args)//TODO: 1. Сделать методы Delete в API
+        public static void Main(string[] args)//TODO: 1. 
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +36,6 @@ namespace ProductionChain
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
-            //builder.Services.AddTransient<IEmployeeStatusesRepository, EmployeeStatusesRepository>();
 
             builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 
@@ -55,7 +54,6 @@ namespace ProductionChain
             builder.Services.AddTransient<CreateAssemblyWarehouseItemHandler>();
 
             builder.Services.AddTransient<GetEmployeesHandler>();
-            //builder.Services.AddTransient<GetEmployeesStatusesHandler>(); Удалить
             builder.Services.AddTransient<GetOrdersHandler>();
             builder.Services.AddTransient<GetProductsHandler>();
 
@@ -65,11 +63,12 @@ namespace ProductionChain
             builder.Services.AddTransient<GetAssemblyWarehouseItemsHandler>();
             builder.Services.AddTransient<GetComponentsWarehouseItemsHandler>();
 
-            builder.Services.AddTransient<UpdateEmployeeStatusHandler>();//Удалить
             builder.Services.AddTransient<UpdateOrderHandler>();
+            builder.Services.AddTransient<UpdateEmployeeStatusHandler>();
             builder.Services.AddTransient<UpdateProductionOrderHandler>();
             builder.Services.AddTransient<UpdateProductionTaskHandler>();
             builder.Services.AddTransient<UpdateAssemblyWarehouseItemHandler>();
+            builder.Services.AddTransient<UpdateComponentsWarehouseItemsHandler>();
 
             builder.Services.AddTransient<DeleteOrderHandler>();
             builder.Services.AddTransient<DeleteProductionHistoryHandler>();

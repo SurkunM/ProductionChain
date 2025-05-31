@@ -15,7 +15,7 @@ public class ProductionAssemblyHistoryRepository : BaseEfRepository<ProductionAs
 {
     private readonly ILogger<ProductionAssemblyHistoryRepository> _logger;
 
-    private const string _defaultPropertyBySorting = "Task.Product.Name";
+    private const string _defaultPropertyBySorting = "AssemblyTask.Product.Name";
 
     public ProductionAssemblyHistoryRepository(ProductionChainDbContext dbContext, ILogger<ProductionAssemblyHistoryRepository> logger) : base(dbContext)
     {

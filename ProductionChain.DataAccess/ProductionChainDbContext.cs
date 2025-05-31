@@ -8,8 +8,6 @@ public class ProductionChainDbContext : DbContext
 {
     public virtual DbSet<Employee> Employees { get; set; }
 
-    //public virtual DbSet<EmployeeStatus> EmployeeStatuses { get; set; }
-
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }

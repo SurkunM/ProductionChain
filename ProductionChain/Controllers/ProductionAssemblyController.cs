@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
@@ -100,7 +99,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProductionOrder([FromQuery] GetQueryParameters queryParameters)
+    public async Task<IActionResult> GetProductionOrders([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
         {
@@ -124,7 +123,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProductionTask([FromQuery] GetQueryParameters queryParameters)
+    public async Task<IActionResult> GetProductionAssemblyTasks([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
         {
