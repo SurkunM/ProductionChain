@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <v-card title="Склад компонентов"
             flat>
         <v-progress-linear v-if="isLoading"
@@ -50,12 +50,12 @@
                 term: "",
                 currentPage: 1,
 
-                sortByColumn: "name",
+                sortByColumn: "",
                 sortDesc: false,
 
                 headers: [
-                    { value: "id", title: "№" },
-                    { value: "name", title: "Название компонента" },
+                    { value: "index", title: "№" },
+                    { value: "componentType", title: "Название компонента" },
                     { value: "productName", title: "Название изделия" },
                     { value: "productModel", title: "Модель" },
                     { value: "count", title: "шт" }
@@ -69,14 +69,15 @@
 
         created() {
             this.$store.dispatch("loadComponentsWarehouseItems")
-                .catch(() => {
+                .catch((response) => {
                     this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
+                    console.log(response);
                 });
         },
 
         computed: {
             items() {
-                return this.$store.getters.componentsWarehouseTabItems;
+                return this.$store.getters.componentsWarehouseItems;
             },
 
             itemsPerPage() {

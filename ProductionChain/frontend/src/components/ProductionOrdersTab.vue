@@ -44,7 +44,7 @@
             <template v-slot:[`item.actions`]="{ item }">
                 <div>
                     <template v-if="!item.inProgress">
-                        <v-btn size="small" color="info" @click="edit(item.id)" class="me-2">Начать</v-btn>
+                        <v-btn size="small" color="info" @click="showTaskCreateModal(item)" class="me-2">Создать задачу</v-btn>
                     </template>
                 </div>
             </template>
@@ -57,23 +57,37 @@
                       color="primary">
         </v-pagination>
     </v-card>
+
+    <template>
+        <production-task-create-modal ref="productionTaskCreateModal" @save="createTask"></production-task-create-modal>
+    </template>
 </template>
 <script>
+    import ProductionTaskCreateModal from "./ProductionTaskCreateModal.vue";
+
     export default {
+        components: {
+            ProductionTaskCreateModal
+        },
+
         data() {
             return {
                 term: "",
                 currentPage: 1,
 
-                sortByColumn: "lastName",
+                sortByColumn: "productName",
                 sortDesc: false,
 
                 headers: [
-                    { value: "id", title: "№", width: "15%" },
-                    { value: "name", title: "Изделие", width: "25%" },
-                    { value: "count", title: "шт", width: "15%" },
-                    { value: "status", title: "Статус", width: "20%" },
-                    { value: "actions", title: "", width: "25%" },
+                    { value: "index", title: "№", width: "10%" },
+                    { value: "name", title: "Изделие", width: "20%" },
+                    
+                    { value: "inProgressCount", title: "в работе (шт)", width: "15%" },
+                    { value: "completedCount", title: "собрано (шт)", width: "15%" },
+                    { value: "totalCount", title: "всего (шт)", width: "15%" },
+
+                    { value: "status", title: "Статус", width: "10%" },
+                    { value: "actions", title: "", width: "15%" },
                 ],
 
                 isShowSuccessAlert: false,
@@ -120,12 +134,20 @@
                 }
             },
 
-            edit(id) {
-                console.log(id);
+            createTask(newTask) {
+                this.$store.dispatch("createTask", newTask)                
+                    .then(() => this.$refs.productionTaskCreateModal.hide())
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось создать задачу.");
+                    });
             },
 
             switchPage(nextPage) {
                 this.$store.dispatch("navigateToPage", nextPage);
+            },
+
+            showTaskCreateModal(productionOrder) {
+                this.$refs.productionTaskCreateModal.show(productionOrder);
             },
 
             showSuccessAlert(text) {

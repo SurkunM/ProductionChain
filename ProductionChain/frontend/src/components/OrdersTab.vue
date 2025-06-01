@@ -43,7 +43,7 @@
             <template v-slot:[`item.actions`]="{ item }">
                 <div>
                     <template v-if="!item.inProgress">
-                        <v-btn size="small" color="info" @click="edit(item.id)">Начать</v-btn>
+                        <v-btn size="small" color="info" @click="createProductionOrder(item.id, item.count)">Начать</v-btn>
                     </template>
                 </div>
             </template>
@@ -123,8 +123,16 @@
                 }
             },
 
-            edit(id) {
-                console.log(id);
+            createProductionOrder(itemId, productsCount) {
+                const parameters = {
+                    orderId: itemId,
+                    count: productsCount
+                }
+
+                this.$store.dispatch("createProductionOrder", parameters)
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось создать производсвтенную задачу.");
+                    });
             },
 
             switchPage(nextPage) {

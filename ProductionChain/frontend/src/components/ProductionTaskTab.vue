@@ -54,13 +54,11 @@
                 sortDesc: false,
 
                 headers: [
-                    { value: "id", title: "№", align: 'center' },
-                    { value: "name", title: "Название" },
-                    { value: "model", title: "Модель" },
-                    { value: "lastName", title: "Фамилия" },
-                    { value: "count", title: "шт" },
-                    { value: "DateAt", title: "Начало" }
-
+                    { value: "index", title: "№", align: 'center' },
+                    { value: "product", title: "Изделие" },
+                    { value: "employee", title: "Сотрудник" },
+                    { value: "productsCount", title: "шт" },
+                    { value: "startTime", title: "Начало" }
                 ],
 
                 isShowSuccessAlert: false,

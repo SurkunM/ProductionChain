@@ -58,8 +58,8 @@ export default createStore({
             return state.assemblyWarehouseItems;
         },
 
-        componentsWarehouseTabItems(state) {
-            return state.componentsWarehouseTabItems;
+        componentsWarehouseItems(state) {
+            return state.componentsWarehouseItems;
         },
 
         pageSize(state) {
@@ -84,6 +84,18 @@ export default createStore({
         },
 
         setTasks(state, tasks) {
+            tasks.forEach(t => {
+                t.employee = `${t.employeeLastName} ${t.employeeFirstName[0]}.${t.employeeMiddleName[0] || ""}.`;
+                t.product = `${t.productName} (${t.productModel})`;
+                t.startTime = new Date(t.startTime).toLocaleString("ru-RU", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric"
+                });
+            });
+
             state.tasks = tasks;
         },
 
@@ -92,6 +104,10 @@ export default createStore({
         },
 
         setProductionOrders(state, productionOrders) {
+            productionOrders.forEach(po => {
+                po.name = `${po.productName || ""} (${po.productModel || ""})`;
+            });
+
             state.productionOrders = productionOrders;
         },
 
@@ -100,11 +116,35 @@ export default createStore({
         },
 
         setComponentsWarehouseItems(state, items) {
+            items.forEach(c => {
+                if (c.componentType === "CircuitBoard") {
+                    c.componentType = "Печатная плата";
+                }
+                else if (c.componentType === "DiodeBoard") {
+                    c.componentType = "Диодная плата";
+                }
+                else if (c.componentType === "Enclosure") {
+                    c.componentType = "Корпус";
+                } else {
+                    c.componentType = "Радиатор";
+                }
+            });
+
             state.componentsWarehouseItems = items;
         },
 
         setIsLoading(state, value) {
             state.isLoading = value;
+        },
+
+        setResponseItemsIndex(state, items) {
+            if (items.length === 0) {
+                return;
+            }
+
+            items.forEach((c, i) => {
+                c.index = state.pageNumber + i;
+            });
         },
 
         setTerm(state, value) {
@@ -139,10 +179,10 @@ export default createStore({
                     pageSize: state.pageSize
                 }
             }).then(response => {
+                commit("setResponseItemsIndex", response.data.employees);
                 commit("setEmployees", response.data.employees);
                 commit("setPageItemsCount", response.data.totalCount);
-            }).catch(response => console.log(response))
-                .finally(() => {
+            }).finally(() => {
                 commit("setIsLoading", false);
             });
         },
@@ -159,6 +199,7 @@ export default createStore({
                     pageSize: state.pageSize
                 }
             }).then(response => {
+                commit("setResponseItemsIndex", response.data.products);
                 commit("setProducts", response.data.products);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
@@ -178,6 +219,7 @@ export default createStore({
                     pageSize: state.pageSize
                 }
             }).then(response => {
+                commit("setResponseItemsIndex", response.data.orders);
                 commit("setOrders", response.data.orders);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
@@ -188,7 +230,7 @@ export default createStore({
         loadTasks({ commit, state }) {
             commit("setIsLoading", true);
 
-            return axios.get("/api/ProductionAssembly/GetProductionTasks", {
+            return axios.get("/api/ProductionAssembly/GetProductionAssemblyTasks", {
                 params: {
                     term: state.term,
                     sortBy: state.sortByColumn,
@@ -197,6 +239,7 @@ export default createStore({
                     pageSize: state.pageSize
                 }
             }).then(response => {
+                commit("setResponseItemsIndex", response.data.tasks);
                 commit("setTasks", response.data.tasks);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
@@ -216,6 +259,7 @@ export default createStore({
                     pageSize: state.pageSize
                 }
             }).then(response => {
+                commit("setResponseItemsIndex", response.data.histories);
                 commit("setHistories", response.data.histories);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
@@ -235,6 +279,7 @@ export default createStore({
                     pageSize: state.pageSize
                 }
             }).then(response => {
+                commit("setResponseItemsIndex", response.data.productionOrders);
                 commit("setProductionOrders", response.data.productionOrders);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
@@ -254,11 +299,16 @@ export default createStore({
                     pageSize: state.pageSize
                 }
             }).then(response => {
+                commit("setResponseItemsIndex", response.data.assemblyWarehouseItems);
                 commit("setAssemblyWarehouseItems", response.data.assemblyWarehouseItems);
                 commit("setPageItemsCount", response.data.totalCount);
-            }).finally(() => {
-                commit("setIsLoading", false);
-            });
+            })
+                .catch((response) => {
+                    this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
+                    console.log(response);
+                }).finally(() => {
+                    commit("setIsLoading", false);
+                });
         },
 
         loadComponentsWarehouseItems({ commit, state }) {
@@ -273,6 +323,7 @@ export default createStore({
                     pageSize: state.pageSize
                 }
             }).then(response => {
+                commit("setResponseItemsIndex", response.data.componentsWarehouseItems);
                 commit("setComponentsWarehouseItems", response.data.componentsWarehouseItems);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
@@ -280,10 +331,10 @@ export default createStore({
             });
         },
 
-        createProductionOrder({ commit, dispatch }, order) {
+        createProductionOrder({ commit, dispatch }, productionOrder) {
             commit("setIsLoading", true);
 
-            return axios.post("/api/ProductionAssembly/CreateProductionOrder", order)
+            return axios.post("/api/ProductionAssembly/CreateProductionOrder", productionOrder)
                 .then(() => {
                     dispatch("loadProductionOrders");
                 })
