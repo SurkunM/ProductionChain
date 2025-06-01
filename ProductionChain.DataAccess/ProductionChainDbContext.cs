@@ -14,13 +14,13 @@ public class ProductionChainDbContext : DbContext
 
     public virtual DbSet<ComponentsWarehouse> ComponentsWarehouse { get; set; }
 
-    public virtual DbSet<ProductionAssemblyHistory> ProductionAssemblyHistory { get; set; }
+    public virtual DbSet<ProductionHistory> ProductionHistory { get; set; }
 
-    public virtual DbSet<ProductionAssemblyOrders> ProductionAssemblyOrders { get; set; }
+    public virtual DbSet<AssemblyProductionOrders> AssemblyProductionOrders { get; set; }
 
-    public virtual DbSet<ProductionAssemblyTask> ProductionAssemblyTasks { get; set; }
+    public virtual DbSet<AssemblyProductionTask> AssemblyProductionTasks { get; set; }
 
-    public virtual DbSet<ProductionAssemblyWarehouse> ProductionAssemblyWarehouse { get; set; }
+    public virtual DbSet<AssemblyProductionWarehouse> AssemblyProductionWarehouse { get; set; }
 
     public ProductionChainDbContext(DbContextOptions<ProductionChainDbContext> options) : base(options) { }
 
@@ -72,7 +72,7 @@ public class ProductionChainDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<ProductionAssemblyHistory>(b =>
+        modelBuilder.Entity<ProductionHistory>(b =>
         {
             b.HasOne(ah => ah.AssemblyTask)
                 .WithMany(at => at.AssemblyHistories)
@@ -80,7 +80,7 @@ public class ProductionChainDbContext : DbContext
                 .OnDelete(DeleteBehavior.NoAction);
         });
 
-        modelBuilder.Entity<ProductionAssemblyOrders>(b =>
+        modelBuilder.Entity<AssemblyProductionOrders>(b =>
         {
             b.HasOne(ao => ao.Product)
                 .WithMany(p => p.ProductionOrders)
@@ -93,7 +93,7 @@ public class ProductionChainDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<ProductionAssemblyTask>(b =>
+        modelBuilder.Entity<AssemblyProductionTask>(b =>
         {
             b.HasOne(at => at.ProductionOrder)
                 .WithMany(po => po.AssemblyTask)
@@ -111,7 +111,7 @@ public class ProductionChainDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<ProductionAssemblyWarehouse>(b =>
+        modelBuilder.Entity<AssemblyProductionWarehouse>(b =>
         {
             b.HasOne(aw => aw.Product)
                 .WithMany(p => p.AssemblyWarehouse)

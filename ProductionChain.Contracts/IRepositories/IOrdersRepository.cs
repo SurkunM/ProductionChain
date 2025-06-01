@@ -8,5 +8,9 @@ public interface IOrdersRepository : IRepository<Order>
 {
     Task<OrdersPage> GetOrdersAsync(GetQueryParameters queryParameters);
 
-    Product GetOrderProduct(Order order);
+    Product? GetProductByOrderId(int orderId);
+
+    bool UpdateOrderStatusByOrderId(int orderId, string statusType);
+
+    bool IsOrderPending(int orderId);
 }

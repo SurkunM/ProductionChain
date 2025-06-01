@@ -11,13 +11,13 @@ using System.Reflection;
 
 namespace ProductionChain.DataAccess.Repositories;
 
-public class ProductionAssemblyHistoryRepository : BaseEfRepository<ProductionAssemblyHistory>, IProductionAssemblyHistoryRepository
+public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, IProductionHistoryRepository
 {
-    private readonly ILogger<ProductionAssemblyHistoryRepository> _logger;
+    private readonly ILogger<ProductionHistoryRepository> _logger;
 
     private const string _defaultPropertyBySorting = "AssemblyTask.Product.Name";
 
-    public ProductionAssemblyHistoryRepository(ProductionChainDbContext dbContext, ILogger<ProductionAssemblyHistoryRepository> logger) : base(dbContext)
+    public ProductionHistoryRepository(ProductionChainDbContext dbContext, ILogger<ProductionHistoryRepository> logger) : base(dbContext)
     {
         _logger = logger;
     }
@@ -68,7 +68,7 @@ public class ProductionAssemblyHistoryRepository : BaseEfRepository<ProductionAs
         };
     }
 
-    private Expression<Func<ProductionAssemblyHistory, object>> CreateSortExpression(string propertyName)
+    private Expression<Func<ProductionHistory, object>> CreateSortExpression(string propertyName)
     {
         try
         {
@@ -82,9 +82,9 @@ public class ProductionAssemblyHistoryRepository : BaseEfRepository<ProductionAs
         }
     }
 
-    private static Expression<Func<ProductionAssemblyHistory, object>> GetPropertyExpression(string propertyName)
+    private static Expression<Func<ProductionHistory, object>> GetPropertyExpression(string propertyName)
     {
-        var parameter = Expression.Parameter(typeof(ProductionAssemblyHistory), "h");
+        var parameter = Expression.Parameter(typeof(ProductionHistory), "h");
         Expression propertyAccess = parameter;
 
         var parts = propertyName.Split(".");
@@ -102,6 +102,6 @@ public class ProductionAssemblyHistoryRepository : BaseEfRepository<ProductionAs
             propertyAccess = Expression.Convert(propertyAccess, typeof(object));
         }
 
-        return Expression.Lambda<Func<ProductionAssemblyHistory, object>>(Expression.Convert(propertyAccess, typeof(object)), parameter);
+        return Expression.Lambda<Func<ProductionHistory, object>>(Expression.Convert(propertyAccess, typeof(object)), parameter);
     }
 }

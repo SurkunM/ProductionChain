@@ -16,7 +16,7 @@ public class GetProductionOrdersHandler
 
     public Task<ProductionOrdersPage> HandleAsync(GetQueryParameters queryParameters)
     {
-        var productionOrdersRepository = _unitOfWork.GetRepository<IProductionAssemblyOrdersRepository>();
+        var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
 
         return productionOrdersRepository.GetProductionOrdersAsync(queryParameters);
     }

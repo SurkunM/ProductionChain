@@ -4,7 +4,7 @@ using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.Contracts.IRepositories;
 
-public interface IProductionAssemblyHistoryRepository : IRepository<ProductionAssemblyHistory>
+public interface IAssemblyProductionTasksRepository : IRepository<AssemblyProductionTask>
 {
-    Task<ProductionHistoriesPage> GetProductionHistoriesAsync(GetQueryParameters queryParameters);
+    Task<ProductionTasksPage> GetTasksAsync(GetQueryParameters queryParameters);
 }

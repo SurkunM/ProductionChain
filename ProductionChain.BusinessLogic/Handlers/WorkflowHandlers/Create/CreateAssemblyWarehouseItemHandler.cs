@@ -18,7 +18,7 @@ public class CreateAssemblyWarehouseItemHandler
     {
         _unitOfWork.BeginTransaction();
 
-        var assemblyWarehouseRepository = _unitOfWork.GetRepository<IProductionAssemblyWarehouseRepository>();
+        var assemblyWarehouseRepository = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
         var productsRepository = _unitOfWork.GetRepository<IProductsRepository>();
 
         var product = await productsRepository.GetByIdAsync(assemblyWarehouseRequest.ProductId);

@@ -16,7 +16,7 @@ public class GetAssemblyWarehouseItemsHandler
 
     public Task<AssemblyWarehousePage> HandleAsync(GetQueryParameters queryParameters)
     {
-        var assemblyWarehouseRepository = _unitOfWork.GetRepository<IProductionAssemblyWarehouseRepository>();
+        var assemblyWarehouseRepository = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
 
         return assemblyWarehouseRepository.GetAssemblyWarehouseItemsAsync(queryParameters);
     }

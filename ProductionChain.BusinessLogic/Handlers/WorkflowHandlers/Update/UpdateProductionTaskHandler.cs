@@ -21,8 +21,8 @@ public class UpdateProductionTaskHandler
 
     public async Task<bool> HandleAsync(ProductionTaskRequest taskRequest)
     {
-        var tasksRepository = _unitOfWork.GetRepository<IProductionAssemblyTasksRepository>();
-        var productionOrdersRepository = _unitOfWork.GetRepository<IProductionAssemblyOrdersRepository>();
+        var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
+        var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
         var productsRepository = _unitOfWork.GetRepository<IProductsRepository>();
         var employeesRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
 

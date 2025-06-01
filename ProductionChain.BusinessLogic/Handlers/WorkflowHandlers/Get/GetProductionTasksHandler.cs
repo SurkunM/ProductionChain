@@ -16,7 +16,7 @@ public class GetProductionTasksHandler
 
     public Task<ProductionTasksPage> HandleAsync(GetQueryParameters queryParameters)
     {
-        var tasksRepository = _unitOfWork.GetRepository<IProductionAssemblyTasksRepository>();
+        var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
 
         return tasksRepository.GetTasksAsync(queryParameters);
     }

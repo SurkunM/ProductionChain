@@ -19,7 +19,7 @@ public class UpdateComponentsWarehouseItemsHandler
 
     public async Task<bool> HandleAsync(ComponentsWarehouseRequest componentsWarehouseRequest)
     {
-        var componentsWarehouseRepository = _unitOfWork.GetRepository<IProductionAssemblyWarehouseRepository>();
+        var componentsWarehouseRepository = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
 
         var componentsWarehouseItem = await componentsWarehouseRepository.GetByIdAsync(componentsWarehouseRequest.Id);
 

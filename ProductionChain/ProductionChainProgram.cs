@@ -17,7 +17,7 @@ namespace ProductionChain
 {
     public class ProductionChainProgram
     {
-        public static void Main(string[] args)//TODO: 1. 
+        public static void Main(string[] args)//TODO: 1. Реализовать доб.задачи в tasksRep и productionOrders(проверить что не создается повторно заказа который уже вып)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -41,10 +41,10 @@ namespace ProductionChain
 
             builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 
-            builder.Services.AddTransient<IProductionAssemblyHistoryRepository, ProductionAssemblyHistoryRepository>();
-            builder.Services.AddTransient<IProductionAssemblyOrdersRepository, ProductionAssemblyOrdersRepository>();
-            builder.Services.AddTransient<IProductionAssemblyTasksRepository, ProductionAssemblyTasksRepository>();
-            builder.Services.AddTransient<IProductionAssemblyWarehouseRepository, ProductionAssemblyWarehouseRepository>();
+            builder.Services.AddTransient<IProductionHistoryRepository, ProductionHistoryRepository>();
+            builder.Services.AddTransient<IAssemblyProductionOrdersRepository, AssemblyProductionOrdersRepository>();
+            builder.Services.AddTransient<IAssemblyProductionTasksRepository, AssemblyProductionTasksRepository>();
+            builder.Services.AddTransient<IAssemblyProductionWarehouseRepository, AssemblyProductionWarehouseRepository>();
             builder.Services.AddTransient<IComponentsWarehouseRepository, ComponentsWarehouseRepository>();
 
             builder.Services.AddTransient<CreateOrderHandler>();

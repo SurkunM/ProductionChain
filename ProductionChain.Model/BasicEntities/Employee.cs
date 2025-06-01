@@ -17,5 +17,5 @@ public class Employee
 
     public required EmployeeStatusType Status { get; set; }
 
-    public virtual ICollection<ProductionAssemblyTask> AssemblyTasks { get; set; } = new List<ProductionAssemblyTask>();
+    public virtual ICollection<AssemblyProductionTask> AssemblyTasks { get; set; } = new List<AssemblyProductionTask>();
 }

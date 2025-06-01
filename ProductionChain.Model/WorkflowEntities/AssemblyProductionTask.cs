@@ -3,13 +3,13 @@ using ProductionChain.Model.Enums;
 
 namespace ProductionChain.Model.WorkflowEntities;
 
-public class ProductionAssemblyTask
+public class AssemblyProductionTask
 {
     public int Id { get; set; }
 
     public int ProductionOrderId { get; set; }
 
-    public virtual required ProductionAssemblyOrders ProductionOrder { get; set; }
+    public virtual required AssemblyProductionOrders ProductionOrder { get; set; }
 
     public int ProductId { get; set; }
 
@@ -27,5 +27,5 @@ public class ProductionAssemblyTask
 
     public DateTime? EndTime { get; set; }
 
-    public virtual ICollection<ProductionAssemblyHistory> AssemblyHistories { get; set; } = new List<ProductionAssemblyHistory>();
+    public virtual ICollection<ProductionHistory> AssemblyHistories { get; set; } = new List<ProductionHistory>();
 }

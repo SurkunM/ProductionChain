@@ -22,7 +22,7 @@ public class DeleteProductionHistoryHandler
         {
             _unitOfWork.BeginTransaction();
 
-            var historiesRepository = _unitOfWork.GetRepository<IProductionAssemblyHistoryRepository>();
+            var historiesRepository = _unitOfWork.GetRepository<IProductionHistoryRepository>();
 
             var history = await historiesRepository.GetByIdAsync(id);
 

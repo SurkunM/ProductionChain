@@ -21,7 +21,7 @@ public class DeleteProductionTaskHandler
         try
         {
             _unitOfWork.BeginTransaction();
-            var tasksRepository = _unitOfWork.GetRepository<IProductionAssemblyTasksRepository>();
+            var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
 
             var task = await tasksRepository.GetByIdAsync(id);
 

@@ -20,7 +20,7 @@ public class UpdateProductionOrderHandler
 
     public async Task<bool> HandleAsync(ProductionOrdersRequest productionOrdersRequest)
     {
-        var productionOrdersRepository = _unitOfWork.GetRepository<IProductionAssemblyOrdersRepository>();
+        var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
 
         var productionOrder = await productionOrdersRepository.GetByIdAsync(productionOrdersRequest.Id);
 
@@ -31,11 +31,11 @@ public class UpdateProductionOrderHandler
 
         if (productionOrdersRequest.AddCount > 0)
         {
-            productionOrder.Count += productionOrdersRequest.AddCount;
+            productionOrder.TotalCount += productionOrdersRequest.AddCount;
         }
         else if (productionOrdersRequest.SubtractCount > 0)
         {
-            productionOrder.Count -= productionOrdersRequest.SubtractCount;
+            productionOrder.TotalCount -= productionOrdersRequest.SubtractCount;
         }
         else
         {

@@ -1,36 +1,38 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
 using ProductionChain.DataAccess.Repositories.BaseAbstractions;
 using ProductionChain.Model.WorkflowEntities;
+using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace ProductionChain.DataAccess.Repositories;
 
-public class ProductionAssemblyOrdersRepository : BaseEfRepository<ProductionAssemblyOrders>, IProductionAssemblyOrdersRepository
+public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProductionTask>, IAssemblyProductionTasksRepository
 {
-    private readonly ILogger<ProductionAssemblyOrdersRepository> _logger;
+    private readonly ILogger<AssemblyProductionTasksRepository> _logger;
 
     private const string _defaultPropertyBySorting = "Product.Name";
 
-    public ProductionAssemblyOrdersRepository(ProductionChainDbContext dbContext, ILogger<ProductionAssemblyOrdersRepository> logger) : base(dbContext)
+    public AssemblyProductionTasksRepository(ProductionChainDbContext dbContext, ILogger<AssemblyProductionTasksRepository> logger) : base(dbContext)
     {
         _logger = logger;
     }
 
-    public async Task<ProductionOrdersPage> GetProductionOrdersAsync(GetQueryParameters queryParameters)
+    public async Task<ProductionTasksPage> GetTasksAsync(GetQueryParameters queryParameters)
     {
         var queryDbSet = DbSet.AsNoTracking();
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
             queryParameters.Term = queryParameters.Term.Trim();
-            queryDbSet = queryDbSet.Where(po => po.Product.Name.Contains(queryParameters.Term)
-                || po.Product.Model.Contains(queryParameters.Term));
+            queryDbSet = queryDbSet.Where(t => t.Product.Name.Contains(queryParameters.Term)
+                || t.Product.Model.Contains(queryParameters.Term)
+                || t.Employee.FirstName.Contains(queryParameters.Term));
         }
 
         var orderByExpression = string.IsNullOrEmpty(queryParameters.SortBy)
@@ -41,16 +43,25 @@ public class ProductionAssemblyOrdersRepository : BaseEfRepository<ProductionAss
             ? queryDbSet.OrderByDescending(orderByExpression)
             : queryDbSet.OrderBy(orderByExpression);
 
-        var productionOrdersDtoSorted = await orderedQuery
+        var tasksDtoSorted = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(po => new ProductionOrderDto
+            .Select(t => new ProductionTaskResponse
             {
-                Id = po.Id,
-                ProductName = po.Product.Name,
-                ProductModel = po.Product.Model,
-                Count = po.Count,
-                Status = po.StatusType.ToString()
+                Id = t.Id,
+                ProductionOrderId = t.ProductionOrderId,
+
+                EmployeeLastName = t.Employee.LastName,
+                EmployeeFirstName = t.Employee.FirstName,
+                EmployeeMiddleName = t.Employee.MiddleName,
+
+                ProductName = t.Product.Name,
+                ProductModel = t.Product.Model,
+                ProductsCount = t.Count,
+
+                Status = t.ProgressStatus.ToString(),
+                StartTime = t.StartTime,
+                EndTime = t.EndTime
             })
             .ToListAsync();
 
@@ -58,17 +69,17 @@ public class ProductionAssemblyOrdersRepository : BaseEfRepository<ProductionAss
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            totalCount = productionOrdersDtoSorted.Count;
+            totalCount = tasksDtoSorted.Count;
         }
 
-        return new ProductionOrdersPage
+        return new ProductionTasksPage
         {
-            ProductionOrders = productionOrdersDtoSorted,
+            Tasks = tasksDtoSorted,
             Total = totalCount
         };
     }
 
-    private Expression<Func<ProductionAssemblyOrders, object>> CreateSortExpression(string propertyName)
+    private Expression<Func<AssemblyProductionTask, object>> CreateSortExpression(string propertyName)
     {
         try
         {
@@ -82,9 +93,9 @@ public class ProductionAssemblyOrdersRepository : BaseEfRepository<ProductionAss
         }
     }
 
-    private static Expression<Func<ProductionAssemblyOrders, object>> GetPropertyExpression(string propertyName)
+    private static Expression<Func<AssemblyProductionTask, object>> GetPropertyExpression(string propertyName)
     {
-        var parameter = Expression.Parameter(typeof(ProductionAssemblyOrders), "po");
+        var parameter = Expression.Parameter(typeof(AssemblyProductionTask), "t");
         Expression propertyAccess = parameter;
 
         var parts = propertyName.Split(".");
@@ -102,6 +113,6 @@ public class ProductionAssemblyOrdersRepository : BaseEfRepository<ProductionAss
             propertyAccess = Expression.Convert(propertyAccess, typeof(object));
         }
 
-        return Expression.Lambda<Func<ProductionAssemblyOrders, object>>(Expression.Convert(propertyAccess, typeof(object)), parameter);
+        return Expression.Lambda<Func<AssemblyProductionTask, object>>(Expression.Convert(propertyAccess, typeof(object)), parameter);
     }
 }

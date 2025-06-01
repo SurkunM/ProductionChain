@@ -20,10 +20,10 @@ public static class MappingExtensions
         };
     }
 
-    public static ProductionAssemblyTask ToTaskModel(this ProductionTaskRequest taskRequest, ProductionAssemblyOrders productionOrder,
+    public static AssemblyProductionTask ToTaskModel(this ProductionTaskRequest taskRequest, AssemblyProductionOrders productionOrder,
             Product product, Employee employee, ProgressStatusType statusType, DateTime dateTime)
     {
-        return new ProductionAssemblyTask
+        return new AssemblyProductionTask
         {
             Id = taskRequest.Id,
             ProductionOrder = productionOrder,
@@ -35,28 +35,28 @@ public static class MappingExtensions
         };
     }
 
-    public static ProductionAssemblyHistory ToHistoryModel(this ProductionHistoryRequest historyRequest, ProductionAssemblyTask task)
+    public static ProductionHistory ToHistoryModel(this ProductionHistoryRequest historyRequest, AssemblyProductionTask task)
     {
-        return new ProductionAssemblyHistory
+        return new ProductionHistory
         {
             AssemblyTask = task
         };
     }
 
-    public static ProductionAssemblyOrders ToProductionOrderModel(this ProductionOrdersRequest productionOrdersRequest, Order order, Product product)
+    public static AssemblyProductionOrders ToProductionOrderModel(this ProductionOrdersRequest productionOrdersRequest, Order order, Product product, ProgressStatusType status)
     {
-        return new ProductionAssemblyOrders
+        return new AssemblyProductionOrders
         {
             Order = order,
             Product = product,
-            Count = productionOrdersRequest.Count,
-            StatusType = ProgressStatusType.Pending
+            TotalCount = productionOrdersRequest.Count,
+            StatusType = status
         };
     }
 
-    public static ProductionAssemblyWarehouse ToAssemblyWarehouseModel(this AssemblyWarehouseRequest warehouseRequest, Product product)
+    public static AssemblyProductionWarehouse ToAssemblyWarehouseModel(this AssemblyWarehouseRequest warehouseRequest, Product product)
     {
-        return new ProductionAssemblyWarehouse
+        return new AssemblyProductionWarehouse
         {
             Product = product,
             Count = warehouseRequest.Count

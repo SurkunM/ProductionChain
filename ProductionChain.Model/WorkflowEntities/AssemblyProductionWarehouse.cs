@@ -2,7 +2,7 @@
 
 namespace ProductionChain.Model.WorkflowEntities;
 
-public class ProductionAssemblyWarehouse
+public class AssemblyProductionWarehouse
 {
     public int Id { get; set; }
 

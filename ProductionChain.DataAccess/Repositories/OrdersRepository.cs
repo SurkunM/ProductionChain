@@ -71,9 +71,29 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
         };
     }
 
-    public Product GetOrderProduct(Order order)
+    public bool IsOrderPending(int orderId)
     {
-        return order.Product;
+        var order = DbSet.FirstOrDefault(o => o.Id == orderId);
+
+        return order?.StageType == "Pending";
+    }
+
+    public bool UpdateOrderStatusByOrderId(int orderId, string statusType)
+    {
+        var order = DbSet.FirstOrDefault(o => o.Id == orderId);
+
+        if (order is null)
+        {
+            return false;
+        }
+
+        order.StageType = statusType;
+
+        return true;
+    }
+    public Product? GetProductByOrderId(int orderId)
+    {
+        return DbSet.FirstOrDefault(o => o.Id == orderId)?.Product;
     }
 
     private Expression<Func<Order, object>> CreateSortExpression(string propertyName)

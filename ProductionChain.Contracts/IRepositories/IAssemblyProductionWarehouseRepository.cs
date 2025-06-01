@@ -4,7 +4,7 @@ using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.Contracts.IRepositories;
 
-public interface IProductionAssemblyWarehouseRepository : IRepository<ProductionAssemblyWarehouse>
+public interface IAssemblyProductionWarehouseRepository : IRepository<AssemblyProductionWarehouse>
 {
     Task<AssemblyWarehousePage> GetAssemblyWarehouseItemsAsync(GetQueryParameters queryParameters);
 }

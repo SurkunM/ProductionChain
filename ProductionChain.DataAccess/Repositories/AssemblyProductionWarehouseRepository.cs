@@ -11,13 +11,13 @@ using System.Reflection;
 
 namespace ProductionChain.DataAccess.Repositories;
 
-public class ProductionAssemblyWarehouseRepository : BaseEfRepository<ProductionAssemblyWarehouse>, IProductionAssemblyWarehouseRepository
+public class AssemblyProductionWarehouseRepository : BaseEfRepository<AssemblyProductionWarehouse>, IAssemblyProductionWarehouseRepository
 {
-    private readonly ILogger<ProductionAssemblyWarehouseRepository> _logger;
+    private readonly ILogger<AssemblyProductionWarehouseRepository> _logger;
 
     private const string _defaultPropertyBySorting = "Product.Name";
 
-    public ProductionAssemblyWarehouseRepository(ProductionChainDbContext dbContext, ILogger<ProductionAssemblyWarehouseRepository> logger) : base(dbContext)
+    public AssemblyProductionWarehouseRepository(ProductionChainDbContext dbContext, ILogger<AssemblyProductionWarehouseRepository> logger) : base(dbContext)
     {
         _logger = logger;
     }
@@ -67,7 +67,7 @@ public class ProductionAssemblyWarehouseRepository : BaseEfRepository<Production
         };
     }
 
-    private Expression<Func<ProductionAssemblyWarehouse, object>> CreateSortExpression(string propertyName)
+    private Expression<Func<AssemblyProductionWarehouse, object>> CreateSortExpression(string propertyName)
     {
         try
         {
@@ -81,9 +81,9 @@ public class ProductionAssemblyWarehouseRepository : BaseEfRepository<Production
         }
     }
 
-    private static Expression<Func<ProductionAssemblyWarehouse, object>> GetPropertyExpression(string propertyName)
+    private static Expression<Func<AssemblyProductionWarehouse, object>> GetPropertyExpression(string propertyName)
     {
-        var parameter = Expression.Parameter(typeof(ProductionAssemblyWarehouse), "aw");
+        var parameter = Expression.Parameter(typeof(AssemblyProductionWarehouse), "aw");
         Expression propertyAccess = parameter;
 
         var parts = propertyName.Split(".");
@@ -101,6 +101,6 @@ public class ProductionAssemblyWarehouseRepository : BaseEfRepository<Production
             propertyAccess = Expression.Convert(propertyAccess, typeof(object));
         }
 
-        return Expression.Lambda<Func<ProductionAssemblyWarehouse, object>>(Expression.Convert(propertyAccess, typeof(object)), parameter);
+        return Expression.Lambda<Func<AssemblyProductionWarehouse, object>>(Expression.Convert(propertyAccess, typeof(object)), parameter);
     }
 }

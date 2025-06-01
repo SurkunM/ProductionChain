@@ -3,7 +3,7 @@ using ProductionChain.Model.Enums;
 
 namespace ProductionChain.Model.WorkflowEntities;
 
-public class ProductionAssemblyOrders
+public class AssemblyProductionOrders
 {
     public int Id { get; set; }
 
@@ -15,9 +15,13 @@ public class ProductionAssemblyOrders
 
     public virtual required Product Product { get; set; }
 
-    public int Count { get; set; }
+    public int InProgressCount { get; set; }
+
+    public int CompletedCount { get; set; }
+
+    public int TotalCount { get; set; }
 
     public required ProgressStatusType StatusType { get; set; }
 
-    public virtual ICollection<ProductionAssemblyTask> AssemblyTask { get; set; } = new List<ProductionAssemblyTask>();
+    public virtual ICollection<AssemblyProductionTask> AssemblyTask { get; set; } = new List<AssemblyProductionTask>();
 }

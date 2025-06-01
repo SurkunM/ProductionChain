@@ -22,7 +22,7 @@ public class DeleteProductionOrderHandler
         {
             _unitOfWork.BeginTransaction();
 
-            var productionOrdersRepository = _unitOfWork.GetRepository<IProductionAssemblyOrdersRepository>();
+            var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
 
             var productionOrder = await productionOrdersRepository.GetByIdAsync(id);
 

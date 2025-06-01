@@ -22,7 +22,7 @@ public class DeleteAssemblyWarehouseItemHandler
         {
             _unitOfWork.BeginTransaction();
 
-            var assemblyWarehouseRepository = _unitOfWork.GetRepository<IProductionAssemblyWarehouseRepository>();
+            var assemblyWarehouseRepository = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
 
             var assemblyWarehouseItem = await assemblyWarehouseRepository.GetByIdAsync(id);
 
