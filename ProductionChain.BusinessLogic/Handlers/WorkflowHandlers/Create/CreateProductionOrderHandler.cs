@@ -47,9 +47,9 @@ public class CreateProductionOrderHandler
 
             await productionOrdersRepository.CreateAsync(productionOrdersRequest.ToProductionOrderModel(order, product, ProgressStatusType.Pending));
 
-            var isStatusUpdated = ordersRepository.UpdateOrderStatusByOrderId(productionOrdersRequest.OrderId, ProgressStatusType.InProgress.ToString());
+            var success = ordersRepository.UpdateOrderStatusByOrderId(productionOrdersRequest.OrderId, ProgressStatusType.InProgress.ToString());
 
-            if (!isStatusUpdated)
+            if (!success)
             {
                 _logger.LogError("Не удалось изменить статус заказа по id={OrderId}.", productionOrdersRequest.OrderId);
 

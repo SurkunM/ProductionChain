@@ -4,6 +4,7 @@ using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
 using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.QueryParameters;
 
 namespace ProductionChain.Controllers;
@@ -533,22 +534,22 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteProductionTask([FromBody] int id)
+    public async Task<IActionResult> DeleteProductionTask(ProductionTaskResponse taskResponse)
     {
-        if (id < 0)
+        if (taskResponse is null)
         {
-            _logger.LogError("Передано значение id меньше нуля. id={id}", id);
+            _logger.LogError("Не передан объект параметров.");
 
-            BadRequest("Передано не корректное значение.");
+            BadRequest("Не передан объект параметров.");
         }
 
         try
         {
-            var isDeleted = await _deleteProductionTaskHandler.HandleAsync(id);
+            var isDeleted = await _deleteProductionTaskHandler.HandleAsync(taskResponse);
 
             if (!isDeleted)
             {
-                _logger.LogError("Ошибка! Задача для удаления не существует. id={id}", id);
+                _logger.LogError("Ошибка! Задача для удаления не существует.");
 
                 return BadRequest("Задача для удаления не существует.");
             }

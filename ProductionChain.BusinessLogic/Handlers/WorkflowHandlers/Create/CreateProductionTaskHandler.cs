@@ -3,6 +3,7 @@ using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
+using ProductionChain.Model.Enums;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 
@@ -24,6 +25,7 @@ public class CreateProductionTaskHandler
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
         var productsRepository = _unitOfWork.GetRepository<IProductsRepository>();
         var employeesRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
+        var componentsWarehouseRepository = _unitOfWork.GetRepository<IComponentsWarehouseRepository>();
 
         try
         {
@@ -35,25 +37,43 @@ public class CreateProductionTaskHandler
 
             if (productionOrder is null || product is null || employee is null)
             {
+                _logger.LogError("Не удалось найти все сущности по переданным id для создания задачи: {ProductionOrderId}, {ProductId}, {EmployeeId}.",
+                    taskRequest.ProductionOrderId, taskRequest.ProductId, taskRequest.EmployeeId);
+
                 return false;
             }
 
             await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee,
-                Model.Enums.ProgressStatusType.Pending, DateTime.UtcNow));
+                ProgressStatusType.Pending, DateTime.UtcNow));
 
-            await _unitOfWork.SaveAsync();
-            // не изменились "In Progress Count" "TotalCount" 
-            var isSubtracted = productionOrdersRepository.SubtractProductsCount(taskRequest.ProductionOrderId, taskRequest.Count);
-            productionOrder.InProgressCount += taskRequest.Count;//TODO: Переделать через метод репозитория в один метод
+            var success = componentsWarehouseRepository.TakeComponentsByProductId(taskRequest.ProductId, taskRequest.Count);
 
-            if (!isSubtracted)
+            if (!success)
             {
-                _logger.LogError("Не удалось уменьшить количество продукции на {Count} в производственном заказе по id={ProductionOrderId}.",
-                    taskRequest.Count, taskRequest.ProductionOrderId);
+                _logger.LogError("Не найдено нужно количество компонентов count={Count} для продукта id={ProductId}", taskRequest.Count, taskRequest.ProductId);
 
                 return false;
             }
 
+            success = productionOrdersRepository.AddInProgressCount(taskRequest.ProductionOrderId, taskRequest.Count);
+
+            if (!success)
+            {
+                _logger.LogError("Не удалось увеличить значение строки InProgress на {Count} .", taskRequest.Count);
+
+                return false;
+            }
+
+            success = employeesRepository.UpdateStatusByEmployeeId(taskRequest.EmployeeId, EmployeeStatusType.Busy);
+
+            if (!success)
+            {
+                _logger.LogError("Не удалось обновить статус сотрудника по id={EmployeeId} .", taskRequest.EmployeeId);
+
+                return false;
+            }
+
+            await _unitOfWork.SaveAsync();
 
             return true;
         }

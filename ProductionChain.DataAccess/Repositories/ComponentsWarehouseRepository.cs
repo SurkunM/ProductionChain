@@ -68,6 +68,27 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
         };
     }
 
+    public bool TakeComponentsByProductId(int productId, int componentsCount)
+    {
+        var components = DbSet
+            .Where(c => c.ProductId == productId)
+            .ToArray();
+
+        var availableComponentsCount = components.Sum(c => c.Count);
+
+        if (availableComponentsCount < componentsCount)
+        {
+            return false;
+        }
+
+        foreach (var component in components)
+        {
+            component.Count -= componentsCount;
+        }
+
+        return true;
+    }
+
     private Expression<Func<ComponentsWarehouse, object>> CreateSortExpression(string propertyName)
     {
         try

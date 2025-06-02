@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
 using ProductionChain.Contracts.Dto;
+using ProductionChain.Model.Enums;
 
 namespace ProductionChain.DataAccess.Repositories;
 
@@ -68,6 +69,20 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
             Employees = employeesDtoSorted,
             Total = totalCount
         };
+    }
+
+    public bool UpdateStatusByEmployeeId(int employeeId, EmployeeStatusType statusType)
+    {
+        var employee = DbSet.FirstOrDefault(e => e.Id == employeeId);
+
+        if (employee is null)
+        {
+            return false;
+        }
+
+        employee.Status = statusType;
+
+        return true;
     }
 
     private Expression<Func<Employee, object>> CreateSortExpression(string propertyName)

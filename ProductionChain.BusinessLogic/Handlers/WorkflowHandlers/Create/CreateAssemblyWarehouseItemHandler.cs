@@ -1,4 +1,5 @@
-﻿using ProductionChain.Contracts.Dto.Requests;
+﻿using Microsoft.Extensions.Logging;
+using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
@@ -9,9 +10,12 @@ public class CreateAssemblyWarehouseItemHandler
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateAssemblyWarehouseItemHandler(IUnitOfWork unitOfWork)
+    private readonly ILogger<CreateAssemblyWarehouseItemHandler> _logger;
+
+    public CreateAssemblyWarehouseItemHandler(IUnitOfWork unitOfWork, ILogger<CreateAssemblyWarehouseItemHandler> logger)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<bool> HandleAsync(AssemblyWarehouseRequest assemblyWarehouseRequest)
@@ -25,6 +29,8 @@ public class CreateAssemblyWarehouseItemHandler
 
         if (product is null)
         {
+            _logger.LogError("Не удалось найти продукт с id={id}.", assemblyWarehouseRequest.ProductId);
+
             return false;
         }
 

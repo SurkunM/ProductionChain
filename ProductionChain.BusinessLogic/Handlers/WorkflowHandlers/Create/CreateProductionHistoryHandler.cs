@@ -18,23 +18,23 @@ public class CreateProductionHistoryHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> HandleAsync(ProductionHistoryRequest historyDto)
+    public async Task<bool> HandleAsync(ProductionHistoryRequest historyRequst)
     {
         _unitOfWork.BeginTransaction();
 
         var historiesRepository = _unitOfWork.GetRepository<IProductionHistoryRepository>();
         var tasksRepositories = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
 
-        var task = await tasksRepositories.GetByIdAsync(historyDto.Id);
+        var task = await tasksRepositories.GetByIdAsync(historyRequst.TaskId);
 
         if (task is null)
         {
-            _logger.LogError("");
+            _logger.LogError("Не удалось найти задачу с id={id}.", historyRequst.TaskId);
 
             return false;
         }
 
-        await historiesRepository.CreateAsync(historyDto.ToHistoryModel(task));
+        await historiesRepository.CreateAsync(historyRequst.ToHistoryModel(task));
 
         await _unitOfWork.SaveAsync();
 
