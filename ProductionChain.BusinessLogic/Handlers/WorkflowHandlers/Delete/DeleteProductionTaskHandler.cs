@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
+using ProductionChain.Model.Enums;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 
@@ -16,14 +18,36 @@ public class DeleteProductionTaskHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> HandleAsync(int id)
+    public async Task<bool> HandleAsync(ProductionTaskRequest taskRequest)
     {
+        var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
+        var employeesRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
+        var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
+
         try
         {
             _unitOfWork.BeginTransaction();
-            var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
 
-            var task = await tasksRepository.GetByIdAsync(id);
+            var success = productionOrdersRepository.SubtractInProgressCount(taskRequest.ProductionOrderId, taskRequest.Count)
+                && productionOrdersRepository.AddCompletedCount(taskRequest.ProductionOrderId, taskRequest.Count);
+
+            if (!success)
+            {
+                _logger.LogError("При изменении счётчиков \"InProgress\" и \"Completed\" произошла ошибка.");
+
+                return false;
+            }
+
+            success = employeesRepository.UpdateStatusByEmployeeId(taskRequest.EmployeeId, EmployeeStatusType.Available);
+
+            if (!success)
+            {
+                _logger.LogError("При изменении статуса сотрудника произошла ошибка.");
+
+                return false;
+            }
+
+            var task = await tasksRepository.GetByIdAsync(taskRequest.Id);
 
             if (task is null)
             {

@@ -8,7 +8,9 @@ public interface IAssemblyProductionOrdersRepository : IRepository<AssemblyProdu
 {
     Task<ProductionOrdersPage> GetProductionOrdersAsync(GetQueryParameters queryParameters);
 
-    bool AddProductsCount(int orderId, int productsCount);
+    bool AddCompletedCount(int productionOrderId, int completedCount);
 
-    bool SubtractProductsCount(int orderId, int productsCount);
+    bool AddInProgressCount(int productionOrderId, int inProgressCount);
+
+    bool SubtractInProgressCount(int productionOrderId, int inProgressCount);
 }

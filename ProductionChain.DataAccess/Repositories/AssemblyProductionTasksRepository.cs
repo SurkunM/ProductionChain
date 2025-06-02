@@ -57,7 +57,7 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
 
                 ProductName = t.Product.Name,
                 ProductModel = t.Product.Model,
-                ProductsCount = t.Count,
+                Count = t.Count,
 
                 Status = t.ProgressStatus.ToString(),
                 StartTime = t.StartTime,

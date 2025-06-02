@@ -69,30 +69,44 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
         };
     }
 
-    public bool AddProductsCount(int orderId, int productsCount)
+    public bool AddInProgressCount(int productionOrderId, int inProgressCount)
     {
-        var order = DbSet.FirstOrDefault(o => o.Id == orderId);
+        var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
 
-        if (order is null)
+        if (productionOrder is null)
         {
             return false;
         }
 
-        order.TotalCount += productsCount;
+        productionOrder.InProgressCount += inProgressCount;
 
         return true;
     }
 
-    public bool SubtractProductsCount(int orderId, int productsCount)
+    public bool SubtractInProgressCount(int orderId, int inProgressCount)
     {
-        var order = DbSet.FirstOrDefault(o => o.Id == orderId);
+        var productionOrder = DbSet.FirstOrDefault(po => po.Id == orderId);
 
-        if (order is null)
+        if (productionOrder is null)
         {
             return false;
         }
 
-        order.TotalCount += productsCount;
+        productionOrder.InProgressCount -= inProgressCount;
+
+        return true;
+    }
+
+    public bool AddCompletedCount(int productionOrderId, int completedCount)
+    {
+        var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
+
+        if (productionOrder is null)
+        {
+            return false;
+        }
+
+        productionOrder.CompletedCount += completedCount;
 
         return true;
     }
