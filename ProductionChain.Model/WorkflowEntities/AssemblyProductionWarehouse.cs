@@ -10,5 +10,5 @@ public class AssemblyProductionWarehouse
 
     public virtual required Product Product { get; set; }
 
-    public int Count { get; set; }
+    public int ProductsCount { get; set; }
 }

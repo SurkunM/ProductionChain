@@ -1,6 +1,6 @@
-﻿namespace ProductionChain.Contracts.Dto;
+﻿namespace ProductionChain.Contracts.Dto.Responses;
 
-public class ComponentsWarehouseItemDto
+public class ComponentsWarehouseResponse
 {
     public int Id { get; set; }
 
@@ -10,5 +10,5 @@ public class ComponentsWarehouseItemDto
 
     public required string ComponentType { get; set; }
 
-    public int Count { get; set; }
+    public int ProductsCount { get; set; }
 }

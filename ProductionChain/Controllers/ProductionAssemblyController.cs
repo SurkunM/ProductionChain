@@ -4,7 +4,6 @@ using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
 using ProductionChain.Contracts.Dto.Requests;
-using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.QueryParameters;
 
 namespace ProductionChain.Controllers;
@@ -19,44 +18,36 @@ public class ProductionAssemblyController : ControllerBase
     private readonly GetAssemblyWarehouseItemsHandler _getAssemblyWarehouseItemsHandler;
     private readonly GetComponentsWarehouseItemsHandler _getComponentsWarehouseItemsHandler;
 
-    private readonly CreateProductionHistoryHandler _createProductionHistoryHandler;
     private readonly CreateProductionOrderHandler _createProductionOrderHandler;
     private readonly CreateProductionTaskHandler _createProductionTaskHandler;
-    private readonly CreateAssemblyWarehouseItemHandler _createAssemblyWarehouseItemHandler;
 
     private readonly UpdateProductionOrderHandler _updateProductionOrderHandler;
-    private readonly UpdateProductionTaskHandler _updateProductionTaskHandler;
     private readonly UpdateAssemblyWarehouseItemHandler _updateAssemblyWarehouseItemHandler;
     private readonly UpdateComponentsWarehouseItemsHandler _updateComponentsWarehouseItemsHandler;
 
-    private readonly DeleteProductionHistoryHandler _deleteProductionHistoryHandler;
     private readonly DeleteProductionOrderHandler _deleteProductionOrderHandler;
     private readonly DeleteProductionTaskHandler _deleteProductionTaskHandler;
-    private readonly DeleteAssemblyWarehouseItemHandler _deleteAssemblyWarehouseItemHandler;
 
     private readonly ILogger<ProductionAssemblyController> _logger;
 
-    public ProductionAssemblyController(GetProductionHistoriesHandler getProductionHistoriesHandler, GetProductionOrdersHandler getProductionOrdersHandler,
+    public ProductionAssemblyController(
+        GetProductionHistoriesHandler getProductionHistoriesHandler, GetProductionOrdersHandler getProductionOrdersHandler,
         GetProductionTasksHandler getProductionTasksHandler, GetAssemblyWarehouseItemsHandler getAssemblyWarehouseItemsHandler,
         GetComponentsWarehouseItemsHandler getComponentsWarehouseItemsHandler,
 
-        CreateProductionHistoryHandler createProductionHistoryHandler, CreateProductionOrderHandler createProductionOrderHandler,
-        CreateProductionTaskHandler createProductionTaskHandler, CreateAssemblyWarehouseItemHandler createAssemblyWarehouseItemHandler,
+        CreateProductionOrderHandler createProductionOrderHandler, CreateProductionTaskHandler createProductionTaskHandler,
 
-        UpdateProductionOrderHandler updateProductionOrderHandler, UpdateProductionTaskHandler updateProductionTaskHandler,
-        UpdateAssemblyWarehouseItemHandler updateAssemblyWarehouseItemHandler, UpdateComponentsWarehouseItemsHandler updateComponentsWarehouseItemsHandler,
+        UpdateProductionOrderHandler updateProductionOrderHandler, UpdateAssemblyWarehouseItemHandler updateAssemblyWarehouseItemHandler,
+        UpdateComponentsWarehouseItemsHandler updateComponentsWarehouseItemsHandler,
 
-        DeleteProductionHistoryHandler deleteProductionHistoryHandler, DeleteProductionOrderHandler deleteProductionOrderHandler,
-        DeleteProductionTaskHandler deleteProductionTaskHandler, DeleteAssemblyWarehouseItemHandler deleteWarehouseItemHandler,
+        DeleteProductionOrderHandler deleteProductionOrderHandler, DeleteProductionTaskHandler deleteProductionTaskHandler,
 
         ILogger<ProductionAssemblyController> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        _createProductionHistoryHandler = createProductionHistoryHandler ?? throw new ArgumentNullException(nameof(createProductionHistoryHandler));
         _createProductionOrderHandler = createProductionOrderHandler ?? throw new ArgumentNullException(nameof(createProductionOrderHandler));
         _createProductionTaskHandler = createProductionTaskHandler ?? throw new ArgumentNullException(nameof(createProductionTaskHandler));
-        _createAssemblyWarehouseItemHandler = createAssemblyWarehouseItemHandler ?? throw new ArgumentNullException(nameof(createAssemblyWarehouseItemHandler));
 
         _getProductionHistoriesHandler = getProductionHistoriesHandler ?? throw new ArgumentNullException(nameof(getProductionHistoriesHandler));
         _getProductionOrdersHandler = getProductionOrdersHandler ?? throw new ArgumentNullException(nameof(getProductionOrdersHandler));
@@ -65,14 +56,11 @@ public class ProductionAssemblyController : ControllerBase
         _getComponentsWarehouseItemsHandler = getComponentsWarehouseItemsHandler ?? throw new ArgumentNullException(nameof(getComponentsWarehouseItemsHandler));
 
         _updateProductionOrderHandler = updateProductionOrderHandler ?? throw new ArgumentNullException(nameof(updateProductionOrderHandler));
-        _updateProductionTaskHandler = updateProductionTaskHandler ?? throw new ArgumentNullException(nameof(updateProductionTaskHandler));
         _updateAssemblyWarehouseItemHandler = updateAssemblyWarehouseItemHandler ?? throw new ArgumentNullException(nameof(updateAssemblyWarehouseItemHandler));
         _updateComponentsWarehouseItemsHandler = updateComponentsWarehouseItemsHandler ?? throw new ArgumentNullException(nameof(updateComponentsWarehouseItemsHandler));
 
-        _deleteProductionHistoryHandler = deleteProductionHistoryHandler ?? throw new ArgumentNullException(nameof(deleteProductionHistoryHandler));
         _deleteProductionOrderHandler = deleteProductionOrderHandler ?? throw new ArgumentNullException(nameof(deleteProductionOrderHandler));
         _deleteProductionTaskHandler = deleteProductionTaskHandler ?? throw new ArgumentNullException(nameof(deleteProductionTaskHandler));
-        _deleteAssemblyWarehouseItemHandler = deleteWarehouseItemHandler ?? throw new ArgumentNullException(nameof(deleteWarehouseItemHandler));
     }
 
     [HttpGet]
@@ -124,7 +112,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProductionAssemblyTasks([FromQuery] GetQueryParameters queryParameters)
+    public async Task<IActionResult> GetProductionTasks([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
         {
@@ -190,44 +178,6 @@ public class ProductionAssemblyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка! Запрос на получение списка продукции из склада компонентов не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateProductionHistory(ProductionHistoryRequest productionHistoriesRequest)
-    {
-        if (productionHistoriesRequest is null)
-        {
-            _logger.LogError("Ошибка! Объект productionHistoriesRequest пуст.");
-
-            return BadRequest("Передан пустой объект параметров.");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            _logger.LogError("Ошибка! Переданы не корректные данные для создания истории. {productionHistoriesRequest}", productionHistoriesRequest);
-
-            return UnprocessableEntity(ModelState);
-        }
-
-        try
-        {
-            var isCreated = await _createProductionHistoryHandler.HandleAsync(productionHistoriesRequest);
-
-            if (!isCreated)
-            {
-                _logger.LogError("Ошибка! Не удалось найти все сущности для создания истории.");
-
-                return BadRequest("Переданы не корректные данные для создания истории.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! История не создана.");
 
             return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
         }
@@ -310,44 +260,6 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAssemblyWarehouseItems(AssemblyWarehouseRequest warehouseItemRequest)
-    {
-        if (warehouseItemRequest is null)
-        {
-            _logger.LogError("Ошибка! Объект warehouseItemRequest пуст.");
-
-            return BadRequest("Передан пустой объект параметров.");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            _logger.LogError("Ошибка! Переданы не корректные данные для создания позиции в складе сборки. {warehouseItemRequest}", warehouseItemRequest);
-
-            return UnprocessableEntity(ModelState);
-        }
-
-        try
-        {
-            var isCreated = await _createAssemblyWarehouseItemHandler.HandleAsync(warehouseItemRequest);
-
-            if (!isCreated)
-            {
-                _logger.LogError("Ошибка! Не удалось найти все сущности для создания позиции в складе сборки.");
-
-                return BadRequest("Переданы не корректные данные для создания позиции в складе сборки..");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Позиция в складе сборки не создана.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpPost]
     public async Task<IActionResult> UpdateProductionOrder(ProductionOrdersRequest productionOrdersRequest)
     {
         if (productionOrdersRequest is null)
@@ -373,37 +285,6 @@ public class ProductionAssemblyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка! Производственный заказ не изменен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateProductionTask(ProductionTaskRequest productionTaskRequest)
-    {
-        if (productionTaskRequest is null)
-        {
-            _logger.LogError("Ошибка! Объект productionTaskRequest пуст.");
-
-            return BadRequest("Передан пустой объект параметров.");
-        }
-
-        try
-        {
-            var isUpdated = await _updateProductionTaskHandler.HandleAsync(productionTaskRequest);
-
-            if (!isUpdated)
-            {
-                _logger.LogError("Ошибка! Не удалось внести изменения в производственную задачу.");
-
-                return BadRequest("Переданы не корректные данные для изменения производственной задачи.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Производственная задача не изменена.");
 
             return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
         }
@@ -472,44 +353,13 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteProductionHistory([FromBody] int id)
-    {
-        if (id < 0)
-        {
-            _logger.LogError("Передано значение id меньше нуля. id={id}", id);
-
-            BadRequest("Передано не корректное значение.");
-        }
-
-        try
-        {
-            var isDeleted = await _deleteProductionHistoryHandler.HandleAsync(id);
-
-            if (!isDeleted)
-            {
-                _logger.LogError("Ошибка! История для удаления не существует. id={id}", id);
-
-                return BadRequest("История для удаления не существует.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Удаление истории не выполнено.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpDelete]
     public async Task<IActionResult> DeleteProductionOrder([FromBody] int id)
     {
         if (id < 0)
         {
             _logger.LogError("Передано значение id меньше нуля. id={id}", id);
 
-            BadRequest("Передано не корректное значение.");
+            return BadRequest("Передано не корректное значение.");
         }
 
         try
@@ -534,18 +384,18 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteProductionTask(ProductionTaskResponse taskResponse)
+    public async Task<IActionResult> DeleteProductionTask([FromBody] ProductionTaskRequest taskRequest)
     {
-        if (taskResponse is null)
+        if (taskRequest is null)
         {
             _logger.LogError("Не передан объект параметров.");
 
-            BadRequest("Не передан объект параметров.");
+            return BadRequest("Не передан объект параметров.");
         }
 
         try
         {
-            var isDeleted = await _deleteProductionTaskHandler.HandleAsync(taskResponse);
+            var isDeleted = await _deleteProductionTaskHandler.HandleAsync(taskRequest);
 
             if (!isDeleted)
             {
@@ -559,37 +409,6 @@ public class ProductionAssemblyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка! Удаление задачи не выполнено.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpDelete]
-    public async Task<IActionResult> DeleteAssemblyWarehouseItem([FromBody] int id)
-    {
-        if (id < 0)
-        {
-            _logger.LogError("Передано значение id меньше нуля. id={id}", id);
-
-            BadRequest("Передано не корректное значение.");
-        }
-
-        try
-        {
-            var isDeleted = await _deleteAssemblyWarehouseItemHandler.HandleAsync(id);
-
-            if (!isDeleted)
-            {
-                _logger.LogError("Ошибка! Позиция для удаления в складе сборки не существует. id={id}", id);
-
-                return BadRequest("Позиция для удаления в складе сборки не существует.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Удаление позиции в складе сборки не выполнено.");
 
             return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
         }

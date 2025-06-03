@@ -3,10 +3,7 @@ using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Update;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
-using ProductionChain.Contracts.Dto;
 using ProductionChain.Contracts.Dto.Requests;
-using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 
 namespace ProductionChain.Controllers;
@@ -18,12 +15,10 @@ public class CatalogController : ControllerBase
     private readonly GetEmployeesHandler _getEmployeesHandler;
     private readonly GetProductsHandler _getProductsHandler;
     private readonly GetOrdersHandler _getOrdersHandler;
-    //private readonly GetEmployeesStatusesHandler _getEmployeesStatusesHandler;
 
     private readonly CreateOrderHandler _createOrderHandler;
 
     private readonly UpdateEmployeeStatusHandler _updateEmployeeStatusHandler;
-    private readonly UpdateOrderHandler _updateOrderHandler;
 
     private readonly DeleteOrderHandler _deleteOrderHandler;
 
@@ -32,18 +27,16 @@ public class CatalogController : ControllerBase
     public CatalogController(GetEmployeesHandler getEmployeesHandler,
         GetProductsHandler getProductsHandler, GetOrdersHandler getOrdersHandler,
         CreateOrderHandler createOrderHandler, UpdateEmployeeStatusHandler updateEmployeeStatusHandler,
-        UpdateOrderHandler updateOrderHandler, DeleteOrderHandler deleteOrderHandler,
+        DeleteOrderHandler deleteOrderHandler,
         ILogger<CatalogController> logger)
     {
         _createOrderHandler = createOrderHandler ?? throw new ArgumentNullException(nameof(createOrderHandler));
 
         _getEmployeesHandler = getEmployeesHandler ?? throw new ArgumentNullException(nameof(getEmployeesHandler));
-        // _getEmployeesStatusesHandler = getEmployeesStatusesHandler ?? throw new ArgumentNullException(nameof(getEmployeesStatusesHandler));
         _getProductsHandler = getProductsHandler ?? throw new ArgumentNullException(nameof(getProductsHandler));
         _getOrdersHandler = getOrdersHandler ?? throw new ArgumentNullException(nameof(getOrdersHandler));
 
         _updateEmployeeStatusHandler = updateEmployeeStatusHandler ?? throw new ArgumentNullException(nameof(updateEmployeeStatusHandler));
-        _updateOrderHandler = updateOrderHandler ?? throw new ArgumentNullException(nameof(updateOrderHandler));
 
         _deleteOrderHandler = deleteOrderHandler ?? throw new ArgumentNullException(nameof(deleteOrderHandler));
 
@@ -155,44 +148,6 @@ public class CatalogController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка! Запрос на получение списка заказов не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateOrder(OrderRequest orderRequest)
-    {
-        if (orderRequest is null)
-        {
-            _logger.LogError("Ошибка! Объект orderRequest пуст.");
-
-            return BadRequest("Передан пустой объект параметров.");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            _logger.LogError("Ошибка! Не корректно заполнены поля для изменения заказа.");
-
-            return UnprocessableEntity(ModelState);
-        }
-
-        try
-        {
-            var isUpdated = await _updateOrderHandler.HandleAsync(orderRequest);
-
-            if (!isUpdated)
-            {
-                _logger.LogError("Ошибка! Не удалось изменить заказ. Переданы не корректные параметры. ProductId={employeeRequest.Id}", orderRequest.ProductId);
-
-                return BadRequest("Переданы не корректные данные для изменения заказа.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Заказ не изменен.");
 
             return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
         }

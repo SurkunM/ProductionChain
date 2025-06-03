@@ -13,5 +13,5 @@ public class ComponentsWarehouse
 
     public required ComponentType Type { get; set; }
 
-    public int Count { get; set; }
+    public int ComponentsCount { get; set; }
 }

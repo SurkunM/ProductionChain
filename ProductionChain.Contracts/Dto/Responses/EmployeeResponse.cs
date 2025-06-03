@@ -1,6 +1,6 @@
-﻿namespace ProductionChain.Contracts.Dto;
+﻿namespace ProductionChain.Contracts.Dto.Responses;
 
-public class EmployeeDto
+public class EmployeeResponse
 {
     public int Id { get; set; }
 

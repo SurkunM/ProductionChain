@@ -39,7 +39,7 @@ public class DbInitializer
         var product1 = CreateProduct("БП 1000", "0.01");
         var product2 = CreateProduct("БП 2000", "0.12");
         var product3 = CreateProduct("БП 3000", "0.03");
-        var product4 = CreateProduct("БС 1000", "0.4");
+        var product4 = CreateProduct("ИПС 1000", "0.1");
 
         var order1 = CreateOrder("OOO T1", product1, 500);
         var order2 = CreateOrder("OOO T1", product2, 1500);
@@ -49,33 +49,44 @@ public class DbInitializer
 
         _dbContext.Orders.AddRange(order1, order2, order3, order4);
 
-        var component1 = CreateComponent(product1, ComponentType.CircuitBoard, 550);
-        var component2 = CreateComponent(product1, ComponentType.DiodeBoard, 440);
-        var component3 = CreateComponent(product1, ComponentType.Heatsink, 300);
-        var component4 = CreateComponent(product1, ComponentType.Enclosure, 350);
+        var assemblyWarehouseItem1 = CreateAssemblyWarehouseItem(product1);
+        var assemblyWarehouseItem2 = CreateAssemblyWarehouseItem(product2);
+        var assemblyWarehouseItem3 = CreateAssemblyWarehouseItem(product3);
+        var assemblyWarehouseItem4 = CreateAssemblyWarehouseItem(product4);
 
-        var component5 = CreateComponent(product2, ComponentType.CircuitBoard, 500);
-        var component6 = CreateComponent(product2, ComponentType.DiodeBoard, 350);
-        var component7 = CreateComponent(product2, ComponentType.Heatsink, 380);
-        var component8 = CreateComponent(product2, ComponentType.Enclosure, 450);
+        _dbContext.AssemblyProductionWarehouse.AddRange(assemblyWarehouseItem1, assemblyWarehouseItem2, assemblyWarehouseItem3, assemblyWarehouseItem4);
 
-        var component9 = CreateComponent(product3, ComponentType.CircuitBoard, 500);
-        var component10 = CreateComponent(product3, ComponentType.DiodeBoard, 350);
-        var component11 = CreateComponent(product3, ComponentType.Heatsink, 380);
-        var component12 = CreateComponent(product3, ComponentType.Enclosure, 450);
+        var component1 = CreateComponentsWarehouseItem(product1, ComponentType.CircuitBoard, 200);
+        var component2 = CreateComponentsWarehouseItem(product1, ComponentType.DiodeBoard, 200);
+        var component3 = CreateComponentsWarehouseItem(product1, ComponentType.Heatsink, 200);
+        var component4 = CreateComponentsWarehouseItem(product1, ComponentType.Enclosure, 200);
 
-        var component13 = CreateComponent(product4, ComponentType.DiodeBoard, 450);
+        var component5 = CreateComponentsWarehouseItem(product2, ComponentType.CircuitBoard, 200);
+        var component6 = CreateComponentsWarehouseItem(product2, ComponentType.DiodeBoard, 200);
+        var component7 = CreateComponentsWarehouseItem(product2, ComponentType.Heatsink, 200);
+        var component8 = CreateComponentsWarehouseItem(product2, ComponentType.Enclosure, 200);
+
+        var component9 = CreateComponentsWarehouseItem(product3, ComponentType.CircuitBoard, 200);
+        var component10 = CreateComponentsWarehouseItem(product3, ComponentType.DiodeBoard, 200);
+        var component11 = CreateComponentsWarehouseItem(product3, ComponentType.Heatsink, 200);
+        var component12 = CreateComponentsWarehouseItem(product3, ComponentType.Enclosure, 200);
+
+        var component13 = CreateComponentsWarehouseItem(product4, ComponentType.CircuitBoard, 200);
+        var component14 = CreateComponentsWarehouseItem(product4, ComponentType.DiodeBoard, 200);
+        var component15 = CreateComponentsWarehouseItem(product4, ComponentType.Heatsink, 200);
+        var component16 = CreateComponentsWarehouseItem(product4, ComponentType.Enclosure, 200);
+
 
         _dbContext.ComponentsWarehouse.AddRange(component1, component2, component3, component4, component5, component6,
-            component7, component8, component9, component10, component11, component12, component13);
+            component7, component8, component9, component10, component11, component12, component13, component14, component15, component16);
     }
 
-    private static Employee CreateEmployee(string firstName, string lastName, string middleName, EmployeePositionType positionType, EmployeeStatusType employeeStatus)
+    private static Employee CreateEmployee(string lastName, string firstName, string middleName, EmployeePositionType positionType, EmployeeStatusType employeeStatus)
     {
         return new Employee()
         {
-            FirstName = firstName,
             LastName = lastName,
+            FirstName = firstName,
             MiddleName = middleName,
             Position = positionType,
             Status = employeeStatus
@@ -97,19 +108,28 @@ public class DbInitializer
         {
             Customer = customer,
             Product = product,
-            Count = count,
+            ProductsCount = count,
             CreatedAt = DateTime.UtcNow,
-            StageType = ProgressStatusType.Pending.ToString()
+            StageType = ProgressStatusType.Pending
         };
     }
 
-    private static ComponentsWarehouse CreateComponent(Product product, ComponentType componentType, int count)
+    private static ComponentsWarehouse CreateComponentsWarehouseItem(Product product, ComponentType componentType, int count)
     {
         return new ComponentsWarehouse()
         {
             Product = product,
             Type = componentType,
-            Count = count
+            ComponentsCount = count
+        };
+    }
+
+    private static AssemblyProductionWarehouse CreateAssemblyWarehouseItem(Product product)
+    {
+        return new AssemblyProductionWarehouse()
+        {
+            Product = product,
+            ProductsCount = 0
         };
     }
 }

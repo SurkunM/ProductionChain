@@ -32,13 +32,13 @@ public class UpdateAssemblyWarehouseItemHandler
                 return false;
             }
 
-            if (assemblyWarehouseRequest.AddCount > 0)
+            if (assemblyWarehouseRequest.AddProductsCount > 0)
             {
-                assemblyWarehouseItem.Count += assemblyWarehouseRequest.AddCount;
+                assemblyWarehouseItem.ProductsCount += assemblyWarehouseRequest.AddProductsCount;
             }
-            else if (assemblyWarehouseRequest.SubtractCount > 0)
+            else if (assemblyWarehouseRequest.SubtractProductsCount > 0)
             {
-                assemblyWarehouseItem.Count -= assemblyWarehouseRequest.SubtractCount;
+                assemblyWarehouseItem.ProductsCount -= assemblyWarehouseRequest.SubtractProductsCount;
             }
             else
             {

@@ -46,29 +46,30 @@ public class CreateProductionTaskHandler
             await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee,
                 ProgressStatusType.Pending, DateTime.UtcNow));
 
-            var success = componentsWarehouseRepository.TakeComponentsByProductId(taskRequest.ProductId, taskRequest.Count);
+            var success = componentsWarehouseRepository.TakeComponentsByProductId(taskRequest.ProductId, taskRequest.ProductsCount);
 
             if (!success)
             {
-                _logger.LogError("Не найдено нужно количество компонентов count={Count} для продукта id={ProductId}", taskRequest.Count, taskRequest.ProductId);
+                _logger.LogError("Не найдено нужно количество компонентов count={Count} для продукта id={ProductId}", taskRequest.ProductsCount, taskRequest.ProductId);
 
                 return false;
             }
 
-            success = productionOrdersRepository.AddInProgressCount(taskRequest.ProductionOrderId, taskRequest.Count);
+            success = productionOrdersRepository.AddInProgressCount(taskRequest.ProductionOrderId, taskRequest.ProductsCount);
 
             if (!success)
             {
-                _logger.LogError("Не удалось увеличить значение строки InProgress на {Count} .", taskRequest.Count);
+                _logger.LogError("Не удалось увеличить значение строки InProgress на {Count} .", taskRequest.ProductsCount);
 
                 return false;
             }
 
-            success = employeesRepository.UpdateStatusByEmployeeId(taskRequest.EmployeeId, EmployeeStatusType.Busy);
+            success = employeesRepository.UpdateEmployeeStatusById(taskRequest.EmployeeId, EmployeeStatusType.Busy)
+                && productionOrdersRepository.UpdateProductionOrderStatusById(taskRequest.ProductionOrderId);
 
             if (!success)
             {
-                _logger.LogError("Не удалось обновить статус сотрудника по id={EmployeeId} .", taskRequest.EmployeeId);
+                _logger.LogError("При изменении статуса сотрудника и производственного заказа произошла ошибка.");
 
                 return false;
             }

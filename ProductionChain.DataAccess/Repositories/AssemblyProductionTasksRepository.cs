@@ -43,7 +43,7 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
             ? queryDbSet.OrderByDescending(orderByExpression)
             : queryDbSet.OrderBy(orderByExpression);
 
-        var tasksDtoSorted = await orderedQuery
+        var tasksSortedResponse = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
             .Select(t => new ProductionTaskResponse
@@ -51,13 +51,15 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
                 Id = t.Id,
                 ProductionOrderId = t.ProductionOrderId,
 
+                EmployeeId = t.EmployeeId,
                 EmployeeLastName = t.Employee.LastName,
                 EmployeeFirstName = t.Employee.FirstName,
                 EmployeeMiddleName = t.Employee.MiddleName,
 
+                ProductId = t.ProductId,
                 ProductName = t.Product.Name,
                 ProductModel = t.Product.Model,
-                Count = t.Count,
+                ProductsCount = t.ProductsCount,
 
                 Status = t.ProgressStatus.ToString(),
                 StartTime = t.StartTime,
@@ -69,14 +71,24 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            totalCount = tasksDtoSorted.Count;
+            totalCount = tasksSortedResponse.Count;
         }
 
         return new ProductionTasksPage
         {
-            Tasks = tasksDtoSorted,
+            Tasks = tasksSortedResponse,
             Total = totalCount
         };
+    }
+
+    public void SetTaskEndTimeById(int id)
+    {
+        var task = DbSet.FirstOrDefault(t => t.Id == id);
+
+        if (task is not null)
+        {
+            task.EndTime = DateTime.Now;
+        }
     }
 
     private Expression<Func<AssemblyProductionTask, object>> CreateSortExpression(string propertyName)

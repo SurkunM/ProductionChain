@@ -28,13 +28,13 @@ public class UpdateComponentsWarehouseItemsHandler
             return false;
         }
 
-        if (componentsWarehouseRequest.AddCount > 0)
+        if (componentsWarehouseRequest.AddProductsCount > 0)
         {
-            componentsWarehouseItem.Count += componentsWarehouseRequest.AddCount;
+            componentsWarehouseItem.ProductsCount += componentsWarehouseRequest.AddProductsCount;
         }
-        else if (componentsWarehouseRequest.SubtractCount > 0)
+        else if (componentsWarehouseRequest.SubtractProductsCount > 0)
         {
-            componentsWarehouseItem.Count -= componentsWarehouseRequest.SubtractCount;
+            componentsWarehouseItem.ProductsCount -= componentsWarehouseRequest.SubtractProductsCount;
         }
         else
         {

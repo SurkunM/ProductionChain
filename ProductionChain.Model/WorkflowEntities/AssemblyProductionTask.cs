@@ -15,7 +15,7 @@ public class AssemblyProductionTask
 
     public virtual required Product Product { get; set; }
 
-    public int Count { get; set; }
+    public int ProductsCount { get; set; }
 
     public int EmployeeId { get; set; }
 
@@ -27,5 +27,5 @@ public class AssemblyProductionTask
 
     public DateTime? EndTime { get; set; }
 
-    public virtual ICollection<ProductionHistory> AssemblyHistories { get; set; } = new List<ProductionHistory>();
+    public virtual ICollection<ProductionHistory> ProductionHistories { get; set; } = new List<ProductionHistory>();
 }

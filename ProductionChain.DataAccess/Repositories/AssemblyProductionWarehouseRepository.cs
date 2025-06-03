@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
@@ -41,15 +41,15 @@ public class AssemblyProductionWarehouseRepository : BaseEfRepository<AssemblyPr
             ? queryDbSet.OrderByDescending(orderByExpression)
             : queryDbSet.OrderBy(orderByExpression);
 
-        var assemblyWarehouseDtoSorted = await orderedQuery
+        var assemblyWarehouseSortedResponse = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(aw => new AssemblyWarehouseItemDto
+            .Select(aw => new AssemblyWarehouseItemResponse
             {
                 Id = aw.Id,
                 Name = aw.Product.Name,
                 Model = aw.Product.Model,
-                Count = aw.Count
+                ProductsCount = aw.ProductsCount
             })
             .ToListAsync();
 
@@ -57,12 +57,12 @@ public class AssemblyProductionWarehouseRepository : BaseEfRepository<AssemblyPr
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            totalCount = assemblyWarehouseDtoSorted.Count;
+            totalCount = assemblyWarehouseSortedResponse.Count;
         }
 
         return new AssemblyWarehousePage
         {
-            AssemblyWarehouseItems = assemblyWarehouseDtoSorted,
+            AssemblyWarehouseItems = assemblyWarehouseSortedResponse,
             Total = totalCount
         };
     }

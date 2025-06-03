@@ -1,10 +1,10 @@
-﻿using ProductionChain.Contracts.Dto;
+﻿using ProductionChain.Contracts.Dto.Responses;
 
 namespace ProductionChain.Contracts.ResponsesPages;
 
 public class ComponentsWarehousePage
 {
-    public List<ComponentsWarehouseItemDto> ComponentsWarehouseItems { get; set; } = new List<ComponentsWarehouseItemDto>();
+    public List<ComponentsWarehouseResponse> ComponentsWarehouseItems { get; set; } = new List<ComponentsWarehouseResponse>();
 
     public int Total { get; set; }
 }

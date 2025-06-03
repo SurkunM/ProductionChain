@@ -23,7 +23,7 @@ public class CreateProductionOrderHandler
     {
         var ordersRepository = _unitOfWork.GetRepository<IOrdersRepository>();
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
-
+        //TODO: Можно получать ProductId. productionOrder создается но prod-sCount = 0, prod-tId = undefind
         _unitOfWork.BeginTransaction();
 
         try
@@ -47,7 +47,7 @@ public class CreateProductionOrderHandler
 
             await productionOrdersRepository.CreateAsync(productionOrdersRequest.ToProductionOrderModel(order, product, ProgressStatusType.Pending));
 
-            var success = ordersRepository.UpdateOrderStatusByOrderId(productionOrdersRequest.OrderId, ProgressStatusType.InProgress.ToString());
+            var success = ordersRepository.UpdateOrderStatusByOrderId(productionOrdersRequest.OrderId, ProgressStatusType.InProgress);
 
             if (!success)
             {

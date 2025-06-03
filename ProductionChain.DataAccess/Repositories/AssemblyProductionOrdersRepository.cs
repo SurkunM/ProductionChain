@@ -5,6 +5,7 @@ using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
 using ProductionChain.DataAccess.Repositories.BaseAbstractions;
+using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -50,7 +51,9 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
                 ProductId = po.ProductId,
                 ProductName = po.Product.Name,
                 ProductModel = po.Product.Model,
-                TotalCount = po.TotalCount,
+                InProgressCount = po.InProgressProductsCount,
+                CompletedCount = po.CompletedProductsCount,
+                TotalCount = po.TotalProductsCount,
                 Status = po.StatusType.ToString()
             })
             .ToListAsync();
@@ -78,7 +81,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
             return false;
         }
 
-        productionOrder.InProgressCount += inProgressCount;
+        productionOrder.InProgressProductsCount += inProgressCount;
 
         return true;
     }
@@ -92,7 +95,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
             return false;
         }
 
-        productionOrder.InProgressCount -= inProgressCount;
+        productionOrder.InProgressProductsCount -= inProgressCount;
 
         return true;
     }
@@ -106,7 +109,32 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
             return false;
         }
 
-        productionOrder.CompletedCount += completedCount;
+        productionOrder.CompletedProductsCount += completedCount;
+
+        return true;
+    }
+
+    public bool UpdateProductionOrderStatusById(int productionOrderId)
+    {
+        var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
+
+        if (productionOrder is null)
+        {
+            return false;
+        }
+
+        if (productionOrder.InProgressProductsCount > 0)
+        {
+            productionOrder.StatusType = ProgressStatusType.InProgress;
+        }
+        else if (productionOrder.CompletedProductsCount == productionOrder.TotalProductsCount)
+        {
+            productionOrder.StatusType = ProgressStatusType.Done;
+        }
+        else
+        {
+            productionOrder.StatusType = ProgressStatusType.Pending;
+        }
 
         return true;
     }

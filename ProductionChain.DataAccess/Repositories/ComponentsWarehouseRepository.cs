@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
@@ -41,16 +41,16 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
             ? queryDbSet.OrderByDescending(orderByExpression)
             : queryDbSet.OrderBy(orderByExpression);
 
-        var componentsWarehouseDtoSorted = await orderedQuery
+        var componentsWarehouseSortedResponse = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(cw => new ComponentsWarehouseItemDto
+            .Select(cw => new ComponentsWarehouseResponse
             {
                 Id = cw.Id,
                 ProductName = cw.Product.Name,
                 ProductModel = cw.Product.Model,
                 ComponentType = cw.Type.ToString(),
-                Count = cw.Count
+                ProductsCount = cw.ComponentsCount
             })
             .ToListAsync();
 
@@ -58,12 +58,12 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            totalCount = componentsWarehouseDtoSorted.Count;
+            totalCount = componentsWarehouseSortedResponse.Count;
         }
 
         return new ComponentsWarehousePage
         {
-            ComponentsWarehouseItems = componentsWarehouseDtoSorted,
+            ComponentsWarehouseItems = componentsWarehouseSortedResponse,
             Total = totalCount
         };
     }
@@ -74,7 +74,7 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
             .Where(c => c.ProductId == productId)
             .ToArray();
 
-        var availableComponentsCount = components.Sum(c => c.Count);
+        var availableComponentsCount = components.Sum(c => c.ComponentsCount);
 
         if (availableComponentsCount < componentsCount)
         {
@@ -83,7 +83,7 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
 
         foreach (var component in components)
         {
-            component.Count -= componentsCount;
+            component.ComponentsCount -= componentsCount;
         }
 
         return true;

@@ -8,5 +8,5 @@ public class OrderRequest
 
     public int ProductId { get; set; }
 
-    public int Count { get; set; }
+    public int ProductsCount { get; set; }
 }

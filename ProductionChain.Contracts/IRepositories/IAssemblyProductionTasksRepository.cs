@@ -7,4 +7,6 @@ namespace ProductionChain.Contracts.IRepositories;
 public interface IAssemblyProductionTasksRepository : IRepository<AssemblyProductionTask>
 {
     Task<ProductionTasksPage> GetTasksAsync(GetQueryParameters queryParameters);
+
+    void SetTaskEndTimeById(int id);
 }

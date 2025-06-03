@@ -1,10 +1,10 @@
-﻿using ProductionChain.Contracts.Dto;
+﻿using ProductionChain.Contracts.Dto.Responses;
 
 namespace ProductionChain.Contracts.ResponsesPages;
 
 public class OrdersPage
 {
-    public List<OrderDto> Orders { get; set; } = new List<OrderDto>();
+    public List<OrderResponse> Orders { get; set; } = new List<OrderResponse>();
 
     public int Total { get; set; }
 }

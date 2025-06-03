@@ -2,7 +2,6 @@
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
-using ProductionChain.Contracts.Mapping;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
 
@@ -29,13 +28,13 @@ public class UpdateProductionOrderHandler
             return false;
         }
 
-        if (productionOrdersRequest.AddCount > 0)
+        if (productionOrdersRequest.AddProductsCount > 0)
         {
-            productionOrder.TotalCount += productionOrdersRequest.AddCount;
+            productionOrder.TotalProductsCount += productionOrdersRequest.AddProductsCount;
         }
-        else if (productionOrdersRequest.SubtractCount > 0)
+        else if (productionOrdersRequest.SubtractProductsCount > 0)
         {
-            productionOrder.TotalCount -= productionOrdersRequest.SubtractCount;
+            productionOrder.TotalProductsCount -= productionOrdersRequest.SubtractProductsCount;
         }
         else
         {

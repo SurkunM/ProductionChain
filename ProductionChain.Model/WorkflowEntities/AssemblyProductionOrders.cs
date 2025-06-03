@@ -15,13 +15,13 @@ public class AssemblyProductionOrders
 
     public virtual required Product Product { get; set; }
 
-    public int InProgressCount { get; set; }
+    public int InProgressProductsCount { get; set; }
 
-    public int CompletedCount { get; set; }
+    public int CompletedProductsCount { get; set; }
 
-    public int TotalCount { get; set; }
+    public int TotalProductsCount { get; set; }
 
     public required ProgressStatusType StatusType { get; set; }
 
-    public virtual ICollection<AssemblyProductionTask> AssemblyTask { get; set; } = new List<AssemblyProductionTask>();
+    public virtual ICollection<AssemblyProductionTask> ProductionTask { get; set; } = new List<AssemblyProductionTask>();
 }

@@ -1,14 +1,14 @@
-﻿using ProductionChain.DataAccess.Repositories.BaseAbstractions;
-using ProductionChain.Model.BasicEntities;
-using ProductionChain.Contracts.IRepositories;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.ResponsesPages;
+using ProductionChain.Contracts.Dto.Responses;
+using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
-using Microsoft.EntityFrameworkCore;
+using ProductionChain.Contracts.ResponsesPages;
+using ProductionChain.DataAccess.Repositories.BaseAbstractions;
+using ProductionChain.Model.BasicEntities;
+using ProductionChain.Model.Enums;
 using System.Linq.Expressions;
 using System.Reflection;
-using ProductionChain.Contracts.Dto;
-using ProductionChain.Model.Enums;
 
 namespace ProductionChain.DataAccess.Repositories;
 
@@ -43,10 +43,10 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
             ? queryDbSet.OrderByDescending(orderByExpression)
             : queryDbSet.OrderBy(orderByExpression);
 
-        var employeesDtoSorted = await orderedQuery
+        var employeesSortedResponse = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(e => new EmployeeDto
+            .Select(e => new EmployeeResponse
             {
                 Id = e.Id,
                 FirstName = e.FirstName,
@@ -61,17 +61,17 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            totalCount = employeesDtoSorted.Count;
+            totalCount = employeesSortedResponse.Count;
         }
 
         return new EmployeesPage
         {
-            Employees = employeesDtoSorted,
+            Employees = employeesSortedResponse,
             Total = totalCount
         };
     }
 
-    public bool UpdateStatusByEmployeeId(int employeeId, EmployeeStatusType statusType)
+    public bool UpdateEmployeeStatusById(int employeeId, EmployeeStatusType statusType)
     {
         var employee = DbSet.FirstOrDefault(e => e.Id == employeeId);
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
@@ -29,8 +29,8 @@ public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
             queryParameters.Term = queryParameters.Term.Trim();
-            queryDbSet = queryDbSet.Where(h => h.AssemblyTask.Employee.LastName.Contains(queryParameters.Term)
-                || h.AssemblyTask.Product.Name.Contains(queryParameters.Term));
+            queryDbSet = queryDbSet.Where(h => h.ProductionTask.Employee.LastName.Contains(queryParameters.Term)
+                || h.ProductionTask.Product.Name.Contains(queryParameters.Term));
         }
 
         var orderByExpression = string.IsNullOrEmpty(queryParameters.SortBy)
@@ -41,16 +41,18 @@ public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, 
             ? queryDbSet.OrderByDescending(orderByExpression)
             : queryDbSet.OrderBy(orderByExpression);
 
-        var historiesDtoSorted = await orderedQuery
+        var historiesSortedResponse = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(h => new HistoryDto
+            .Select(h => new ProductionHistoryResponse
             {
                 Id = h.Id,
-                ProductName = h.AssemblyTask.Product.Name,
-                EmployeeName = h.AssemblyTask.Employee.FirstName,
-                StartTime = h.AssemblyTask.StartTime,
-                EndTime = h.AssemblyTask.EndTime
+                TaskId = h.ProductionTaskId,
+                Employee = h.Employee,
+                Product = h.Product,
+                ProductsCount = h.ProductsCount,
+                StartTime = h.StartTime,
+                EndTime = h.EndTime
             })
             .ToListAsync();
 
@@ -58,12 +60,12 @@ public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, 
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            totalCount = historiesDtoSorted.Count;
+            totalCount = historiesSortedResponse.Count;
         }
 
         return new ProductionHistoriesPage
         {
-            Histories = historiesDtoSorted,
+            Histories = historiesSortedResponse,
             Total = totalCount
         };
     }

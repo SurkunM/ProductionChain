@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
 using ProductionChain.DataAccess.Repositories.BaseAbstractions;
 using ProductionChain.Model.BasicEntities;
+using ProductionChain.Model.Enums;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -42,16 +43,17 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
             ? queryDbSet.OrderByDescending(orderByExpression)
             : queryDbSet.OrderBy(orderByExpression);
 
-        var ordersDtoSorted = await orderedQuery
+        var ordersSortedResponse = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(o => new OrderDto
+            .Select(o => new OrderResponse
             {
                 Id = o.Id,
                 Customer = o.Customer,
+                ProductId = o.ProductId,
                 ProductName = o.Product.Name,
                 ProductModel = o.Product.Model,
-                Count = o.Count,
+                ProductsCount = o.ProductsCount,
                 Status = o.StageType.ToString(),
                 CreateAt = o.CreatedAt
             })
@@ -61,12 +63,12 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
-            totalCount = ordersDtoSorted.Count;
+            totalCount = ordersSortedResponse.Count;
         }
 
         return new OrdersPage
         {
-            Orders = ordersDtoSorted,
+            Orders = ordersSortedResponse,
             Total = totalCount
         };
     }
@@ -75,10 +77,10 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
     {
         var order = DbSet.FirstOrDefault(o => o.Id == orderId);
 
-        return order?.StageType == "Pending";
+        return order?.StageType == ProgressStatusType.Pending;
     }
 
-    public bool UpdateOrderStatusByOrderId(int orderId, string statusType)
+    public bool UpdateOrderStatusByOrderId(int orderId, ProgressStatusType statusType)
     {
         var order = DbSet.FirstOrDefault(o => o.Id == orderId);
 

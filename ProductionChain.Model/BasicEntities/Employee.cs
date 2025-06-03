@@ -7,9 +7,9 @@ public class Employee
 {
     public int Id { get; set; }
 
-    public required string FirstName { get; set; }
-
     public required string LastName { get; set; }
+
+    public required string FirstName { get; set; }
 
     public string? MiddleName { get; set; }
 
@@ -17,5 +17,5 @@ public class Employee
 
     public required EmployeeStatusType Status { get; set; }
 
-    public virtual ICollection<AssemblyProductionTask> AssemblyTasks { get; set; } = new List<AssemblyProductionTask>();
+    public virtual ICollection<AssemblyProductionTask> ProductionTasks { get; set; } = new List<AssemblyProductionTask>();
 }

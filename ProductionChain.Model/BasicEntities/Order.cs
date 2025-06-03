@@ -1,4 +1,5 @@
-﻿using ProductionChain.Model.WorkflowEntities;
+﻿using ProductionChain.Model.Enums;
+using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.Model.BasicEntities;
 
@@ -12,11 +13,11 @@ public class Order
 
     public virtual required Product Product { get; set; }
 
-    public int Count { get; set; }
+    public int ProductsCount { get; set; }
 
-    public required string StageType { get; set; }//TODO: изменить тип на ProgressStatusType
+    public required ProgressStatusType StageType { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
-    public virtual ICollection<AssemblyProductionOrders> AssemblyOrders { get; set; } = new List<AssemblyProductionOrders>();
+    public virtual ICollection<AssemblyProductionOrders> ProductionOrders { get; set; } = new List<AssemblyProductionOrders>();
 }

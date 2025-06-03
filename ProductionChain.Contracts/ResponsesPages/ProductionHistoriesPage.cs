@@ -1,10 +1,10 @@
-﻿using ProductionChain.Contracts.Dto;
+﻿using ProductionChain.Contracts.Dto.Responses;
 
 namespace ProductionChain.Contracts.ResponsesPages;
 
 public class ProductionHistoriesPage
 {
-    public List<HistoryDto> Histories { get; set; } = new List<HistoryDto>();
+    public List<ProductionHistoryResponse> Histories { get; set; } = new List<ProductionHistoryResponse>();
 
     public int Total { get; set; }
 }

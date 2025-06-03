@@ -14,8 +14,8 @@ public static class MappingExtensions
             Id = orderRequest.Id,
             Customer = orderRequest.Customer,
             Product = product,
-            Count = orderRequest.Count,
-            StageType = ProgressStatusType.InProgress.ToString(),
+            ProductsCount = orderRequest.ProductsCount,
+            StageType = ProgressStatusType.InProgress,
             CreatedAt = DateTime.UtcNow
         };
     }
@@ -29,17 +29,20 @@ public static class MappingExtensions
             ProductionOrder = productionOrder,
             Employee = employee,
             Product = product,
-            Count = taskRequest.Count,
+            ProductsCount = taskRequest.ProductsCount,
             ProgressStatus = statusType,
             StartTime = dateTime
         };
     }
 
-    public static ProductionHistory ToHistoryModel(this ProductionHistoryRequest historyRequest, AssemblyProductionTask task)
+    public static ProductionHistory ToHistoryModel(this AssemblyProductionTask task)
     {
         return new ProductionHistory
         {
-            AssemblyTask = task
+            ProductionTask = task,
+            Employee = $"{task.Employee.LastName} {task.Employee.FirstName} {task.Employee.MiddleName ?? ""}".Trim(),
+            Product = $"{task.Product.Name} ({task.Product.Model})",
+            ProductsCount = task.ProductsCount
         };
     }
 
@@ -49,7 +52,7 @@ public static class MappingExtensions
         {
             Order = order,
             Product = product,
-            TotalCount = productionOrdersRequest.Count,
+            TotalProductsCount = productionOrdersRequest.ProductsCount,
             StatusType = status
         };
     }
@@ -59,7 +62,7 @@ public static class MappingExtensions
         return new AssemblyProductionWarehouse
         {
             Product = product,
-            Count = warehouseRequest.Count
+            ProductsCount = warehouseRequest.ProductsCount
         };
     }
 }

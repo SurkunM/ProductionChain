@@ -2,6 +2,7 @@
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
+using ProductionChain.Contracts.Mapping;
 using ProductionChain.Model.Enums;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
@@ -23,13 +24,14 @@ public class DeleteProductionTaskHandler
         var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
         var employeesRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
+        var historiesRepository = _unitOfWork.GetRepository<IProductionHistoryRepository>();
 
         try
         {
             _unitOfWork.BeginTransaction();
 
-            var success = productionOrdersRepository.SubtractInProgressCount(taskRequest.ProductionOrderId, taskRequest.Count)
-                && productionOrdersRepository.AddCompletedCount(taskRequest.ProductionOrderId, taskRequest.Count);
+            var success = productionOrdersRepository.SubtractInProgressCount(taskRequest.ProductionOrderId, taskRequest.ProductsCount)
+                && productionOrdersRepository.AddCompletedCount(taskRequest.ProductionOrderId, taskRequest.ProductsCount);
 
             if (!success)
             {
@@ -38,11 +40,12 @@ public class DeleteProductionTaskHandler
                 return false;
             }
 
-            success = employeesRepository.UpdateStatusByEmployeeId(taskRequest.EmployeeId, EmployeeStatusType.Available);
+            success = employeesRepository.UpdateEmployeeStatusById(taskRequest.EmployeeId, EmployeeStatusType.Available)
+                    && productionOrdersRepository.UpdateProductionOrderStatusById(taskRequest.ProductionOrderId);
 
             if (!success)
             {
-                _logger.LogError("При изменении статуса сотрудника произошла ошибка.");
+                _logger.LogError("При изменении статуса сотрудника и производственного заказа произошла ошибка.");
 
                 return false;
             }
@@ -51,8 +54,14 @@ public class DeleteProductionTaskHandler
 
             if (task is null)
             {
+                _logger.LogError("Не удалось найди задачу по переданному id={id}", taskRequest.Id);
+
                 return false;
             }
+
+            tasksRepository.SetTaskEndTimeById(taskRequest.Id);
+
+            await historiesRepository.CreateAsync(task.ToHistoryModel());
 
             tasksRepository.Delete(task);
 

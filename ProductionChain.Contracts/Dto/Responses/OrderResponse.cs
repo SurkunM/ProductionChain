@@ -1,16 +1,18 @@
-﻿namespace ProductionChain.Contracts.Dto;
+﻿namespace ProductionChain.Contracts.Dto.Responses;
 
-public class OrderDto
+public class OrderResponse
 {
     public int Id { get; set; }
 
     public required string Customer { get; set; }
 
+    public int ProductId { get; set; }
+
     public required string ProductName { get; set; }
 
     public required string ProductModel { get; set; }
 
-    public int Count { get; set; }
+    public int ProductsCount { get; set; }
 
     public required string Status { get; set; }
 

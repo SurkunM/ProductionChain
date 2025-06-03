@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
@@ -44,7 +44,7 @@ public class ProductsRepository : BaseEfRepository<Product>, IProductsRepository
         var productsDtoSorted = await orderedQuery
             .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
             .Take(queryParameters.PageSize)
-            .Select(p => new ProductsDto
+            .Select(p => new ProductsResponse
             {
                 Id = p.Id,
                 Name = p.Name,
