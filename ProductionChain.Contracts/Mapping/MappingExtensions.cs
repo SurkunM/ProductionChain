@@ -7,19 +7,6 @@ namespace ProductionChain.Contracts.Mapping;
 
 public static class MappingExtensions
 {
-    public static Order ToOrderModel(this OrderRequest orderRequest, Product product)
-    {
-        return new Order
-        {
-            Id = orderRequest.Id,
-            Customer = orderRequest.Customer,
-            Product = product,
-            ProductsCount = orderRequest.ProductsCount,
-            StageType = ProgressStatusType.InProgress,
-            CreatedAt = DateTime.UtcNow
-        };
-    }
-
     public static AssemblyProductionTask ToTaskModel(this ProductionTaskRequest taskRequest, AssemblyProductionOrders productionOrder,
             Product product, Employee employee, ProgressStatusType statusType, DateTime dateTime)
     {
@@ -39,30 +26,32 @@ public static class MappingExtensions
     {
         return new ProductionHistory
         {
-            ProductionTask = task,
+            ProductionTaskId = task.Id,
             Employee = $"{task.Employee.LastName} {task.Employee.FirstName} {task.Employee.MiddleName ?? ""}".Trim(),
             Product = $"{task.Product.Name} ({task.Product.Model})",
-            ProductsCount = task.ProductsCount
+            ProductsCount = task.ProductsCount,
+            StartTime = task.StartTime,
+            EndTime = DateTime.UtcNow
         };
     }
 
-    public static AssemblyProductionOrders ToProductionOrderModel(this ProductionOrdersRequest productionOrdersRequest, Order order, Product product, ProgressStatusType status)
+    public static AssemblyProductionOrders ToProductionOrderModel(this ProductionOrdersRequest productionOrdersRequest, Order order, Product product)
     {
+        var requiredProductCount = productionOrdersRequest.ProductsCount - productionOrdersRequest.AvailableCount;
+        var status = ProgressStatusType.InProgress;
+
+        if (requiredProductCount <= 0)
+        {
+            requiredProductCount = 0;
+            status = ProgressStatusType.Done;
+        }
+
         return new AssemblyProductionOrders
         {
             Order = order,
             Product = product,
-            TotalProductsCount = productionOrdersRequest.ProductsCount,
+            TotalProductsCount = requiredProductCount,
             StatusType = status
-        };
-    }
-
-    public static AssemblyProductionWarehouse ToAssemblyWarehouseModel(this AssemblyWarehouseRequest warehouseRequest, Product product)
-    {
-        return new AssemblyProductionWarehouse
-        {
-            Product = product,
-            ProductsCount = warehouseRequest.ProductsCount
         };
     }
 }

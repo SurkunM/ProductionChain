@@ -23,7 +23,7 @@ public class UpdateComponentsWarehouseItemsHandler
 
         var componentsWarehouseItem = await componentsWarehouseRepository.GetByIdAsync(componentsWarehouseRequest.Id);
 
-        if (componentsWarehouseItem is null)//TODO: в request приходит componentType. найти по нему продукт или не получать componentType
+        if (componentsWarehouseItem is null)
         {
             return false;
         }

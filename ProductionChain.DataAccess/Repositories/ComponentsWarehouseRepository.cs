@@ -68,22 +68,22 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
         };
     }
 
-    public bool TakeComponentsByProductId(int productId, int componentsCount)
+    public bool TakeComponentsByProductId(int productId, int takeComponentsCount)
     {
         var components = DbSet
             .Where(c => c.ProductId == productId)
             .ToArray();
 
-        var availableComponentsCount = components.Sum(c => c.ComponentsCount);
+        var minComponentsCount = components.Min(c => c.ComponentsCount);
 
-        if (availableComponentsCount < componentsCount)
+        if (minComponentsCount < takeComponentsCount)
         {
             return false;
         }
 
         foreach (var component in components)
         {
-            component.ComponentsCount -= componentsCount;
+            component.ComponentsCount -= takeComponentsCount;
         }
 
         return true;

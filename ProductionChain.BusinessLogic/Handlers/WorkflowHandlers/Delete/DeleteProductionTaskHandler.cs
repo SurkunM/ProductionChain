@@ -41,7 +41,7 @@ public class DeleteProductionTaskHandler
             }
 
             success = employeesRepository.UpdateEmployeeStatusById(taskRequest.EmployeeId, EmployeeStatusType.Available)
-                    && productionOrdersRepository.UpdateProductionOrderStatusById(taskRequest.ProductionOrderId);
+                    && productionOrdersRepository.UpdateStatusById(taskRequest.ProductionOrderId);
 
             if (!success)
             {
@@ -60,7 +60,6 @@ public class DeleteProductionTaskHandler
             }
 
             tasksRepository.SetTaskEndTimeById(taskRequest.Id);
-
             await historiesRepository.CreateAsync(task.ToHistoryModel());
 
             tasksRepository.Delete(task);

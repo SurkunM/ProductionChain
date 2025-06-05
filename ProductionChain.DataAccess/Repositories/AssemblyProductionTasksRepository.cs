@@ -32,7 +32,9 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
             queryParameters.Term = queryParameters.Term.Trim();
             queryDbSet = queryDbSet.Where(t => t.Product.Name.Contains(queryParameters.Term)
                 || t.Product.Model.Contains(queryParameters.Term)
-                || t.Employee.FirstName.Contains(queryParameters.Term));
+                || t.Employee.FirstName.Contains(queryParameters.Term)
+                || t.Employee.LastName.Contains(queryParameters.Term)
+                || (t.Employee.MiddleName != null && t.Employee.MiddleName.Contains(queryParameters.Term)));
         }
 
         var orderByExpression = string.IsNullOrEmpty(queryParameters.SortBy)

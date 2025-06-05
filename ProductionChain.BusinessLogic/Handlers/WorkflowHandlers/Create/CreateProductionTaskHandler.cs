@@ -43,9 +43,6 @@ public class CreateProductionTaskHandler
                 return false;
             }
 
-            await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee,
-                ProgressStatusType.Pending, DateTime.UtcNow));
-
             var success = componentsWarehouseRepository.TakeComponentsByProductId(taskRequest.ProductId, taskRequest.ProductsCount);
 
             if (!success)
@@ -65,7 +62,7 @@ public class CreateProductionTaskHandler
             }
 
             success = employeesRepository.UpdateEmployeeStatusById(taskRequest.EmployeeId, EmployeeStatusType.Busy)
-                && productionOrdersRepository.UpdateProductionOrderStatusById(taskRequest.ProductionOrderId);
+                && productionOrdersRepository.UpdateStatusById(taskRequest.ProductionOrderId);
 
             if (!success)
             {
@@ -73,6 +70,9 @@ public class CreateProductionTaskHandler
 
                 return false;
             }
+
+            await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee,
+                ProgressStatusType.Pending, DateTime.UtcNow));
 
             await _unitOfWork.SaveAsync();
 

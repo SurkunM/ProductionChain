@@ -67,6 +67,34 @@ public class AssemblyProductionWarehouseRepository : BaseEfRepository<AssemblyPr
         };
     }
 
+    public bool AddWarehouseItems(int productId, int productsCount)
+    {
+        var warehouseItem = DbSet.FirstOrDefault(aw => aw.ProductId == productId);
+
+        if (warehouseItem is null)
+        {
+            return false;
+        }
+
+        warehouseItem.ProductsCount += productsCount;
+
+        return true;
+    }
+
+    public bool SubtractWarehouseItems(int productId, int productsCount)
+    {
+        var warehouseItem = DbSet.FirstOrDefault(aw => aw.ProductId == productId);
+
+        if (warehouseItem is null)
+        {
+            return false;
+        }
+
+        warehouseItem.ProductsCount -= productsCount;
+
+        return true;
+    }
+
     private Expression<Func<AssemblyProductionWarehouse, object>> CreateSortExpression(string propertyName)
     {
         try

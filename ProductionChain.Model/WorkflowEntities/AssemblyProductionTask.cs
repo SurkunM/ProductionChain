@@ -23,9 +23,7 @@ public class AssemblyProductionTask
 
     public required ProgressStatusType ProgressStatus { get; set; }
 
-    public DateTime? StartTime { get; set; }
+    public DateTime StartTime { get; set; }
 
     public DateTime? EndTime { get; set; }
-
-    public virtual ICollection<ProductionHistory> ProductionHistories { get; set; } = new List<ProductionHistory>();
 }

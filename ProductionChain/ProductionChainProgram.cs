@@ -1,8 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Create;
-using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
-using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Update;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
@@ -17,9 +14,9 @@ namespace ProductionChain
 {
     public class ProductionChainProgram
     {
-        public static void Main(string[] args)//TODO: 1. проверить запрос deleteTask. Сделать что бы создавалась история. В controller проверить избыточность [FromBody]
+        public static void Main(string[] args)//TODO: 2. В controller проверить избыточность [FromBody]. Удалить UpdateHandler складов. ФронтЕнд
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);//TODO: 1. Проверить доб. ли в склад ГП после завершения Prod.Order
 
             builder.Services.AddDbContext<ProductionChainDbContext>(options =>
             {
@@ -36,9 +33,7 @@ namespace ProductionChain
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
-
             builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
-
             builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 
             builder.Services.AddTransient<IProductionHistoryRepository, ProductionHistoryRepository>();
@@ -47,7 +42,6 @@ namespace ProductionChain
             builder.Services.AddTransient<IAssemblyProductionWarehouseRepository, AssemblyProductionWarehouseRepository>();
             builder.Services.AddTransient<IComponentsWarehouseRepository, ComponentsWarehouseRepository>();
 
-            builder.Services.AddTransient<CreateOrderHandler>();
             builder.Services.AddTransient<CreateProductionOrderHandler>();
             builder.Services.AddTransient<CreateProductionTaskHandler>();
 
@@ -61,12 +55,10 @@ namespace ProductionChain
             builder.Services.AddTransient<GetAssemblyWarehouseItemsHandler>();
             builder.Services.AddTransient<GetComponentsWarehouseItemsHandler>();
 
-            builder.Services.AddTransient<UpdateEmployeeStatusHandler>();
             builder.Services.AddTransient<UpdateProductionOrderHandler>();
             builder.Services.AddTransient<UpdateAssemblyWarehouseItemHandler>();
             builder.Services.AddTransient<UpdateComponentsWarehouseItemsHandler>();
 
-            builder.Services.AddTransient<DeleteOrderHandler>();
             builder.Services.AddTransient<DeleteProductionOrderHandler>();
             builder.Services.AddTransient<DeleteProductionTaskHandler>();
 
@@ -79,7 +71,7 @@ namespace ProductionChain
                 try
                 {
                     var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-                    dbInitializer.Initialize();
+                    //dbInitializer.Initialize();
                 }
                 catch (Exception ex)
                 {

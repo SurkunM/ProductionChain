@@ -15,7 +15,7 @@ public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, 
 {
     private readonly ILogger<ProductionHistoryRepository> _logger;
 
-    private const string _defaultPropertyBySorting = "AssemblyTask.Product.Name";
+    private const string _defaultPropertyBySorting = "Product";
 
     public ProductionHistoryRepository(ProductionChainDbContext dbContext, ILogger<ProductionHistoryRepository> logger) : base(dbContext)
     {
@@ -29,8 +29,7 @@ public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, 
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
             queryParameters.Term = queryParameters.Term.Trim();
-            queryDbSet = queryDbSet.Where(h => h.ProductionTask.Employee.LastName.Contains(queryParameters.Term)
-                || h.ProductionTask.Product.Name.Contains(queryParameters.Term));
+            queryDbSet = queryDbSet.Where(h => h.Product.Contains(queryParameters.Term) || h.Employee.Contains(queryParameters.Term));
         }
 
         var orderByExpression = string.IsNullOrEmpty(queryParameters.SortBy)

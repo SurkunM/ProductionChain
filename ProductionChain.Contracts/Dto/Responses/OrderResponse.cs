@@ -14,6 +14,8 @@ public class OrderResponse
 
     public int ProductsCount { get; set; }
 
+    public int AvailableCount { get; set; }
+
     public required string Status { get; set; }
 
     public DateTime? CreateAt { get; set; }

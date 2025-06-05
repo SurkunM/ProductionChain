@@ -6,8 +6,6 @@ public class ProductionHistory
 
     public int ProductionTaskId { get; set; }
 
-    public virtual required AssemblyProductionTask ProductionTask { get; set; }
-
     public required string Employee { get; set; }
 
     public required string  Product { get; set; }

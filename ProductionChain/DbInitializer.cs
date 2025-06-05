@@ -42,9 +42,9 @@ public class DbInitializer
         var product4 = CreateProduct("ИПС 1000", "0.1");
 
         var order1 = CreateOrder("OOO T1", product1, 500);
-        var order2 = CreateOrder("OOO T1", product2, 1500);
+        var order2 = CreateOrder("OOO T1", product2, 100);
 
-        var order3 = CreateOrder("OAO Восток", product3, 2000);
+        var order3 = CreateOrder("OAO Восток", product3, 200);
         var order4 = CreateOrder("OAO Восток", product4, 100);
 
         _dbContext.Orders.AddRange(order1, order2, order3, order4);
@@ -108,7 +108,8 @@ public class DbInitializer
         {
             Customer = customer,
             Product = product,
-            ProductsCount = count,
+            OrderedProductsCount = count,
+            AvailableProductsCount = 0,
             CreatedAt = DateTime.UtcNow,
             StageType = ProgressStatusType.Pending
         };

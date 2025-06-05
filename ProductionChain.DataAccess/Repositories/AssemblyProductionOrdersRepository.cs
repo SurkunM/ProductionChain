@@ -76,7 +76,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
     {
         var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
 
-        if (productionOrder is null)
+        if (productionOrder is null || productionOrder.TotalProductsCount <= productionOrder.CompletedProductsCount)
         {
             return false;
         }
@@ -114,7 +114,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
         return true;
     }
 
-    public bool UpdateProductionOrderStatusById(int productionOrderId)
+    public bool UpdateStatusById(int productionOrderId)
     {
         var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
 
@@ -127,7 +127,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
         {
             productionOrder.StatusType = ProgressStatusType.InProgress;
         }
-        else if (productionOrder.CompletedProductsCount == productionOrder.TotalProductsCount)
+        else if (productionOrder.CompletedProductsCount >= productionOrder.TotalProductsCount)
         {
             productionOrder.StatusType = ProgressStatusType.Done;
         }
@@ -137,6 +137,30 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
         }
 
         return true;
+    }
+
+    public bool IsCompleted(int productionOrderId)
+    {
+        var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
+
+        if (productionOrder is null)
+        {
+            return false;
+        }
+
+        return productionOrder.CompletedProductsCount >= productionOrder.TotalProductsCount;
+    }
+
+    public bool HasInProgressTasks(int productionOrderId)
+    {
+        var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
+
+        if (productionOrder is null)
+        {
+            return true;
+        }
+
+        return productionOrder.ProductionTask.Count > 0;
     }
 
     private Expression<Func<AssemblyProductionOrders, object>> CreateSortExpression(string propertyName)

@@ -13,7 +13,9 @@ public class Order
 
     public virtual required Product Product { get; set; }
 
-    public int ProductsCount { get; set; }
+    public int OrderedProductsCount { get; set; }
+
+    public int AvailableProductsCount { get; set; }
 
     public required ProgressStatusType StageType { get; set; }
 

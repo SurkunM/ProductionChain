@@ -53,7 +53,8 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
                 ProductId = o.ProductId,
                 ProductName = o.Product.Name,
                 ProductModel = o.Product.Model,
-                ProductsCount = o.ProductsCount,
+                ProductsCount = o.OrderedProductsCount,
+                AvailableCount = o.AvailableProductsCount,
                 Status = o.StageType.ToString(),
                 CreateAt = o.CreatedAt
             })
@@ -80,7 +81,17 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
         return order?.StageType == ProgressStatusType.Pending;
     }
 
-    public bool UpdateOrderStatusByOrderId(int orderId, ProgressStatusType statusType)
+    public void UpdateStatusByOrderId(int orderId, ProgressStatusType statusType)
+    {
+        var order = DbSet.FirstOrDefault(o => o.Id == orderId);
+
+        if (order is not null)
+        {
+            order.StageType = statusType;
+        }
+    }
+
+    public bool SetAvailableProductsCount(int orderId, int productsCount)
     {
         var order = DbSet.FirstOrDefault(o => o.Id == orderId);
 
@@ -89,13 +100,9 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
             return false;
         }
 
-        order.StageType = statusType;
+        order.AvailableProductsCount += productsCount;
 
         return true;
-    }
-    public Product? GetProductByOrderId(int orderId)
-    {
-        return DbSet.FirstOrDefault(o => o.Id == orderId)?.Product;
     }
 
     private Expression<Func<Order, object>> CreateSortExpression(string propertyName)

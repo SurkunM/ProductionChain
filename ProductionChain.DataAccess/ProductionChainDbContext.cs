@@ -49,7 +49,7 @@ public class ProductionChainDbContext : DbContext
             b.HasOne(o => o.Product)
                 .WithMany(p => p.Orders)
                 .HasForeignKey(o => o.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Product>(b =>
@@ -69,14 +69,6 @@ public class ProductionChainDbContext : DbContext
             b.HasOne(cw => cw.Product)
                 .WithMany(p => p.ComponentsWarehouse)
                 .HasForeignKey(cw => cw.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        modelBuilder.Entity<ProductionHistory>(b =>
-        {
-            b.HasOne(ah => ah.ProductionTask)
-                .WithMany(at => at.ProductionHistories)
-                .HasForeignKey(ah => ah.ProductionTaskId)
                 .OnDelete(DeleteBehavior.NoAction);
         });
 
@@ -85,12 +77,12 @@ public class ProductionChainDbContext : DbContext
             b.HasOne(ao => ao.Product)
                 .WithMany(p => p.ProductionOrders)
                 .HasForeignKey(ao => ao.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
 
             b.HasOne(ao => ao.Order)
                 .WithMany(o => o.ProductionOrders)
                 .HasForeignKey(ao => ao.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<AssemblyProductionTask>(b =>
@@ -103,12 +95,12 @@ public class ProductionChainDbContext : DbContext
             b.HasOne(at => at.Employee)
                 .WithMany(e => e.ProductionTasks)
                 .HasForeignKey(at => at.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
 
             b.HasOne(at => at.Product)
                 .WithMany(p => p.ProductionTask)
                 .HasForeignKey(at => at.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<AssemblyProductionWarehouse>(b =>
@@ -116,7 +108,7 @@ public class ProductionChainDbContext : DbContext
             b.HasOne(aw => aw.Product)
                 .WithMany(p => p.AssemblyWarehouse)
                 .HasForeignKey(aw => aw.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
         });
     }
 }

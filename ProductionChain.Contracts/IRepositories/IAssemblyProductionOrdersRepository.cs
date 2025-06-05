@@ -14,5 +14,9 @@ public interface IAssemblyProductionOrdersRepository : IRepository<AssemblyProdu
 
     bool SubtractInProgressCount(int productionOrderId, int inProgressCount);
 
-    bool UpdateProductionOrderStatusById(int productionOrderId);
+    bool UpdateStatusById(int productionOrderId);
+
+    bool IsCompleted(int productionOrderId);
+
+    bool HasInProgressTasks(int productionOrderId);
 }
