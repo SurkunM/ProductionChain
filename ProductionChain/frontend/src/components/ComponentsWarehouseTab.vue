@@ -58,7 +58,7 @@
                     { value: "componentType", title: "Название компонента" },
                     { value: "productName", title: "Название изделия" },
                     { value: "productModel", title: "Модель" },
-                    { value: "count", title: "шт" }
+                    { value: "productsCount", title: "шт" }
                 ],
 
                 isShowSuccessAlert: false,

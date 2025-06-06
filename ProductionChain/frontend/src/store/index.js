@@ -80,6 +80,10 @@ export default createStore({
         },
 
         setOrders(state, orders) {
+            orders.forEach(o => {
+                o.productName = `${o.productName || ""} (${o.productModel || ""})`;
+            });
+
             state.orders = orders;
         },
 
@@ -135,6 +139,11 @@ export default createStore({
 
         setIsLoading(state, value) {
             state.isLoading = value;
+        },
+
+        setSearchParameters(state, value) {
+            state.term = value;
+            state.pageNumber = 1;
         },
 
         setResponseItemsIndex(state, items) {
@@ -227,10 +236,10 @@ export default createStore({
             });
         },
 
-        loadTasks({ commit, state }) {
+        loadProductionTasks({ commit, state }) {
             commit("setIsLoading", true);
 
-            return axios.get("/api/ProductionAssembly/GetProductionAssemblyTasks", {
+            return axios.get("/api/ProductionAssembly/GetProductionTasks", {
                 params: {
                     term: state.term,
                     sortBy: state.sortByColumn,
@@ -303,9 +312,8 @@ export default createStore({
                 commit("setAssemblyWarehouseItems", response.data.assemblyWarehouseItems);
                 commit("setPageItemsCount", response.data.totalCount);
             })
-                .catch((response) => {
+                .catch(() => {
                     this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
-                    console.log(response);
                 }).finally(() => {
                     commit("setIsLoading", false);
                 });
@@ -331,10 +339,22 @@ export default createStore({
             });
         },
 
-        createProductionOrder({ commit, dispatch }, productionOrder) {
+        createProductionOrder({ commit, dispatch }, parameters) {
             commit("setIsLoading", true);
 
-            return axios.post("/api/ProductionAssembly/CreateProductionOrder", productionOrder)
+            return axios.post("/api/ProductionAssembly/CreateProductionOrder", parameters)
+                .then(() => {
+                    dispatch("loadOrders");
+                })
+                .finally(() => {
+                    commit("setIsLoading", false);
+                });
+        },
+
+        createProductionTask({ commit, dispatch }, task) {
+            commit("setIsLoading", true);
+
+            return axios.post("/api/ProductionAssembly/CreateProductionTask", task)
                 .then(() => {
                     dispatch("loadProductionOrders");
                 })
@@ -343,50 +363,14 @@ export default createStore({
                 });
         },
 
-        createTask({ commit, dispatch }, task) {
-            commit("setIsLoading", true);
-
-            return axios.post("/api/ProductionAssembly/CreateProductionTask", task)
-                .then(() => {
-                    dispatch("loadTasks");
-                })
-                .finally(() => {
-                    commit("setIsLoading", false);
-                });
-        },
-
-        createHistory({ commit, dispatch }, task) {
-            commit("setIsLoading", true);
-
-            return axios.post("/api/ProductionAssembly/CreateProductionHistory", task)
-                .then(() => {
-                    dispatch("loadHistories");
-                })
-                .finally(() => {
-                    commit("setIsLoading", false);
-                });
-        },
-
-        updateAssemblyWarehouseItems({ commit, dispatch }, item) {
-            commit("setIsLoading", true);
-
-            return axios.post("/api/ProductionAssembly/UpdateAssemblyWarehouseItem", item)
-                .then(() => {
-                    dispatch("loadAssemblyWarehouseItems");
-                })
-                .finally(() => {
-                    commit("setIsLoading", false);
-                });
-        },
-
-        deleteTask({ commit, dispatch }, id) {
+        deleteProductionTask({ commit, dispatch }, parameters) {
             commit("setIsLoading", true);
 
             return axios.delete("/api/ProductionAssembly/DeleteProductionTask", {
-                headers: { "Content-Type": "application/json" },
-                data: id
+                data: parameters,
+                headers: { "Content-Type": "application/json" }
             }).then(() => {
-                dispatch("loadTasks");
+                dispatch("loadProductionTasks");
             }).finally(() => {
                 commit("setIsLoading", false);
             });

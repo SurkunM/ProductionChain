@@ -33,6 +33,14 @@
                       hide-default-footer
                       :items-per-page="itemsPerPage"
                       no-data-text="Список пуст">
+
+            <template v-slot:[`item.actions`]="{ item }">
+                <div>
+                    <template v-if="!item.inProgress">
+                        <v-btn size="small" color="info" @click="completeTask(item)" class="me-2">Заверишть задачу</v-btn>
+                    </template>
+                </div>
+            </template>
         </v-data-table>
 
         <v-pagination v-model="currentPage"
@@ -50,7 +58,7 @@
                 term: "",
                 currentPage: 1,
 
-                sortByColumn: "lastName",
+                sortByColumn: "",
                 sortDesc: false,
 
                 headers: [
@@ -58,7 +66,8 @@
                     { value: "product", title: "Изделие" },
                     { value: "employee", title: "Сотрудник" },
                     { value: "productsCount", title: "шт" },
-                    { value: "startTime", title: "Начало" }
+                    { value: "startTime", title: "Начало" },
+                    { value: "actions", title: "" }
                 ],
 
                 isShowSuccessAlert: false,
@@ -68,7 +77,7 @@
         },
 
         created() {
-            this.$store.dispatch("loadTasks")
+            this.$store.dispatch("loadProductionTasks")
                 .catch(() => {
                     this.showErrorAlert("Ошибка! Не удалось загрузить список задачи.");
                 });
@@ -97,6 +106,18 @@
                 this.$store.dispatch("navigateToPage", nextPage);
             },
 
+            completeTask(task) {
+                const parameters = {
+                    id: task.id,
+                    productionOrderId: task.productionOrderId,
+                    employeeId: task.employeeId,
+                    productId: task.productId,
+                    productsCount: task.productsCount
+                };
+
+                this.$store.dispatch("deleteProductionTask", parameters);
+            },
+
             showSuccessAlert(text) {
                 this.alertText = text;
                 this.isShowSuccessAlert = true;
@@ -117,6 +138,5 @@
                 }, 2000);
             }
         }
-
     }
 </script>

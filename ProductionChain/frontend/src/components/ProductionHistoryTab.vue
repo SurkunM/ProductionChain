@@ -50,14 +50,17 @@
                 term: "",
                 currentPage: 1,
 
-                sortByColumn: "lastName",
+                sortByColumn: "",
                 sortDesc: false,
 
                 headers: [
-                    { value: "id", title: "№" },
-                    { value: "orderId", title: "Id заказа" },
-                    { value: "lastName", title: "Сотрудник" },
+                    { value: "index", title: "№" },
+                    { value: "taskId", title: "Id задачи" },
+                    { value: "employee", title: "Сотрудник" },
                     { value: "product", title: "Продукция" },
+                    { value: "productsCount", title: "шт" },
+                    { value: "startTime", title: "Дата начала" },
+                    { value: "endTime", title: "Дата завершения" }
                 ],
 
                 isShowSuccessAlert: false,

@@ -59,14 +59,14 @@
                 term: "",
                 currentPage: 1,
 
-                sortByColumn: "lastName",
+                sortByColumn: "",
                 sortDesc: false,
 
                 headers: [
                     { value: "index", title: "№" },
                     { value: "lastName", title: "Фамилия" },
                     { value: "firstName", title: "Имя" },
-                    { value: "middlename", title: "Отчество" },
+                    { value: "middleName", title: "Отчество" },
                     { value: "position", title: "Должность" },
                     { value: "status", title: "Состояние" }
                 ],

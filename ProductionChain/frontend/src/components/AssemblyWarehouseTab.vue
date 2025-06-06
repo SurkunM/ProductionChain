@@ -50,14 +50,14 @@
                 term: "",
                 currentPage: 1,
 
-                sortByColumn: "name",
+                sortByColumn: "",
                 sortDesc: false,
 
                 headers: [
                     { value: "id", title: "№" },
                     { value: "name", title: "Название" },
                     { value: "model", title: "Модель" },
-                    { value: "count", title: "шт" }
+                    { value: "productsCount", title: "шт" }
                 ],
 
                 isShowSuccessAlert: false,

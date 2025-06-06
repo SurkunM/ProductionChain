@@ -42,11 +42,11 @@
             </template>
 
             <template v-slot:[`item.actions`]="{ item }">
-                <div>
-                    <template v-if="!item.inProgress">
-                        <v-btn size="small" color="info" @click="showTaskCreateModal(item)" class="me-2">Создать задачу</v-btn>
-                    </template>
-                </div>
+                <template v-if="item.completedCount < item.totalCount">
+                    <v-btn size="small" color="info" @click="showTaskCreateModal(item)" class="mt-2">Создать задачу</v-btn>
+                </template>
+
+                <v-btn size="small" color="error" @click="endProductionOrder(item)" class="my-2">Завершить заказ</v-btn>
             </template>
         </v-data-table>
 
@@ -75,19 +75,19 @@
                 term: "",
                 currentPage: 1,
 
-                sortByColumn: "productName",
+                sortByColumn: "",
                 sortDesc: false,
 
                 headers: [
                     { value: "index", title: "№", width: "10%" },
                     { value: "name", title: "Изделие", width: "20%" },
-                    
+
                     { value: "inProgressCount", title: "в работе (шт)", width: "15%" },
                     { value: "completedCount", title: "собрано (шт)", width: "15%" },
                     { value: "totalCount", title: "всего (шт)", width: "15%" },
 
                     { value: "status", title: "Статус", width: "10%" },
-                    { value: "actions", title: "", width: "15%" },
+                    { value: "actions", title: "", width: "15%" }
                 ],
 
                 isShowSuccessAlert: false,
@@ -123,11 +123,11 @@
 
         methods: {
             getColor(state) {
-                if (state === "в очереди") {
+                if (state === "Pending") {
                     return "error";
                 }
-                else if (state === "выполняется") {
-                    return "warning";
+                else if (state === "InProgress") {
+                    return "secondary";
                 }
                 else {
                     return "success";
@@ -135,7 +135,7 @@
             },
 
             createTask(newTask) {
-                this.$store.dispatch("createTask", newTask)                
+                this.$store.dispatch("createProductionTask", newTask)
                     .then(() => this.$refs.productionTaskCreateModal.hide())
                     .catch(() => {
                         this.showErrorAlert("Ошибка! Не удалось создать задачу.");
@@ -148,6 +148,13 @@
 
             showTaskCreateModal(productionOrder) {
                 this.$refs.productionTaskCreateModal.show(productionOrder);
+            },
+
+            endProductionOrder(productionOrder) {
+                this.$store.dispatch("deleteProductionOrder", productionOrder.id)
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось завершить производственную задачу.");
+                    });
             },
 
             showSuccessAlert(text) {

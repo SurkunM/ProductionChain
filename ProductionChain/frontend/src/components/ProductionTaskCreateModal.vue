@@ -16,7 +16,7 @@
                         <span class="text-h5"> {{ task.productName }} </span>
                     </div>
 
-                    <v-text-field v-model.trim="task.count"
+                    <v-text-field v-model.trim="task.productsCount"
                                   label="Количество"
                                   :error-messages="errors.count"
                                   autocomplete="off"
@@ -49,7 +49,7 @@
                 task: {
                     id: 0,
                     productName: "",
-                    count: "",
+                    productsCount: "",
                     productId: 0,
                     productionOrderId: 0,
                     employeeId: 0,
@@ -75,7 +75,7 @@
                 this.resetErrors();
                 let isValid = true;
 
-                if (task.count.length === 0) {
+                if (task.productsCount.length === 0) {
                     this.errors.count = "Заполните поле count";
                     isValid = false;
                 }
@@ -84,7 +84,7 @@
             },
 
             checkProductCountFieldComplete() {
-                if (this.task.count.length > 0) {
+                if (this.task.productsCount.length > 0) {
                     this.errors.count = "";
                 }
             },
@@ -111,7 +111,7 @@
 
             employeeProps(employee) {
                 return {
-                    title: `${employee.lastName} ${employee.firstName || ""}.${employee.middlName || " "}`,
+                    title: `${employee.lastName} ${employee.firstName || ""} ${employee.middleName || " "}`,
                     subtitle: employee.status,
                 }
             },

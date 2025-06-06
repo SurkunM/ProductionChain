@@ -50,7 +50,7 @@
                 term: "",
                 currentPage: 1,
 
-                sortByColumn: "lastName",
+                sortByColumn: "",
                 sortDesc: false,
 
                 headers: [
