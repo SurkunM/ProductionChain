@@ -53,8 +53,8 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
                 ProductId = o.ProductId,
                 ProductName = o.Product.Name,
                 ProductModel = o.Product.Model,
-                ProductsCount = o.OrderedProductsCount,
-                AvailableCount = o.AvailableProductsCount,
+                OrderedProductsCount = o.OrderedProductsCount,
+                AvailableProductsCount = o.AvailableProductsCount,
                 Status = o.StageType.ToString(),
                 CreateAt = o.CreatedAt
             })

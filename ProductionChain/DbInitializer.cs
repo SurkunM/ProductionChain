@@ -1,4 +1,5 @@
-﻿using ProductionChain.DataAccess;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductionChain.DataAccess;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
@@ -16,7 +17,7 @@ public class DbInitializer
 
     public void Initialize()
     {
-        _dbContext.Database.EnsureCreated();
+        _dbContext.Database.Migrate();
 
         CreateData();
 

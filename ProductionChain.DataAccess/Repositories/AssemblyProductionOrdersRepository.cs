@@ -76,7 +76,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
     {
         var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
 
-        if (productionOrder is null || productionOrder.TotalProductsCount <= productionOrder.CompletedProductsCount)
+        if (productionOrder is null || productionOrder.InProgressProductsCount >= productionOrder.TotalProductsCount)
         {
             return false;
         }

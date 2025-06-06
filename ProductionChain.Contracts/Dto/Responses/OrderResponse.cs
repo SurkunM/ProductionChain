@@ -12,9 +12,9 @@ public class OrderResponse
 
     public required string ProductModel { get; set; }
 
-    public int ProductsCount { get; set; }
+    public int OrderedProductsCount { get; set; }
 
-    public int AvailableCount { get; set; }
+    public int AvailableProductsCount { get; set; }
 
     public required string Status { get; set; }
 
