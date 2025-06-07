@@ -8,32 +8,83 @@
                            height="4">
         </v-progress-linear>
 
-        <v-alert type="success" variant="outlined" v-show="isShowSuccessAlert">
-            <template v-slot:text>
-                <span v-text="alertText"></span>
-            </template>
-        </v-alert>
-        <v-alert type="error" variant="outlined" v-show="isShowErrorAlert">
-            <template v-slot:text>
-                <span v-text="alertText"></span>
-            </template>
-        </v-alert>
+        <v-snackbar v-model="isShowSuccessAlert"
+                    :timeout="2000"
+                    color="success">
+            {{alertText}}
+        </v-snackbar>
+        <v-snackbar v-model="isShowErrorAlert"
+                    :timeout="2000"
+                    color="error">
+            {{alertText}}
+        </v-snackbar>
 
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
+                          autocomplete="off"
                           prepend-inner-icon="mdi-magnify"
                           variant="outlined"
                           hide-details
-                          single-line></v-text-field>
+                          single-line
+                          @keyup.enter="search">
+                <template v-slot:append-inner>
+                    <v-btn icon
+                           @click="search"
+                           color="primary"
+                           size="small">
+                        <v-icon>mdi-magnify</v-icon>
+                    </v-btn>
+                    <v-icon @click="cancelSearch"
+                            style="cursor: pointer;"
+                            size="x-large"
+                            class="ms-1 me-2">
+                        mdi-close-circle
+                    </v-icon>
+                </template>
+            </v-text-field>
         </template>
 
         <v-data-table :headers="headers"
                       :items="employees"
-                      :search="term"
                       hide-default-footer
                       :items-per-page="itemsPerPage"
                       no-data-text="Список пуст">
+
+            <template v-slot:[`header.lastName`]="{ column }">
+                <button @click="sortBy(column)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.firstName`]="{ column }">
+                <button @click="sortBy(column)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.middleName`]="{ column }">
+                <button @click="sortBy(column)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.position`]="{ column }">
+                <button @click="sortBy(column)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.status`]="{ column }">
+                <button @click="sortBy(column)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
 
             <template v-slot:[`item.status`]="{ value }">
                 <v-chip :border="`${getColor(value)} thin opacity-25`"
@@ -41,6 +92,7 @@
                         :text="value"
                         size="small"></v-chip>
             </template>
+
         </v-data-table>
 
         <v-pagination v-model="currentPage"
@@ -57,9 +109,10 @@
         data() {
             return {
                 term: "",
+                isSearchMode: false,
                 currentPage: 1,
 
-                sortByColumn: "",
+                sortByColumn: "lastName",
                 sortDesc: false,
 
                 headers: [
@@ -78,6 +131,8 @@
         },
 
         created() {
+            this.$store.commit("setSearchParameters", this.term);
+
             this.$store.dispatch("loadEmployees")
                 .catch(() => {
                     this.showErrorAlert("Ошибка! Не удалось загрузить список сотрудников.");
@@ -103,6 +158,56 @@
         },
 
         methods: {
+            search() {
+                if (this.term.length === 0) {
+                    return;
+                }
+
+                this.$store.commit("setSearchParameters", this.term);
+
+                this.isSearchMode = true;
+
+                this.$store.dispatch("loadEmployees")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список сотрудников.");
+                    });
+            },
+
+            cancelSearch() {
+                if (!this.isSearchMode) {
+                    return;
+                }
+
+                this.term = "";
+                this.$store.commit("setSearchParameters", this.term);
+
+                this.isSearchMode = false;
+
+                this.$store.dispatch("loadEmployees")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список сотрудников.");
+                    });
+            },
+
+            sortBy(column) {
+                if (this.sortByColumn === column.value) {
+                    this.sortDesc = !this.sortDesc;
+                } else {
+                    this.sortDesc = false;
+                    this.sortByColumn = column.value;
+                }
+
+                this.$store.commit("setSortingParameters", {
+                    sortBy: this.sortByColumn,
+                    isDesc: this.sortDesc
+                });
+
+                this.$store.dispatch("loadEmployees")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список сотрудников.");
+                    });
+            },
+
             getColor(status) {
                 if (status === "OnLeave") {
                     return "error";
@@ -118,27 +223,22 @@
             },
 
             switchPage(nextPage) {
-                this.$store.dispatch("navigateToPage", nextPage);
+                this.$store.commit("setPageNumber", nextPage);
+
+                this.$store.dispatch("loadEmployees")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список сотрудников.");
+                    });
             },
 
             showSuccessAlert(text) {
                 this.alertText = text;
                 this.isShowSuccessAlert = true;
-
-                setTimeout(() => {
-                    this.alertText = "";
-                    this.isShowSuccessAlert = false;
-                }, 2000);
             },
 
             showErrorAlert(text) {
                 this.alertText = text;
                 this.isShowErrorAlert = true;
-
-                setTimeout(() => {
-                    this.alertText = "";
-                    this.isShowErrorAlert = false;
-                }, 2000);
             }
         }
     }

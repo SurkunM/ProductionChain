@@ -51,28 +51,35 @@
                       no-data-text="Список пуст">
 
             <template v-slot:[`header.customer`]="{ column }">
-                <button @click="sortBy(column)">{{column.title}}</button>
+                <button @click="sortBy(`customer`)">{{column.title}}</button>
                 <v-icon v-if="sortByColumn === column.value">
                     {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
                 </v-icon>
             </template>
 
             <template v-slot:[`header.productName`]="{ column }">
-                <button @click="sortBy(column)">{{column.title}}</button>
+                <button @click="sortBy(`product.Name`)">{{column.title}}</button>
                 <v-icon v-if="sortByColumn === column.value">
                     {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
                 </v-icon>
             </template>
 
             <template v-slot:[`header.orderedProductsCount`]="{ column }">
-                <button @click="sortBy(column)">{{column.title}}</button>
+                <button @click="sortBy(`orderedProductsCount`)">{{column.title}}</button>
                 <v-icon v-if="sortByColumn === column.value">
                     {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
                 </v-icon>
             </template>
 
             <template v-slot:[`header.availableProductsCount`]="{ column }">
-                <button @click="sortBy(column)">{{column.title}}</button>
+                <button @click="sortBy(`availableProductsCount`)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.status`]="{ column }">
+                <button @click="sortBy(column.status)">{{column.title}}</button>
                 <v-icon v-if="sortByColumn === column.value">
                     {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
                 </v-icon>
@@ -111,7 +118,7 @@
 
                 currentPage: 1,
 
-                sortByColumn: "",
+                sortByColumn: "customer",
                 sortDesc: false,
 
                 headers: [
@@ -131,6 +138,8 @@
         },
 
         created() {
+            this.$store.commit("setSearchParameters", this.term);
+
             this.$store.dispatch("loadOrders")
                 .catch(() => {
                     this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
@@ -204,22 +213,27 @@
                     });
             },
 
-            switchPage(nextPage) {
-                this.$store.dispatch("navigateToPage", nextPage);
-            },
-
             sortBy(column) {
-                if (this.sortByColumn === column.value) {
+                if (this.sortByColumn === column) {
                     this.sortDesc = !this.sortDesc;
                 } else {
                     this.sortDesc = false;
-                    this.sortByColumn = column.value;
+                    this.sortByColumn = column;
                 }
 
                 this.$store.commit("setSortingParameters", {
                     sortBy: this.sortByColumn,
                     isDesc: this.sortDesc
                 });
+
+                this.$store.dispatch("loadOrders")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
+                    });
+            },
+
+            switchPage(nextPage) {
+                this.$store.commit("setPageNumber", nextPage);
 
                 this.$store.dispatch("loadOrders")
                     .catch(() => {

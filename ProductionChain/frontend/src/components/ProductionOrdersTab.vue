@@ -7,32 +7,83 @@
                            height="4">
         </v-progress-linear>
 
-        <v-alert type="success" variant="outlined" v-show="isShowSuccessAlert">
-            <template v-slot:text>
-                <span v-text="alertText"></span>
-            </template>
-        </v-alert>
-        <v-alert type="error" variant="outlined" v-show="isShowErrorAlert">
-            <template v-slot:text>
-                <span v-text="alertText"></span>
-            </template>
-        </v-alert>
+        <v-snackbar v-model="isShowSuccessAlert"
+                    :timeout="2000"
+                    color="success">
+            {{alertText}}
+        </v-snackbar>
+        <v-snackbar v-model="isShowErrorAlert"
+                    :timeout="2000"
+                    color="error">
+            {{alertText}}
+        </v-snackbar>
 
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
+                          autocomplete="off"
                           prepend-inner-icon="mdi-magnify"
                           variant="outlined"
                           hide-details
-                          single-line></v-text-field>
+                          single-line
+                          @keyup.enter="search">
+                <template v-slot:append-inner>
+                    <v-btn icon
+                           @click="search"
+                           color="primary"
+                           size="small">
+                        <v-icon>mdi-magnify</v-icon>
+                    </v-btn>
+                    <v-icon @click="cancelSearch"
+                            style="cursor: pointer;"
+                            size="x-large"
+                            class="ms-1 me-2">
+                        mdi-close-circle
+                    </v-icon>
+                </template>
+            </v-text-field>
         </template>
 
         <v-data-table :headers="headers"
                       :items="productionOrders"
-                      :search="term"
                       hide-default-footer
                       :items-per-page="itemsPerPage"
                       no-data-text="Список пуст">
+
+            <template v-slot:[`header.name`]="{ column }">
+                <button @click="sortBy(`product.Name`)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.inProgressCount`]="{ column }">
+                <button @click="sortBy(`inProgressProductsCount`)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.completedCount`]="{ column }">
+                <button @click="sortBy(`completedProductsCount`)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.totalCount`]="{ column }">
+                <button @click="sortBy(`totalProductsCount`)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
+
+            <template v-slot:[`header.status`]="{ column }">
+                <button @click="sortBy(column.status)">{{column.title}}</button>
+                <v-icon v-if="sortByColumn === column.value">
+                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                </v-icon>
+            </template>
 
             <template v-slot:[`item.status`]="{ value }">
                 <v-chip :border="`${getColor(value)} thin opacity-25`"
@@ -73,9 +124,10 @@
         data() {
             return {
                 term: "",
+                isSearchMode: false,
                 currentPage: 1,
 
-                sortByColumn: "",
+                sortByColumn: "product.Name",
                 sortDesc: false,
 
                 headers: [
@@ -97,6 +149,8 @@
         },
 
         created() {
+            this.$store.commit("setSearchParameters", this.term);
+
             this.$store.dispatch("loadProductionOrders")
                 .catch(() => {
                     this.showErrorAlert("Ошибка! Не удалось загрузить список производственных заказов.");
@@ -122,6 +176,87 @@
         },
 
         methods: {
+            createTask(newTask) {
+                this.$store.dispatch("createProductionTask", newTask)
+                    .then(() => {
+                        this.$refs.productionTaskCreateModal.hide();
+                        this.showSuccessAlert("Задача успешно создана.");
+                    })
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось создать задачу.");
+                    });
+            },
+
+            showTaskCreateModal(productionOrder) {
+                this.$refs.productionTaskCreateModal.show(productionOrder);
+            },
+
+            endProductionOrder(productionOrder) {
+                this.$store.dispatch("deleteProductionOrder", productionOrder.id)
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось завершить производственную задачу. Возможно остались не завершенные задачи.");
+                    });
+            },
+
+            search() {
+                if (this.term.length === 0) {
+                    return;
+                }
+
+                this.$store.commit("setSearchParameters", this.term);
+
+                this.isSearchMode = true;
+
+                this.$store.dispatch("loadProductionOrders")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список производственных заказов.");
+                    });
+            },
+
+            cancelSearch() {
+                if (!this.isSearchMode) {
+                    return;
+                }
+
+                this.term = "";
+                this.$store.commit("setSearchParameters", this.term);
+
+                this.isSearchMode = false;
+
+                this.$store.dispatch("loadProductionOrders")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список производственных заказов.");
+                    });
+            },
+
+            sortBy(column) {
+                if (this.sortByColumn === column) {
+                    this.sortDesc = !this.sortDesc;
+                } else {
+                    this.sortDesc = false;
+                    this.sortByColumn = column;
+                }
+
+                this.$store.commit("setSortingParameters", {
+                    sortBy: this.sortByColumn,
+                    isDesc: this.sortDesc
+                });
+
+                this.$store.dispatch("loadProductionOrders")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список производственных заказов.");
+                    });
+            },
+
+            switchPage(nextPage) {
+                this.$store.commit("setPageNumber", nextPage);
+
+                this.$store.dispatch("loadProductionOrders")
+                    .catch(() => {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список производственных заказов.");
+                    });
+            },
+
             getColor(state) {
                 if (state === "Pending") {
                     return "error";
@@ -134,47 +269,14 @@
                 }
             },
 
-            createTask(newTask) {
-                this.$store.dispatch("createProductionTask", newTask)
-                    .then(() => this.$refs.productionTaskCreateModal.hide())
-                    .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось создать задачу.");
-                    });
-            },
-
-            switchPage(nextPage) {
-                this.$store.dispatch("navigateToPage", nextPage);
-            },
-
-            showTaskCreateModal(productionOrder) {
-                this.$refs.productionTaskCreateModal.show(productionOrder);
-            },
-
-            endProductionOrder(productionOrder) {
-                this.$store.dispatch("deleteProductionOrder", productionOrder.id)
-                    .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось завершить производственную задачу.");
-                    });
-            },
-
             showSuccessAlert(text) {
                 this.alertText = text;
                 this.isShowSuccessAlert = true;
-
-                setTimeout(() => {
-                    this.alertText = "";
-                    this.isShowSuccessAlert = false;
-                }, 2000);
             },
 
             showErrorAlert(text) {
                 this.alertText = text;
                 this.isShowErrorAlert = true;
-
-                setTimeout(() => {
-                    this.alertText = "";
-                    this.isShowErrorAlert = false;
-                }, 2000);
             }
         }
     }
