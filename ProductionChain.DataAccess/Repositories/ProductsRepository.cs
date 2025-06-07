@@ -62,7 +62,7 @@ public class ProductsRepository : BaseEfRepository<Product>, IProductsRepository
         return new ProductsPage
         {
             Products = productsDtoSorted,
-            Total = totalCount
+            TotalCount = totalCount
         };
     }
 

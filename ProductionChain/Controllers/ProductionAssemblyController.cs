@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.QueryParameters;
 
@@ -21,10 +20,6 @@ public class ProductionAssemblyController : ControllerBase
     private readonly CreateProductionOrderHandler _createProductionOrderHandler;
     private readonly CreateProductionTaskHandler _createProductionTaskHandler;
 
-    private readonly UpdateProductionOrderHandler _updateProductionOrderHandler;
-    private readonly UpdateAssemblyWarehouseItemHandler _updateAssemblyWarehouseItemHandler;
-    private readonly UpdateComponentsWarehouseItemsHandler _updateComponentsWarehouseItemsHandler;
-
     private readonly DeleteProductionOrderHandler _deleteProductionOrderHandler;
     private readonly DeleteProductionTaskHandler _deleteProductionTaskHandler;
 
@@ -36,9 +31,6 @@ public class ProductionAssemblyController : ControllerBase
         GetComponentsWarehouseItemsHandler getComponentsWarehouseItemsHandler,
 
         CreateProductionOrderHandler createProductionOrderHandler, CreateProductionTaskHandler createProductionTaskHandler,
-
-        UpdateProductionOrderHandler updateProductionOrderHandler, UpdateAssemblyWarehouseItemHandler updateAssemblyWarehouseItemHandler,
-        UpdateComponentsWarehouseItemsHandler updateComponentsWarehouseItemsHandler,
 
         DeleteProductionOrderHandler deleteProductionOrderHandler, DeleteProductionTaskHandler deleteProductionTaskHandler,
 
@@ -54,10 +46,6 @@ public class ProductionAssemblyController : ControllerBase
         _getProductionTasksHandler = getProductionTasksHandler ?? throw new ArgumentNullException(nameof(getProductionTasksHandler));
         _getAssemblyWarehouseItemsHandler = getAssemblyWarehouseItemsHandler ?? throw new ArgumentNullException(nameof(getAssemblyWarehouseItemsHandler));
         _getComponentsWarehouseItemsHandler = getComponentsWarehouseItemsHandler ?? throw new ArgumentNullException(nameof(getComponentsWarehouseItemsHandler));
-
-        _updateProductionOrderHandler = updateProductionOrderHandler ?? throw new ArgumentNullException(nameof(updateProductionOrderHandler));
-        _updateAssemblyWarehouseItemHandler = updateAssemblyWarehouseItemHandler ?? throw new ArgumentNullException(nameof(updateAssemblyWarehouseItemHandler));
-        _updateComponentsWarehouseItemsHandler = updateComponentsWarehouseItemsHandler ?? throw new ArgumentNullException(nameof(updateComponentsWarehouseItemsHandler));
 
         _deleteProductionOrderHandler = deleteProductionOrderHandler ?? throw new ArgumentNullException(nameof(deleteProductionOrderHandler));
         _deleteProductionTaskHandler = deleteProductionTaskHandler ?? throw new ArgumentNullException(nameof(deleteProductionTaskHandler));
@@ -254,99 +242,6 @@ public class ProductionAssemblyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка! Задача не создана.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateProductionOrder(ProductionOrdersRequest productionOrdersRequest)
-    {
-        if (productionOrdersRequest is null)
-        {
-            _logger.LogError("Ошибка! Объект productionOrdersRequest пуст.");
-
-            return BadRequest("Передан пустой объект параметров.");
-        }
-
-        try
-        {
-            var isUpdated = await _updateProductionOrderHandler.HandleAsync(productionOrdersRequest);
-
-            if (!isUpdated)
-            {
-                _logger.LogError("Ошибка! Не удалось внести изменения в производственный заказ.");
-
-                return BadRequest("Переданы не корректные данные для изменения производственного заказа.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Производственный заказ не изменен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateAssemblyWarehouseItem(AssemblyWarehouseRequest assemblyWarehouseRequest)
-    {
-        if (assemblyWarehouseRequest is null)
-        {
-            _logger.LogError("Ошибка! Объект assemblyWarehouseRequest пуст.");
-
-            return BadRequest("Передан пустой объект параметров.");
-        }
-
-        try
-        {
-            var isUpdated = await _updateAssemblyWarehouseItemHandler.HandleAsync(assemblyWarehouseRequest);
-
-            if (!isUpdated)
-            {
-                _logger.LogError("Ошибка! Не удалось внести изменения в склад сборки.");
-
-                return BadRequest("Переданы не корректные данные для изменения позиции в складе сборки.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Количество продукции в складе сборки не изменено.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateComponentsWarehouseItem(ComponentsWarehouseRequest componentsWarehouseRequest)
-    {
-        if (componentsWarehouseRequest is null)
-        {
-            _logger.LogError("Ошибка! Объект componentsWarehouseRequest пуст.");
-
-            return BadRequest("Передан пустой объект параметров.");
-        }
-
-        try
-        {
-            var isUpdated = await _updateComponentsWarehouseItemsHandler.HandleAsync(componentsWarehouseRequest);
-
-            if (!isUpdated)
-            {
-                _logger.LogError("Ошибка! Не удалось внести изменения в склад компонентов.");
-
-                return BadRequest("Переданы не корректные данные для изменения позиции в складе компонентов.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Количество продукции в складе компонентов не изменено.");
 
             return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
         }

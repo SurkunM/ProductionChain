@@ -6,5 +6,5 @@ public class ProductionHistoriesPage
 {
     public List<ProductionHistoryResponse> Histories { get; set; } = new List<ProductionHistoryResponse>();
 
-    public int Total { get; set; }
+    public int TotalCount { get; set; }
 }

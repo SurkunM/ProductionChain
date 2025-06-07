@@ -63,7 +63,7 @@ public class AssemblyProductionWarehouseRepository : BaseEfRepository<AssemblyPr
         return new AssemblyWarehousePage
         {
             AssemblyWarehouseItems = assemblyWarehouseSortedResponse,
-            Total = totalCount
+            TotalCount = totalCount
         };
     }
 

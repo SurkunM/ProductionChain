@@ -79,7 +79,7 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
         return new ProductionTasksPage
         {
             Tasks = tasksSortedResponse,
-            Total = totalCount
+            TotalCount = totalCount
         };
     }
 

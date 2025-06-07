@@ -64,7 +64,7 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
         return new ComponentsWarehousePage
         {
             ComponentsWarehouseItems = componentsWarehouseSortedResponse,
-            Total = totalCount
+            TotalCount = totalCount
         };
     }
 

@@ -67,7 +67,7 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
         return new EmployeesPage
         {
             Employees = employeesSortedResponse,
-            Total = totalCount
+            TotalCount = totalCount
         };
     }
 

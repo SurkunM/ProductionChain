@@ -6,5 +6,5 @@ public class EmployeesPage
 {
     public List<EmployeeResponse> Employees { get; set; } = new List<EmployeeResponse>();
 
-    public int Total { get; set; }
+    public int TotalCount { get; set; }
 }

@@ -6,5 +6,5 @@ public class ProductionOrdersPage
 {
     public List<ProductionOrderResponse> ProductionOrders { get; set; } = new List<ProductionOrderResponse>();
 
-    public int Total { get; set; }
+    public int TotalCount { get; set; }
 }

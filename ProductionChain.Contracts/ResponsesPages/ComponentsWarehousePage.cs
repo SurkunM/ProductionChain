@@ -6,5 +6,5 @@ public class ComponentsWarehousePage
 {
     public List<ComponentsWarehouseResponse> ComponentsWarehouseItems { get; set; } = new List<ComponentsWarehouseResponse>();
 
-    public int Total { get; set; }
+    public int TotalCount { get; set; }
 }

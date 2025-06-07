@@ -68,7 +68,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
         return new ProductionOrdersPage
         {
             ProductionOrders = productionOrdersDtoSorted,
-            Total = totalCount
+            TotalCount = totalCount
         };
     }
 

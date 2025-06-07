@@ -70,7 +70,7 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
         return new OrdersPage
         {
             Orders = ordersSortedResponse,
-            Total = totalCount
+            TotalCount = totalCount
         };
     }
 

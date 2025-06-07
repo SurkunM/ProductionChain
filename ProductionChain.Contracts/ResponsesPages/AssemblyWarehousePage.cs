@@ -6,5 +6,5 @@ public class AssemblyWarehousePage
 {
     public List<AssemblyWarehouseItemResponse> AssemblyWarehouseItems { get; set; } = new List<AssemblyWarehouseItemResponse>();
 
-    public int Total { get; set; }
+    public int TotalCount { get; set; }
 }

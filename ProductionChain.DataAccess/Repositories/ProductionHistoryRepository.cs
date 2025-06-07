@@ -65,7 +65,7 @@ public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, 
         return new ProductionHistoriesPage
         {
             Histories = historiesSortedResponse,
-            Total = totalCount
+            TotalCount = totalCount
         };
     }
 
