@@ -3,103 +3,97 @@ using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.DataAccess.UnitOfWork;
 
-namespace ProductionChain
+namespace ProductionChain;
+
+public class ProductionChainProgram
 {
-    public class ProductionChainProgram
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)//TODO: 2. В controller проверить избыточность [FromBody]. Удалить UpdateHandler складов. ФронтЕнд
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddDbContext<ProductionChainDbContext>(options =>
         {
-            var builder = WebApplication.CreateBuilder(args);//TODO: 1. Проверить доб. ли в склад ГП после завершения Prod.Order
+            options
+                .UseSqlServer(builder.Configuration.GetConnectionString("ProductionChainConnection"))
+                .UseLazyLoadingProxies();
+        }, ServiceLifetime.Scoped, ServiceLifetime.Transient);
 
-            builder.Services.AddDbContext<ProductionChainDbContext>(options =>
+        builder.Services.AddControllersWithViews();
+
+        builder.Services.AddScoped<DbInitializer>();
+
+        builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<ProductionChainDbContext>());
+        builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+        builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
+        builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
+        builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
+
+        builder.Services.AddTransient<IProductionHistoryRepository, ProductionHistoryRepository>();
+        builder.Services.AddTransient<IAssemblyProductionOrdersRepository, AssemblyProductionOrdersRepository>();
+        builder.Services.AddTransient<IAssemblyProductionTasksRepository, AssemblyProductionTasksRepository>();
+        builder.Services.AddTransient<IAssemblyProductionWarehouseRepository, AssemblyProductionWarehouseRepository>();
+        builder.Services.AddTransient<IComponentsWarehouseRepository, ComponentsWarehouseRepository>();
+
+        builder.Services.AddTransient<CreateProductionOrderHandler>();
+        builder.Services.AddTransient<CreateProductionTaskHandler>();
+
+        builder.Services.AddTransient<GetEmployeesHandler>();
+        builder.Services.AddTransient<GetOrdersHandler>();
+        builder.Services.AddTransient<GetProductsHandler>();
+
+        builder.Services.AddTransient<GetProductionHistoriesHandler>();
+        builder.Services.AddTransient<GetProductionOrdersHandler>();
+        builder.Services.AddTransient<GetProductionTasksHandler>();
+        builder.Services.AddTransient<GetAssemblyWarehouseItemsHandler>();
+        builder.Services.AddTransient<GetComponentsWarehouseItemsHandler>();
+
+        builder.Services.AddTransient<DeleteProductionOrderHandler>();
+        builder.Services.AddTransient<DeleteProductionTaskHandler>();
+
+        //jobs ...
+
+        var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            try
             {
-                options
-                    .UseSqlServer(builder.Configuration.GetConnectionString("ProductionChainConnection"))
-                    .UseLazyLoadingProxies();
-            }, ServiceLifetime.Scoped, ServiceLifetime.Transient);
-
-            builder.Services.AddControllersWithViews();
-
-            builder.Services.AddScoped<DbInitializer>();
-
-            builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<ProductionChainDbContext>());
-            builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-
-            builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
-            builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
-            builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
-
-            builder.Services.AddTransient<IProductionHistoryRepository, ProductionHistoryRepository>();
-            builder.Services.AddTransient<IAssemblyProductionOrdersRepository, AssemblyProductionOrdersRepository>();
-            builder.Services.AddTransient<IAssemblyProductionTasksRepository, AssemblyProductionTasksRepository>();
-            builder.Services.AddTransient<IAssemblyProductionWarehouseRepository, AssemblyProductionWarehouseRepository>();
-            builder.Services.AddTransient<IComponentsWarehouseRepository, ComponentsWarehouseRepository>();
-
-            builder.Services.AddTransient<CreateProductionOrderHandler>();
-            builder.Services.AddTransient<CreateProductionTaskHandler>();
-
-            builder.Services.AddTransient<GetEmployeesHandler>();
-            builder.Services.AddTransient<GetOrdersHandler>();
-            builder.Services.AddTransient<GetProductsHandler>();
-
-            builder.Services.AddTransient<GetProductionHistoriesHandler>();
-            builder.Services.AddTransient<GetProductionOrdersHandler>();
-            builder.Services.AddTransient<GetProductionTasksHandler>();
-            builder.Services.AddTransient<GetAssemblyWarehouseItemsHandler>();
-            builder.Services.AddTransient<GetComponentsWarehouseItemsHandler>();
-
-            builder.Services.AddTransient<UpdateProductionOrderHandler>();
-            builder.Services.AddTransient<UpdateAssemblyWarehouseItemHandler>();
-            builder.Services.AddTransient<UpdateComponentsWarehouseItemsHandler>();
-
-            builder.Services.AddTransient<DeleteProductionOrderHandler>();
-            builder.Services.AddTransient<DeleteProductionTaskHandler>();
-
-            //jobs ...
-
-            var app = builder.Build();
-
-            using (var scope = app.Services.CreateScope())
-            {
-                try
-                {
-                    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-                    //dbInitializer.Initialize();
-                }
-                catch (Exception ex)
-                {
-                    var logger = app.Services.GetRequiredService<ILogger<ProductionChainProgram>>();
-                    logger.LogError(ex, "При создании базы данных произошла ошибка.");
-
-                    throw;
-                }
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+                dbInitializer.Initialize();
             }
-
-            if (!app.Environment.IsDevelopment())
+            catch (Exception ex)
             {
-                app.UseHsts();
+                var logger = app.Services.GetRequiredService<ILogger<ProductionChainProgram>>();
+                logger.LogError(ex, "При создании базы данных произошла ошибка.");
+
+                throw;
             }
-
-            app.UseHttpsRedirection();
-
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-            app.MapFallbackToFile("index.html");
-
-            app.Run();
         }
+
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+        app.MapFallbackToFile("index.html");
+
+        app.Run();
     }
 }

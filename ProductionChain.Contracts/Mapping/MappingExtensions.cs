@@ -37,7 +37,7 @@ public static class MappingExtensions
 
     public static AssemblyProductionOrders ToProductionOrderModel(this ProductionOrdersRequest productionOrdersRequest, Order order, Product product)
     {
-        var requiredProductCount = productionOrdersRequest.ProductsCount - productionOrdersRequest.AvailableCount;
+        var requiredProductCount = order.OrderedProductsCount - order.AvailableProductsCount;
         var status = ProgressStatusType.InProgress;
 
         if (requiredProductCount <= 0)

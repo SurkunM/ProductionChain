@@ -47,7 +47,7 @@ public class CreateProductionOrderHandler
                 return false;
             }
 
-            await productionOrdersRepository.CreateAsync(productionOrdersRequest.ToProductionOrderModel(order, product));
+            await productionOrdersRepository.CreateAsync(productionOrdersRequest.ToProductionOrderModel(order, product));//TODO: Передел. order.ToModel()
 
             ordersRepository.UpdateStatusByOrderId(productionOrdersRequest.OrderId, ProgressStatusType.InProgress);
 

@@ -19,12 +19,22 @@ public class DbInitializer
     {
         _dbContext.Database.Migrate();
 
-        CreateData();
+        if (!_dbContext.Employees.Any() && !_dbContext.Products.Any() && !_dbContext.Orders.Any())
+        {
+            CreateBaseData();
 
-        _dbContext.SaveChanges();
+            _dbContext.SaveChanges();
+        }
+
+        if (!_dbContext.AssemblyProductionWarehouse.Any() && !_dbContext.ComponentsWarehouse.Any())
+        {
+            CreateWarehousesData();
+
+            _dbContext.SaveChanges();
+        }
     }
 
-    private void CreateData()
+    private void CreateBaseData()
     {
         var employee1 = CreateEmployee("Васильев", "Василий", "Васильевич", EmployeePositionType.AssemblyREA, EmployeeStatusType.Available);
         var employee2 = CreateEmployee("Александров", "Александр", "Александрович", EmployeePositionType.AssemblyREA, EmployeeStatusType.Available);
@@ -49,6 +59,14 @@ public class DbInitializer
         var order4 = CreateOrder("OAO Восток", product4, 100);
 
         _dbContext.Orders.AddRange(order1, order2, order3, order4);
+    }
+
+    private void CreateWarehousesData()
+    {
+        var product1 = _dbContext.Products.FirstOrDefault(p => p.Id == 1) ?? throw new ArgumentNullException("Не найден продукт с id=1");
+        var product2 = _dbContext.Products.FirstOrDefault(p => p.Id == 2) ?? throw new ArgumentNullException("Не найден продукт с id=2");
+        var product3 = _dbContext.Products.FirstOrDefault(p => p.Id == 3) ?? throw new ArgumentNullException("Не найден продукт с id=3");
+        var product4 = _dbContext.Products.FirstOrDefault(p => p.Id == 4) ?? throw new ArgumentNullException("Не найден продукт с id=4");
 
         var assemblyWarehouseItem1 = CreateAssemblyWarehouseItem(product1);
         var assemblyWarehouseItem2 = CreateAssemblyWarehouseItem(product2);
