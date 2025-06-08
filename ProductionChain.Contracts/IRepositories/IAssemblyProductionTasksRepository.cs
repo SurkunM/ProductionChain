@@ -8,5 +8,5 @@ public interface IAssemblyProductionTasksRepository : IRepository<AssemblyProduc
 {
     Task<ProductionTasksPage> GetTasksAsync(GetQueryParameters queryParameters);
 
-    void SetTaskEndTimeById(int id);
+    void SetTaskEndTime(int id);
 }

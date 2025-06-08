@@ -35,13 +35,13 @@ public class DeleteProductionTaskHandler
 
             if (!success)
             {
-                _logger.LogError("При изменении счётчиков \"InProgress\" и \"Completed\" произошла ошибка.");
+                _logger.LogError("При изменении значений \"InProgress\" и \"Completed\" в производственном заказе произошла ошибка.");
 
                 return false;
             }
 
-            success = employeesRepository.UpdateEmployeeStatusById(taskRequest.EmployeeId, EmployeeStatusType.Available)
-                    && productionOrdersRepository.UpdateStatusById(taskRequest.ProductionOrderId);
+            success = employeesRepository.UpdateEmployeeStatus(taskRequest.EmployeeId, EmployeeStatusType.Available)
+                    && productionOrdersRepository.UpdateProductionOrderStatus(taskRequest.ProductionOrderId);
 
             if (!success)
             {
@@ -59,7 +59,7 @@ public class DeleteProductionTaskHandler
                 return false;
             }
 
-            tasksRepository.SetTaskEndTimeById(taskRequest.Id);
+            tasksRepository.SetTaskEndTime(taskRequest.Id);
             await historiesRepository.CreateAsync(task.ToHistoryModel());
 
             tasksRepository.Delete(task);

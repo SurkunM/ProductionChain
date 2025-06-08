@@ -63,7 +63,6 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
                 ProductModel = t.Product.Model,
                 ProductsCount = t.ProductsCount,
 
-                Status = t.ProgressStatus.ToString(),
                 StartTime = t.StartTime,
                 EndTime = t.EndTime
             })
@@ -83,7 +82,7 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
         };
     }
 
-    public void SetTaskEndTimeById(int id)
+    public void SetTaskEndTime(int id)
     {
         var task = DbSet.FirstOrDefault(t => t.Id == id);
 

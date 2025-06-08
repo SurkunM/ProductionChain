@@ -7,12 +7,4 @@ public class ProductionOrdersRequest
     public int OrderId { get; set; }
 
     public int ProductId { get; set; }
-
-    public int ProductsCount { get; set; }
-
-    public int AvailableCount { get; set; }
-
-    public int AddProductsCount { get; set; }
-
-    public int SubtractProductsCount { get; set; }
 }

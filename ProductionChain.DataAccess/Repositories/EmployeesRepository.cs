@@ -71,7 +71,7 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
         };
     }
 
-    public bool UpdateEmployeeStatusById(int employeeId, EmployeeStatusType statusType)
+    public bool UpdateEmployeeStatus(int employeeId, EmployeeStatusType statusType)
     {
         var employee = DbSet.FirstOrDefault(e => e.Id == employeeId);
 

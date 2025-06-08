@@ -9,5 +9,5 @@ public interface IEmployeesRepository : IRepository<Employee>
 {
     Task<EmployeesPage> GetEmployeesAsync(GetQueryParameters queryParameters);
 
-    bool UpdateEmployeeStatusById(int employeeId, EmployeeStatusType statusType);
+    bool UpdateEmployeeStatus(int employeeId, EmployeeStatusType statusType);
 }

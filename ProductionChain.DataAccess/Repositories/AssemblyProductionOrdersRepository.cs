@@ -114,7 +114,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
         return true;
     }
 
-    public bool UpdateStatusById(int productionOrderId)
+    public bool UpdateProductionOrderStatus(int productionOrderId)
     {
         var productionOrder = DbSet.FirstOrDefault(po => po.Id == productionOrderId);
 

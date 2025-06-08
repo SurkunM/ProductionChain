@@ -25,10 +25,10 @@ public class CreateProductionOrderHandler
         var productRepository = _unitOfWork.GetRepository<IProductsRepository>();
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
 
-        _unitOfWork.BeginTransaction();
-
         try
         {
+            _unitOfWork.BeginTransaction();
+
             if (!ordersRepository.IsOrderPending(productionOrdersRequest.OrderId))
             {
                 _logger.LogError("Ошибка. Попытка начать задачу которая уже находится в состоянии \"isProgress\" или \"Done\".");
@@ -47,17 +47,17 @@ public class CreateProductionOrderHandler
                 return false;
             }
 
-            await productionOrdersRepository.CreateAsync(productionOrdersRequest.ToProductionOrderModel(order, product));//TODO: Передел. order.ToModel()
+            await productionOrdersRepository.CreateAsync(order.ToProductionOrderModel(product));
 
-            ordersRepository.UpdateStatusByOrderId(productionOrdersRequest.OrderId, ProgressStatusType.InProgress);
+            ordersRepository.UpdateOrderStatus(productionOrdersRequest.OrderId, ProgressStatusType.InProgress);
 
             await _unitOfWork.SaveAsync();
 
             return true;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _logger.LogError(e, "Ошибка. Транзакция отменена");
+            _logger.LogError(ex, "Ошибка. Транзакция отменена");
 
             _unitOfWork.BeginTransaction();
 

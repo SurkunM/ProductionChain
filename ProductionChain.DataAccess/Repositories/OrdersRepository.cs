@@ -81,7 +81,7 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
         return order?.StageType == ProgressStatusType.Pending;
     }
 
-    public void UpdateStatusByOrderId(int orderId, ProgressStatusType statusType)
+    public void UpdateOrderStatus(int orderId, ProgressStatusType statusType)
     {
         var order = DbSet.FirstOrDefault(o => o.Id == orderId);
 

@@ -1,5 +1,4 @@
 ﻿using ProductionChain.Model.BasicEntities;
-using ProductionChain.Model.Enums;
 
 namespace ProductionChain.Model.WorkflowEntities;
 
@@ -20,8 +19,6 @@ public class AssemblyProductionTask
     public int EmployeeId { get; set; }
 
     public virtual required Employee Employee { get; set; }
-
-    public required ProgressStatusType ProgressStatus { get; set; }
 
     public DateTime StartTime { get; set; }
 

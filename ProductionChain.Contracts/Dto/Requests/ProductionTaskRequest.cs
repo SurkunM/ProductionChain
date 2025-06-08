@@ -11,8 +11,4 @@ public class ProductionTaskRequest
     public int ProductId { get; set; }
 
     public int ProductsCount { get; set; }
-
-    public int StatusId { get; set; }
-
-    public DateTime StartTime { get; set; }
 }

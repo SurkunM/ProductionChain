@@ -56,13 +56,13 @@ public class CreateProductionTaskHandler
 
             if (!success)
             {
-                _logger.LogError("Не удалось увеличить значение строки InProgress на {Count} .", taskRequest.ProductsCount);
+                _logger.LogError("Не удалось увеличить значение строки InProgress на {Count} в производственном заказе.", taskRequest.ProductsCount);
 
                 return false;
             }
 
-            success = employeesRepository.UpdateEmployeeStatusById(taskRequest.EmployeeId, EmployeeStatusType.Busy)
-                && productionOrdersRepository.UpdateStatusById(taskRequest.ProductionOrderId);
+            success = employeesRepository.UpdateEmployeeStatus(taskRequest.EmployeeId, EmployeeStatusType.Busy)
+                && productionOrdersRepository.UpdateProductionOrderStatus(taskRequest.ProductionOrderId);
 
             if (!success)
             {
@@ -71,18 +71,17 @@ public class CreateProductionTaskHandler
                 return false;
             }
 
-            await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee,
-                ProgressStatusType.Pending, DateTime.UtcNow));
+            await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee, DateTime.UtcNow));
 
             await _unitOfWork.SaveAsync();
 
             return true;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             _unitOfWork.RollbackTransaction();
 
-            _logger.LogError(e, "Ошибка. Транзакция отменена.");
+            _logger.LogError(ex, "Ошибка. Транзакция отменена.");
 
             return false;
         }

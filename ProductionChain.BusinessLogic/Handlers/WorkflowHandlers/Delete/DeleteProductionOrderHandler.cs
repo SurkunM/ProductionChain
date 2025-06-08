@@ -47,11 +47,11 @@ public class DeleteProductionOrderHandler
 
             if (productionOrdersRepository.IsCompleted(id))
             {
-                ordersRepository.UpdateStatusByOrderId(productionOrder.OrderId, ProgressStatusType.Done);
+                ordersRepository.UpdateOrderStatus(productionOrder.OrderId, ProgressStatusType.Done);
             }
             else
             {
-                ordersRepository.UpdateStatusByOrderId(productionOrder.OrderId, ProgressStatusType.Pending);
+                ordersRepository.UpdateOrderStatus(productionOrder.OrderId, ProgressStatusType.Pending);
             }
 
             var success = assemblyWarehouse.AddWarehouseItems(productionOrder.ProductId, productionOrder.CompletedProductsCount);
