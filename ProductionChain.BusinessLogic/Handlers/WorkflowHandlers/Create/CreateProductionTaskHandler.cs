@@ -40,6 +40,8 @@ public class CreateProductionTaskHandler
                 _logger.LogError("Не удалось найти все сущности по переданным id для создания задачи: {ProductionOrderId}, {ProductId}, {EmployeeId}.",
                     taskRequest.ProductionOrderId, taskRequest.ProductId, taskRequest.EmployeeId);
 
+                _unitOfWork.RollbackTransaction();
+
                 return false;
             }
 
@@ -48,6 +50,8 @@ public class CreateProductionTaskHandler
             if (!success)
             {
                 _logger.LogError("Не найдено нужно количество компонентов count={Count} для продукта id={ProductId}", taskRequest.ProductsCount, taskRequest.ProductId);
+
+                _unitOfWork.RollbackTransaction();
 
                 return false;
             }
@@ -58,6 +62,8 @@ public class CreateProductionTaskHandler
             {
                 _logger.LogError("Не удалось увеличить значение строки InProgress на {Count} в производственном заказе.", taskRequest.ProductsCount);
 
+                _unitOfWork.RollbackTransaction();
+
                 return false;
             }
 
@@ -67,6 +73,8 @@ public class CreateProductionTaskHandler
             if (!success)
             {
                 _logger.LogError("При изменении статуса сотрудника и производственного заказа произошла ошибка.");
+
+                _unitOfWork.RollbackTransaction();
 
                 return false;
             }

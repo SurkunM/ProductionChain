@@ -37,6 +37,8 @@ public class DeleteProductionTaskHandler
             {
                 _logger.LogError("При изменении значений \"InProgress\" и \"Completed\" в производственном заказе произошла ошибка.");
 
+                _unitOfWork.RollbackTransaction();
+
                 return false;
             }
 
@@ -47,6 +49,8 @@ public class DeleteProductionTaskHandler
             {
                 _logger.LogError("При изменении статуса сотрудника и производственного заказа произошла ошибка.");
 
+                _unitOfWork.RollbackTransaction();
+
                 return false;
             }
 
@@ -55,6 +59,8 @@ public class DeleteProductionTaskHandler
             if (task is null)
             {
                 _logger.LogError("Не удалось найди задачу по переданному id={id}", taskRequest.Id);
+
+                _unitOfWork.RollbackTransaction();
 
                 return false;
             }
@@ -74,7 +80,7 @@ public class DeleteProductionTaskHandler
 
             _logger.LogError(ex, "Ошибка! При удалении задачи из БД произошла ошибка. Транзакция отменена");
 
-            throw;
+            return false;
         }
     }
 }

@@ -21,7 +21,7 @@ public class DeleteProductionOrderHandler
     {
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
         var ordersRepository = _unitOfWork.GetRepository<IOrdersRepository>();
-        var assemblyWarehouse = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
+        var assemblyWarehouseRepository = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
 
         try
         {
@@ -33,12 +33,16 @@ public class DeleteProductionOrderHandler
             {
                 _logger.LogError("Не найден производственный заказ по id={id}", id);
 
+                _unitOfWork.RollbackTransaction();
+
                 return false;
             }
 
             if (productionOrdersRepository.HasInProgressTasks(id))
             {
                 _logger.LogError("Ошибка! Попытка завершить производственную задачу в которой есть незавершенные задачи.");
+
+                _unitOfWork.RollbackTransaction();
 
                 return false;
             }
@@ -54,11 +58,13 @@ public class DeleteProductionOrderHandler
                 ordersRepository.UpdateOrderStatus(productionOrder.OrderId, ProgressStatusType.Pending);
             }
 
-            var success = assemblyWarehouse.AddWarehouseItems(productionOrder.ProductId, productionOrder.CompletedProductsCount);
+            var success = assemblyWarehouseRepository.AddWarehouseItems(productionOrder.ProductId, productionOrder.CompletedProductsCount);
 
             if (!success)
             {
                 _logger.LogError("При добавлении собранной продукции в склад ГП произошла ошибка.");
+
+                _unitOfWork.RollbackTransaction();
 
                 return false;
             }
@@ -75,7 +81,7 @@ public class DeleteProductionOrderHandler
 
             _logger.LogError(ex, "Ошибка! При удалении производственного заказа из БД произошла ошибка. Транзакция отменена");
 
-            throw;
+            return false;
         }
     }
 }

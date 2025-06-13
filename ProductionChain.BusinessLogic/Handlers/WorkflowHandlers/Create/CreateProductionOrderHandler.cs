@@ -33,6 +33,8 @@ public class CreateProductionOrderHandler
             {
                 _logger.LogError("Ошибка. Попытка начать задачу которая уже находится в состоянии \"isProgress\" или \"Done\".");
 
+                _unitOfWork.RollbackTransaction();
+
                 return false;
             }
 
@@ -43,6 +45,8 @@ public class CreateProductionOrderHandler
             {
                 _logger.LogError("Не удалось найти сущности по переданному параметру {OrderId} или {ProductId}.",
                     productionOrdersRequest.OrderId, productionOrdersRequest.ProductId);
+
+                _unitOfWork.RollbackTransaction();
 
                 return false;
             }
@@ -59,7 +63,7 @@ public class CreateProductionOrderHandler
         {
             _logger.LogError(ex, "Ошибка. Транзакция отменена");
 
-            _unitOfWork.BeginTransaction();
+            _unitOfWork.RollbackTransaction();
 
             return false;
         }

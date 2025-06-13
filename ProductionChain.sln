@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionChain.Contracts",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionChain.BusinessLogic", "ProductionChain.BusinessLogic\ProductionChain.BusinessLogic.csproj", "{5A4D94B7-4934-4D94-B0D6-B34B24176F73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionChain.Tests", "ProductionChain.Tests\ProductionChain.Tests.csproj", "{3C36C9E1-98E3-4ECC-8A6B-490576800706}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{5A4D94B7-4934-4D94-B0D6-B34B24176F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A4D94B7-4934-4D94-B0D6-B34B24176F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A4D94B7-4934-4D94-B0D6-B34B24176F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C36C9E1-98E3-4ECC-8A6B-490576800706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C36C9E1-98E3-4ECC-8A6B-490576800706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C36C9E1-98E3-4ECC-8A6B-490576800706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C36C9E1-98E3-4ECC-8A6B-490576800706}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
