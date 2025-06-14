@@ -20,7 +20,7 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
 
     public OrdersRepository(ProductionChainDbContext dbContext, ILogger<OrdersRepository> logger) : base(dbContext)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<OrdersPage> GetOrdersAsync(GetQueryParameters queryParameters)
@@ -81,14 +81,18 @@ public class OrdersRepository : BaseEfRepository<Order>, IOrdersRepository
         return order?.StageType == ProgressStatusType.Pending;
     }
 
-    public void UpdateOrderStatus(int orderId, ProgressStatusType statusType)
+    public bool UpdateOrderStatus(int orderId, ProgressStatusType statusType)
     {
         var order = DbSet.FirstOrDefault(o => o.Id == orderId);
 
-        if (order is not null)
+        if (order is null)
         {
-            order.StageType = statusType;
+            return false;
         }
+
+        order.StageType = statusType;
+
+        return true;
     }
 
     public bool SetAvailableProductsCount(int orderId, int productsCount)

@@ -20,7 +20,7 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
 
     public EmployeesRepository(ProductionChainDbContext dbContext, ILogger<EmployeesRepository> logger) : base(dbContext)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger)) ;
     }
 
     public async Task<EmployeesPage> GetEmployeesAsync(GetQueryParameters queryParameters)

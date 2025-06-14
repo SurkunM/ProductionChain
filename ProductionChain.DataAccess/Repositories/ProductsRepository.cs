@@ -19,7 +19,7 @@ public class ProductsRepository : BaseEfRepository<Product>, IProductsRepository
 
     public ProductsRepository(ProductionChainDbContext dbContext, ILogger<ProductsRepository> logger) : base(dbContext)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ProductsPage> GetProductsAsync(GetQueryParameters queryParameters)

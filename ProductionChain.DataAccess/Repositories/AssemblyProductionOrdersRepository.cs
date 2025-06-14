@@ -20,7 +20,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
 
     public AssemblyProductionOrdersRepository(ProductionChainDbContext dbContext, ILogger<AssemblyProductionOrdersRepository> logger) : base(dbContext)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ProductionOrdersPage> GetProductionOrdersAsync(GetQueryParameters queryParameters)

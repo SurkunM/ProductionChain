@@ -19,7 +19,7 @@ public class AssemblyProductionWarehouseRepository : BaseEfRepository<AssemblyPr
 
     public AssemblyProductionWarehouseRepository(ProductionChainDbContext dbContext, ILogger<AssemblyProductionWarehouseRepository> logger) : base(dbContext)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<AssemblyWarehousePage> GetAssemblyWarehouseItemsAsync(GetQueryParameters queryParameters)

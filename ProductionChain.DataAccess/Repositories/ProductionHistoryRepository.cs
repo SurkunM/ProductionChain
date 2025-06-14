@@ -19,7 +19,7 @@ public class ProductionHistoryRepository : BaseEfRepository<ProductionHistory>, 
 
     public ProductionHistoryRepository(ProductionChainDbContext dbContext, ILogger<ProductionHistoryRepository> logger) : base(dbContext)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ProductionHistoriesPage> GetProductionHistoriesAsync(GetQueryParameters queryParameters)

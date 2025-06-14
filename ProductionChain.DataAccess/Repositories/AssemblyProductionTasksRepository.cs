@@ -20,7 +20,7 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
 
     public AssemblyProductionTasksRepository(ProductionChainDbContext dbContext, ILogger<AssemblyProductionTasksRepository> logger) : base(dbContext)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ProductionTasksPage> GetTasksAsync(GetQueryParameters queryParameters)

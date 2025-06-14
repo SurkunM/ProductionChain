@@ -9,7 +9,7 @@ public interface IOrdersRepository : IRepository<Order>
 {
     Task<OrdersPage> GetOrdersAsync(GetQueryParameters queryParameters);
 
-    void UpdateOrderStatus(int orderId, ProgressStatusType statusType);
+    bool UpdateOrderStatus(int orderId, ProgressStatusType statusType);
 
     bool IsOrderPending(int orderId);
 

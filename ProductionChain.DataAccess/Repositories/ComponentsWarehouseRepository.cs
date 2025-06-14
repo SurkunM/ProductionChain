@@ -19,7 +19,7 @@ public class ComponentsWarehouseRepository : BaseEfRepository<ComponentsWarehous
 
     public ComponentsWarehouseRepository(ProductionChainDbContext dbContext, ILogger<ComponentsWarehouseRepository> logger) : base(dbContext)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ComponentsWarehousePage> GetComponentsAsync(GetQueryParameters queryParameters)
