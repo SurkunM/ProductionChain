@@ -19,7 +19,7 @@
  - ComponentsWarehouse - склад компонентов (печатные платы, диодные платы, радиаторы, корпуса),
 
 ## Логика работы:
-Таблицы Employees, Products, Orders, ComponentsWarehouse считаются, что уже сущ.
+Таблицы Employees, Products, Orders, ComponentsWarehouse считаются, что уже сущ. и инициализируется в ручную.
 
 ### 1.Начало производства:
 При нажатии "Начать" в клиентской части
