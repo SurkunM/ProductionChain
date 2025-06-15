@@ -2,22 +2,20 @@
 
 Основные сущности:
 Базовые модели (ProductionChain.Model)
-
-Employee - сотрудники производства
-Product - продукция (блоки питания)
-Order - заказы на производство
+  Employee - сотрудники производства
+  Product - продукция (блоки питания)
+  Order - заказы на производство
 
 Рабочий процесс:
-AssemblyProductionOrders - заказы, переданные в производство (производственная очередь)
-AssemblyProductionTask - производственные задачи
-ProductionHistory - история выполненных задач
-AssemblyProductionWarehouse - склад готовой продукции
-ComponentsWarehouse - склад компонентов (печатные платы, диодные платы, радиаторы, корпуса)
+  AssemblyProductionOrders - заказы, переданные в производство (производственная очередь)
+  AssemblyProductionTask - производственные задачи
+  ProductionHistory - история выполненных задач
+  AssemblyProductionWarehouse - склад готовой продукции
+  ComponentsWarehouse - склад компонентов (печатные платы, диодные платы, радиаторы, корпуса)
 
 Логика работы:
-
 Инициализация системы:
-Таблицы Employees, Products, Orders, ComponentsWarehouse считаются, что уже сущ.
+  Таблицы Employees, Products, Orders, ComponentsWarehouse считаются, что уже сущ.
 
 1.Начало производства:
 При нажатии "Начать" в клиентской части
