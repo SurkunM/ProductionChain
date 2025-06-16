@@ -12,7 +12,7 @@ using ProductionChain.DataAccess.UnitOfWork;
 namespace ProductionChain;
 
 public class ProductionChainProgram
-{//TODO: изменить сообщени€ в лог в контроллерах! “есты, jobs
+{
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
