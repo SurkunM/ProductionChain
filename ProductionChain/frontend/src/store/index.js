@@ -25,6 +25,7 @@ export default createStore({
         sortByColumn: "",
         isDescending: false,
     },
+
     getters: {
         isLoading(state) {
             return state.isLoading;
@@ -58,6 +59,10 @@ export default createStore({
             return state.assemblyWarehouseItems;
         },
 
+        assemblyWarehouseItemsCount(state) {
+            return state.assemblyWarehouseItems.reduce((sum, item) => sum + item.productsCount, 0);
+        },
+
         componentsWarehouseItems(state) {
             return state.componentsWarehouseItems;
         },
@@ -70,6 +75,7 @@ export default createStore({
             return state.pageItemsCount;
         },
     },
+
     mutations: {
         setEmployees(state, employees) {
             state.employees = employees;
@@ -175,6 +181,7 @@ export default createStore({
             state.isDescending = isDesc;
         },
     },
+
     actions: {
         loadEmployees({ commit, state }) {
             commit("setIsLoading", true);
