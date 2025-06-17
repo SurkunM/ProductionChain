@@ -39,12 +39,12 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
             StatusType = ProgressStatusType.Pending,
             InProgressProductsCount = 100,
             CompletedProductsCount = 0,
-            TotalProductsCount = 100
+            TotalProductsCount = 200
         };
     }
 
     [Fact]
-    public async Task AddInProgressCount()
+    public async Task ShouldIncreaseAddInProgressCount()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -52,18 +52,16 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
-
         productionOrderRepository.AddInProgressCount(_productionOrders.Id, 100);
 
-        var updatedProductionOrder = context.AssemblyProductionOrders.Find(1);
+        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrders.Id);
 
         Assert.NotNull(updatedProductionOrder);
-
         Assert.Equal(200, updatedProductionOrder.InProgressProductsCount);
     }
 
     [Fact]
-    public async Task SubtractInProgressCount()
+    public async Task ShouldDecreaseSubtractInProgressCount()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -71,10 +69,9 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
-
         productionOrderRepository.SubtractInProgressCount(_productionOrders.Id, 100);
 
-        var updatedProductionOrder = context.AssemblyProductionOrders.Find(1);
+        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrders.Id);
 
         Assert.NotNull(updatedProductionOrder);
 
@@ -82,7 +79,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task AddCompletedCount()
+    public async Task ShouldIncreaseAddCompletedCount()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -93,7 +90,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
 
         productionOrderRepository.AddCompletedCount(_productionOrders.Id, 100);
 
-        var updatedProductionOrder = context.AssemblyProductionOrders.Find(1);
+        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrders.Id);
 
         Assert.NotNull(updatedProductionOrder);
 
@@ -102,9 +99,9 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
 
     [Theory]
     [InlineData(0, 0, ProgressStatusType.Pending)]
-    [InlineData(0, 100, ProgressStatusType.Done)]
+    [InlineData(0, 200, ProgressStatusType.Done)]
     [InlineData(100, 0, ProgressStatusType.InProgress)]
-    public async Task UpdateProductionOrderStatus(int inProgressCount, int completedCount, ProgressStatusType statusType)//TODO: Продебажить
+    public async Task ShouldTrueForUpdateProductionOrderStatus(int inProgressCount, int completedCount, ProgressStatusType statusType)//TODO: Продебажить
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -126,7 +123,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task IsCompleted()
+    public async Task ShouldTrueForIsCompleted()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -135,7 +132,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
 
-        productionOrderRepository.AddCompletedCount(_productionOrders.Id, 100);
+        productionOrderRepository.AddCompletedCount(_productionOrders.Id, 200);
 
         var result = productionOrderRepository.IsCompleted(1);
 
@@ -143,7 +140,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task HasInProgressTasks()
+    public async Task ShouldFalseForHasInProgressTasks()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 

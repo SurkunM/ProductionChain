@@ -31,20 +31,8 @@ public class OrdersRepositoryTests : IDisposable
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
-        var product = new Product
-        {
-            Name = "Product1",
-            Model = "Model1"
-        };
-
-        var order = new Order
-        {
-            Id = 1,
-            Customer = "Customer1",
-            Product = product,
-            StageType = status,
-            OrderedProductsCount = 100
-        };
+        var product = GetProduct("Product1", "Model1");
+        var order = GetOrder(product, "Customer1", status);
 
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
@@ -61,32 +49,43 @@ public class OrdersRepositoryTests : IDisposable
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
-        var product = new Product
-        {
-            Name = "Product1",
-            Model = "Model1"
-        };
-
-        var order = new Order
-        {
-            Id = 1,
-            Customer = "Customer1",
-            Product = product,
-            StageType = ProgressStatusType.InProgress,
-            OrderedProductsCount = 100,
-            AvailableProductsCount = 100
-        };
+        var product = GetProduct("Product1", "Model1");
+        var order = GetOrder(product, "Customer1", ProgressStatusType.InProgress);
 
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
+
+        var ordersRepository = new OrdersRepository(context, _loggerMock.Object);
+
+        ordersRepository.SetAvailableProductsCount(order.Id, 100);
 
         var updatedOrder = context.Orders.Find(1);
 
         Assert.NotNull(updatedOrder);
 
-        updatedOrder.AvailableProductsCount += 100;
+        Assert.Equal(100, updatedOrder.AvailableProductsCount);
+    }
 
-        Assert.Equal(200, updatedOrder.AvailableProductsCount);
+    private static Product GetProduct(string name, string model)
+    {
+        return new Product
+        {
+            Name = name,
+            Model = model
+        };
+    }
+
+    private static Order GetOrder(Product product, string customer, ProgressStatusType status)
+    {
+        return new Order
+        {
+            Id = 1,
+            Customer = "Customer1",
+            Product = product,
+            StageType = status,
+            OrderedProductsCount = 100,
+            AvailableProductsCount = 0
+        };
     }
 
     public void Dispose()
