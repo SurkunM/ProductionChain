@@ -4,7 +4,7 @@ using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.Contracts.IRepositories;
 
-public interface IAssemblyProductionOrdersRepository : IRepository<AssemblyProductionOrders>
+public interface IAssemblyProductionOrdersRepository : IRepository<AssemblyProductionOrder>
 {
     Task<ProductionOrdersPage> GetProductionOrdersAsync(GetQueryParameters queryParameters);
 

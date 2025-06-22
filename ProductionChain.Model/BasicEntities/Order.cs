@@ -21,5 +21,5 @@ public class Order
 
     public DateTime? CreatedAt { get; set; }
 
-    public virtual ICollection<AssemblyProductionOrders> ProductionOrders { get; set; } = new List<AssemblyProductionOrders>();
+    public virtual ICollection<AssemblyProductionOrder> ProductionOrders { get; set; } = new List<AssemblyProductionOrder>();
 }

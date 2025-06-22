@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace ProductionChain.DataAccess.Repositories;
 
-public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProductionOrders>, IAssemblyProductionOrdersRepository
+public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProductionOrder>, IAssemblyProductionOrdersRepository
 {
     private readonly ILogger<AssemblyProductionOrdersRepository> _logger;
 
@@ -163,7 +163,7 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
         return productionOrder.ProductionTask.Count > 0;
     }
 
-    private Expression<Func<AssemblyProductionOrders, object>> CreateSortExpression(string propertyName)
+    private Expression<Func<AssemblyProductionOrder, object>> CreateSortExpression(string propertyName)
     {
         try
         {
@@ -177,9 +177,9 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
         }
     }
 
-    private static Expression<Func<AssemblyProductionOrders, object>> GetPropertyExpression(string propertyName)
+    private static Expression<Func<AssemblyProductionOrder, object>> GetPropertyExpression(string propertyName)
     {
-        var parameter = Expression.Parameter(typeof(AssemblyProductionOrders), "po");
+        var parameter = Expression.Parameter(typeof(AssemblyProductionOrder), "po");
         Expression propertyAccess = parameter;
 
         var parts = propertyName.Split(".");
@@ -197,6 +197,6 @@ public class AssemblyProductionOrdersRepository : BaseEfRepository<AssemblyProdu
             propertyAccess = Expression.Convert(propertyAccess, typeof(object));
         }
 
-        return Expression.Lambda<Func<AssemblyProductionOrders, object>>(Expression.Convert(propertyAccess, typeof(object)), parameter);
+        return Expression.Lambda<Func<AssemblyProductionOrder, object>>(Expression.Convert(propertyAccess, typeof(object)), parameter);
     }
 }

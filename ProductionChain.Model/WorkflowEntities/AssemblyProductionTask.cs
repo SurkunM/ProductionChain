@@ -8,7 +8,7 @@ public class AssemblyProductionTask
 
     public int ProductionOrderId { get; set; }
 
-    public virtual required AssemblyProductionOrders ProductionOrder { get; set; }
+    public virtual required AssemblyProductionOrder ProductionOrder { get; set; }
 
     public int ProductId { get; set; }
 

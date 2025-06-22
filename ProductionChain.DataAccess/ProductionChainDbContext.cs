@@ -16,7 +16,7 @@ public class ProductionChainDbContext : DbContext
 
     public virtual DbSet<ProductionHistory> ProductionHistory { get; set; }
 
-    public virtual DbSet<AssemblyProductionOrders> AssemblyProductionOrders { get; set; }
+    public virtual DbSet<AssemblyProductionOrder> AssemblyProductionOrders { get; set; }
 
     public virtual DbSet<AssemblyProductionTask> AssemblyProductionTasks { get; set; }
 
@@ -72,7 +72,7 @@ public class ProductionChainDbContext : DbContext
                 .OnDelete(DeleteBehavior.NoAction);
         });
 
-        modelBuilder.Entity<AssemblyProductionOrders>(b =>
+        modelBuilder.Entity<AssemblyProductionOrder>(b =>
         {
             b.HasOne(ao => ao.Product)
                 .WithMany(p => p.ProductionOrders)

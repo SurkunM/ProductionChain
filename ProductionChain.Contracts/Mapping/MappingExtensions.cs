@@ -7,7 +7,7 @@ namespace ProductionChain.Contracts.Mapping;
 
 public static class MappingExtensions
 {
-    public static AssemblyProductionTask ToTaskModel(this ProductionTaskRequest taskRequest, AssemblyProductionOrders productionOrder,
+    public static AssemblyProductionTask ToTaskModel(this ProductionTaskRequest taskRequest, AssemblyProductionOrder productionOrder,
             Product product, Employee employee, DateTime dateTime)
     {
         return new AssemblyProductionTask
@@ -34,7 +34,7 @@ public static class MappingExtensions
         };
     }
 
-    public static AssemblyProductionOrders ToProductionOrderModel(this Order order, Product product)
+    public static AssemblyProductionOrder ToProductionOrderModel(this Order order, Product product)
     {
         var requiredProductCount = order.OrderedProductsCount - order.AvailableProductsCount;
         var status = ProgressStatusType.InProgress;
@@ -45,7 +45,7 @@ public static class MappingExtensions
             status = ProgressStatusType.Done;
         }
 
-        return new AssemblyProductionOrders
+        return new AssemblyProductionOrder
         {
             Order = order,
             Product = product,

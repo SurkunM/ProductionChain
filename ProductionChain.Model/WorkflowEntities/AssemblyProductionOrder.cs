@@ -3,7 +3,7 @@ using ProductionChain.Model.Enums;
 
 namespace ProductionChain.Model.WorkflowEntities;
 
-public class AssemblyProductionOrders
+public class AssemblyProductionOrder
 {
     public int Id { get; set; }
 
