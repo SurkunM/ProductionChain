@@ -27,7 +27,7 @@ public class OrdersRepositoryTests : IDisposable
     [InlineData(ProgressStatusType.Pending, true)]
     [InlineData(ProgressStatusType.Done, false)]
     [InlineData(ProgressStatusType.InProgress, false)]
-    public async Task ShouldReturnTrueForOrderIsPending(ProgressStatusType status, bool expected)
+    public async Task OrderIsPending_ShouldReturnTrue(ProgressStatusType status, bool expected)
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -45,7 +45,7 @@ public class OrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task ShouldUpdateAvailableProductsCountIncreaseBy100()
+    public async Task SetAvailableProductsCount_ShouldIncreaseBy100()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 

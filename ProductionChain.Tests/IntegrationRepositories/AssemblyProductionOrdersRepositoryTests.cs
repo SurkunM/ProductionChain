@@ -9,7 +9,7 @@ using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.Tests.IntegrationRepositories;
 
-public class AssemblyProductionOrdersRepositoryTests : IDisposable
+public class AssemblyProductionOrdersRepositoryTests
 {
     private readonly DbContextOptions<ProductionChainDbContext> _dbContextOptions;
 
@@ -44,7 +44,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task ShouldIncreaseAddInProgressCount()
+    public async Task AddInProgressCount_ShouldIncreaseBy100()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -61,7 +61,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task ShouldDecreaseSubtractInProgressCount()
+    public async Task SubtractInProgressCount_ShouldDecreaseBy100()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -79,7 +79,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task ShouldIncreaseAddCompletedCount()
+    public async Task AddCompletedCount_ShouldIncreaseBy100()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -101,7 +101,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     [InlineData(0, 0, ProgressStatusType.Pending)]
     [InlineData(0, 200, ProgressStatusType.Done)]
     [InlineData(100, 0, ProgressStatusType.InProgress)]
-    public async Task ShouldTrueForUpdateProductionOrderStatus(int inProgressCount, int completedCount, ProgressStatusType statusType)//TODO: Продебажить
+    public async Task UpdateProductionOrderStatus_ShouldReturnTrue(int inProgressCount, int completedCount, ProgressStatusType statusType)//TODO: Продебажить
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -123,7 +123,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task ShouldTrueForIsCompleted()
+    public async Task IsCompleted_ShouldReturnTrue()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -140,7 +140,7 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task ShouldFalseForHasInProgressTasks()
+    public async Task HasInProgressTasks_ShouldReturnFalse()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -152,11 +152,5 @@ public class AssemblyProductionOrdersRepositoryTests : IDisposable
         var result = productionOrderRepository.HasInProgressTasks(_productionOrders.Id);
 
         Assert.False(result);
-    }
-
-    public void Dispose()
-    {
-        using var context = new ProductionChainDbContext(_dbContextOptions);
-        context.Database.EnsureDeleted();
     }
 }

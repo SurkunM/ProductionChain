@@ -32,7 +32,7 @@ public class AssemblyProductionWarehouseRepositoryTests
     }
 
     [Fact]
-    public async Task AddWarehouseItems()
+    public async Task AddWarehouseItems_ShouldIncreaseItemsBy100()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
@@ -51,7 +51,7 @@ public class AssemblyProductionWarehouseRepositoryTests
     }
 
     [Fact]
-    public async Task SubtractWarehouseItems()
+    public async Task SubtractWarehouseItems_ShouldDecreaseItemsBy100()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 

@@ -25,7 +25,7 @@ public class ComponentsWarehouseRepositoryTests
     }
 
     [Fact]
-    public async Task TakeComponentsByProductId()
+    public async Task TakeComponentsByProductId_ShouldDecreaseComponentsBy50()
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
