@@ -6,7 +6,7 @@ using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 
-namespace ProductionChain.Tests.IntegrationRepositories;
+namespace ProductionChain.Tests.Repositories.Integration;
 
 public class OrdersRepositoryTests : IDisposable
 {

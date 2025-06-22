@@ -6,7 +6,7 @@ using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
 
-namespace ProductionChain.Tests.IntegrationRepositories;
+namespace ProductionChain.Tests.Repositories.Integration;
 
 public class AssemblyProductionTasksRepositoryTests
 {

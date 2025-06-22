@@ -7,7 +7,7 @@ using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
 
-namespace ProductionChain.Tests.IntegrationRepositories;
+namespace ProductionChain.Tests.Repositories.Integration;
 
 public class AssemblyProductionOrdersRepositoryTests
 {
@@ -101,7 +101,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [InlineData(0, 0, ProgressStatusType.Pending)]
     [InlineData(0, 200, ProgressStatusType.Done)]
     [InlineData(100, 0, ProgressStatusType.InProgress)]
-    public async Task UpdateProductionOrderStatus_ShouldReturnTrue(int inProgressCount, int completedCount, ProgressStatusType statusType)//TODO: Продебажить
+    public async Task UpdateProductionOrderStatus_ShouldReturnTrue(int inProgressCount, int completedCount, ProgressStatusType statusType)
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
