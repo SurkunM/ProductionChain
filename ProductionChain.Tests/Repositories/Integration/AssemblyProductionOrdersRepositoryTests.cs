@@ -15,7 +15,7 @@ public class AssemblyProductionOrdersRepositoryTests
 
     private readonly Mock<ILogger<AssemblyProductionOrdersRepository>> _loggerMock;
 
-    private AssemblyProductionOrders _productionOrders;
+    private AssemblyProductionOrder _productionOrder;
 
     public AssemblyProductionOrdersRepositoryTests()
     {
@@ -31,7 +31,7 @@ public class AssemblyProductionOrdersRepositoryTests
             Model = "Model1"
         };
 
-        _productionOrders = new AssemblyProductionOrders
+        _productionOrder = new AssemblyProductionOrder
         {
             Id = 1,
             Product = product,
@@ -48,13 +48,13 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
-        await context.AddAsync(_productionOrders);
+        await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
-        productionOrderRepository.AddInProgressCount(_productionOrders.Id, 100);
+        productionOrderRepository.AddInProgressCount(_productionOrder.Id, 100);
 
-        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrders.Id);
+        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrder.Id);
 
         Assert.NotNull(updatedProductionOrder);
         Assert.Equal(200, updatedProductionOrder.InProgressProductsCount);
@@ -65,13 +65,13 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
-        await context.AddAsync(_productionOrders);
+        await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
-        productionOrderRepository.SubtractInProgressCount(_productionOrders.Id, 100);
+        productionOrderRepository.SubtractInProgressCount(_productionOrder.Id, 100);
 
-        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrders.Id);
+        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrder.Id);
 
         Assert.NotNull(updatedProductionOrder);
 
@@ -83,14 +83,14 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
-        await context.AddAsync(_productionOrders);
+        await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
 
-        productionOrderRepository.AddCompletedCount(_productionOrders.Id, 100);
+        productionOrderRepository.AddCompletedCount(_productionOrder.Id, 100);
 
-        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrders.Id);
+        var updatedProductionOrder = context.AssemblyProductionOrders.Find(_productionOrder.Id);
 
         Assert.NotNull(updatedProductionOrder);
 
@@ -105,15 +105,15 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
-        _productionOrders.InProgressProductsCount = inProgressCount;
-        _productionOrders.CompletedProductsCount = completedCount;
+        _productionOrder.InProgressProductsCount = inProgressCount;
+        _productionOrder.CompletedProductsCount = completedCount;
 
-        await context.AddAsync(_productionOrders);
+        await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
 
-        var result = productionOrderRepository.UpdateProductionOrderStatus(_productionOrders.Id);
+        var result = productionOrderRepository.UpdateProductionOrderStatus(_productionOrder.Id);
 
         var updatedProductionOrder = context.AssemblyProductionOrders.Find(1);
 
@@ -127,12 +127,12 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
-        await context.AddAsync(_productionOrders);
+        await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
 
-        productionOrderRepository.AddCompletedCount(_productionOrders.Id, 200);
+        productionOrderRepository.AddCompletedCount(_productionOrder.Id, 200);
 
         var result = productionOrderRepository.IsCompleted(1);
 
@@ -144,12 +144,12 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = new ProductionChainDbContext(_dbContextOptions);
 
-        await context.AddAsync(_productionOrders);
+        await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
 
-        var result = productionOrderRepository.HasInProgressTasks(_productionOrders.Id);
+        var result = productionOrderRepository.HasInProgressTasks(_productionOrder.Id);
 
         Assert.False(result);
     }

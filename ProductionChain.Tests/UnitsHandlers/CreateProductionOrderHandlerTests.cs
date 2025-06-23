@@ -76,7 +76,7 @@ public class CreateProductionOrderHandlerTests
 
         productsRepositoryMock.Verify(r => r.GetByIdAsync(_productionOrdersRequest.ProductId), Times.Once);
 
-        productionOrdersRepositoryMock.Verify(r => r.CreateAsync(It.IsNotNull<AssemblyProductionOrders>()), Times.Once);
+        productionOrdersRepositoryMock.Verify(r => r.CreateAsync(It.IsNotNull<AssemblyProductionOrder>()), Times.Once);
 
         _uowMock.Verify(uow => uow.SaveAsync(), Times.Once);
     }

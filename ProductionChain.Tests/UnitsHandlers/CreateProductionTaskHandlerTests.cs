@@ -58,7 +58,7 @@ public class CreateProductionTaskHandlerTests
             StageType = ProgressStatusType.Pending
         };
 
-        var productionOrder = new AssemblyProductionOrders
+        var productionOrder = new AssemblyProductionOrder
         {
             Order = order,
             Product = product,

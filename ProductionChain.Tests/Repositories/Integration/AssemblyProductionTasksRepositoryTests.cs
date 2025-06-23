@@ -30,7 +30,7 @@ public class AssemblyProductionTasksRepositoryTests
             Model = "Model1"
         };
 
-        var productionOrder = new AssemblyProductionOrders
+        var productionOrder = new AssemblyProductionOrder
         {
             Id = 1,
             Product = product,

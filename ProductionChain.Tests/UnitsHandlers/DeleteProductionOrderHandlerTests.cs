@@ -44,7 +44,7 @@ public class DeleteProductionOrderHandlerTests
             StageType = ProgressStatusType.Pending
         };
 
-        var productionOrder = new AssemblyProductionOrders
+        var productionOrder = new AssemblyProductionOrder
         {
             Id = 1,
             Order = order,
@@ -59,7 +59,7 @@ public class DeleteProductionOrderHandlerTests
         productionOrdersRepositoryMock.Setup(r => r.GetByIdAsync(productionOrder.Id)).ReturnsAsync(productionOrder);
         productionOrdersRepositoryMock.Setup(r => r.HasInProgressTasks(productionOrder.Id)).Returns(false);
         productionOrdersRepositoryMock.Setup(r => r.IsCompleted(productionOrder.Id)).Returns(true);
-        productionOrdersRepositoryMock.Setup(r => r.Delete(It.IsAny<AssemblyProductionOrders>()));
+        productionOrdersRepositoryMock.Setup(r => r.Delete(It.IsAny<AssemblyProductionOrder>()));
 
         var ordersRepositoryMock = new Mock<IOrdersRepository>();
         ordersRepositoryMock.Setup(r => r.SetAvailableProductsCount(It.IsAny<int>(), productionOrder.CompletedProductsCount));
