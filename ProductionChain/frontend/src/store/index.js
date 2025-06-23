@@ -147,7 +147,7 @@ export default createStore({
             state.isLoading = value;
         },
 
-        setSearchParameters(state, value) {
+        setSearchParameters(state, value) {//TODO: Сломан поиск в Tab-х(CompnetnsWarehouseTab). Нету поиска по названию!
             state.term = value;
             state.pageNumber = 1;
         },
@@ -157,8 +157,8 @@ export default createStore({
                 return;
             }
 
-            items.forEach((c, i) => {
-                c.index = state.pageNumber + i;
+            items.forEach((item, i) => {
+                item.index = (state.pageNumber - 1) * state.pageSize + i + 1;
             });
         },
 
