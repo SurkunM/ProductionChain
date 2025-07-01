@@ -8,7 +8,7 @@ using ProductionChain.Model.Enums;
 
 namespace ProductionChain.Tests.Repositories.Integration;
 
-public class OrdersRepositoryTests : IDisposable
+public class OrdersRepositoryTests
 {
     private readonly DbContextOptions<ProductionChainDbContext> _dbContextOptions;
 
@@ -86,11 +86,5 @@ public class OrdersRepositoryTests : IDisposable
             OrderedProductsCount = 100,
             AvailableProductsCount = 0
         };
-    }
-
-    public void Dispose()
-    {
-        using var context = new ProductionChainDbContext(_dbContextOptions);
-        context.Database.EnsureDeleted();
     }
 }
