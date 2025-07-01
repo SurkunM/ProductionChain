@@ -39,7 +39,6 @@ public class ComponentsWarehouseRepositoryTests
         var componentsWarehouseItem3 = CreateComponentsWarehouseItem(product, ComponentType.Heatsink, 100);
         var componentsWarehouseItem4 = CreateComponentsWarehouseItem(product, ComponentType.Enclosure, 100);
 
-
         await context.AddRangeAsync(componentsWarehouseItem1, componentsWarehouseItem2, componentsWarehouseItem3, componentsWarehouseItem4);
         await context.SaveChangesAsync();
 

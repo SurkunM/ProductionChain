@@ -97,7 +97,6 @@ public class CreateProductionTaskHandlerTests
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionTasksRepository>()).Returns(tasksRepositoryMock.Object);
 
-
         var result = await _createProductionTaskHandler.HandleAsync(_taskRequest);
 
         Assert.True(result);

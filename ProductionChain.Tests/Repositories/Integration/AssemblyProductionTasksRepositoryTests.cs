@@ -48,4 +48,10 @@ public class AssemblyProductionTasksRepositoryTests
             Employee = new Employee { FirstName = "Employee1", LastName = "Employee1", Position = EmployeePositionType.AssemblyREA, Status = EmployeeStatusType.Available }
         };
     }
+
+    [Fact]
+    public async Task GetTasksAsync_ShouldReturnCorrectData()
+    {
+
+    }
 }
