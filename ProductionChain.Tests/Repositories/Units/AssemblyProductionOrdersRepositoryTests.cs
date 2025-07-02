@@ -1,28 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
 using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
+using ProductionChain.Tests.Repositories.Units.DbContextFactory;
 
 namespace ProductionChain.Tests.Repositories.Units;
 
 public class AssemblyProductionOrdersRepositoryTests
 {
-    private readonly DbContextOptions<ProductionChainDbContext> _dbContextOptions;
+    private readonly ProductionChainDbContextFactory _dbContextFactory;
 
     private readonly Mock<ILogger<AssemblyProductionOrdersRepository>> _loggerMock;
 
-    private List<AssemblyProductionOrder> _productionOrdersList;
+    private readonly List<AssemblyProductionOrder> _productionOrdersList;
 
     public AssemblyProductionOrdersRepositoryTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<ProductionChainDbContext>()
-           .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-           .Options;
+        _dbContextFactory = new ProductionChainDbContextFactory();
 
         _loggerMock = new Mock<ILogger<AssemblyProductionOrdersRepository>>();
 
@@ -41,7 +38,7 @@ public class AssemblyProductionOrdersRepositoryTests
 
         _productionOrdersList = new List<AssemblyProductionOrder>
         {
-            new() 
+            new()
             {
                 Id = 1,
                 Product = product,
@@ -70,7 +67,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [Fact]
     public async Task GetProductionOrdersAsync_WithDefaultParameters_ReturnsPagedResult()
     {
-        using var context = new ProductionChainDbContext(_dbContextOptions);
+        using var context = _dbContextFactory.CreateContext();
 
         var dbSet = context.Set<AssemblyProductionOrder>();
 
@@ -89,7 +86,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [Fact]
     public async Task GetProductionOrders_FilterByTerm_ReturnsFilteredResults()
     {
-        using var context = new ProductionChainDbContext(_dbContextOptions);
+        using var context = _dbContextFactory.CreateContext();
 
         var dbSet = context.Set<AssemblyProductionOrder>();
 

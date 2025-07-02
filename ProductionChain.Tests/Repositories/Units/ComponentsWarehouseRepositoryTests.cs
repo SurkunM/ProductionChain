@@ -1,18 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
 using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
+using ProductionChain.Tests.Repositories.Units.DbContextFactory;
 
 namespace ProductionChain.Tests.Repositories.Units;
 
 public class ComponentsWarehouseRepositoryTests
 {
-    private readonly DbContextOptions<ProductionChainDbContext> _dbContextOptions;
+    private readonly ProductionChainDbContextFactory _dbContextFactory;
 
     private readonly Mock<ILogger<ComponentsWarehouseRepository>> _loggerMock;
 
@@ -20,9 +19,7 @@ public class ComponentsWarehouseRepositoryTests
 
     public ComponentsWarehouseRepositoryTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<ProductionChainDbContext>()
-           .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-           .Options;
+        _dbContextFactory = new ProductionChainDbContextFactory();
 
         _loggerMock = new Mock<ILogger<ComponentsWarehouseRepository>>();
 
@@ -54,7 +51,7 @@ public class ComponentsWarehouseRepositoryTests
     [Fact]
     public async Task GetComponentsAsync_WithDefaultParameters_ReturnsPagedResult()
     {
-        using var context = new ProductionChainDbContext(_dbContextOptions);
+        using var context = _dbContextFactory.CreateContext();
 
         context.ComponentsWarehouse.AddRange(_componentsWarehouseItems);
         await context.SaveChangesAsync();
@@ -71,7 +68,7 @@ public class ComponentsWarehouseRepositoryTests
     [Fact]
     public async Task GetComponentsAsync_FilterByTerm_ReturnsFilteredResults()
     {
-        using var context = new ProductionChainDbContext(_dbContextOptions);
+        using var context = _dbContextFactory.CreateContext();
 
         context.ComponentsWarehouse.AddRange(_componentsWarehouseItems);
         await context.SaveChangesAsync();

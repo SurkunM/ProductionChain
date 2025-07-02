@@ -1,16 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
 using ProductionChain.Contracts.QueryParameters;
-using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.WorkflowEntities;
+using ProductionChain.Tests.Repositories.Units.DbContextFactory;
 
 namespace ProductionChain.Tests.Repositories.Units;
 
 public class ProductionHistoryRepositoryTests
 {
-    private readonly DbContextOptions<ProductionChainDbContext> _dbContextOptions;
+    private readonly ProductionChainDbContextFactory _dbContextFactory;
 
     private readonly Mock<ILogger<ProductionHistoryRepository>> _loggerMock;
 
@@ -18,9 +17,7 @@ public class ProductionHistoryRepositoryTests
 
     public ProductionHistoryRepositoryTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<ProductionChainDbContext>()
-           .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-           .Options;
+        _dbContextFactory = new ProductionChainDbContextFactory();
 
         _loggerMock = new Mock<ILogger<ProductionHistoryRepository>>();
 
@@ -45,7 +42,7 @@ public class ProductionHistoryRepositoryTests
     [Fact]
     public async Task GetProductionHistoriesAsync_WithDefaultParameters_ReturnsPagedResult()
     {
-        using var context = new ProductionChainDbContext(_dbContextOptions);
+        using var context = _dbContextFactory.CreateContext();
 
         context.ProductionHistory.AddRange(_histories);
         await context.SaveChangesAsync();
@@ -62,7 +59,7 @@ public class ProductionHistoryRepositoryTests
     [Fact]
     public async Task GetProductionHistoriesAsync_FilterByTerm_ReturnsFilteredResults()
     {
-        using var context = new ProductionChainDbContext(_dbContextOptions);
+        using var context = _dbContextFactory.CreateContext();
 
         context.ProductionHistory.AddRange(_histories);
         await context.SaveChangesAsync();
