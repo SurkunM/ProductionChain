@@ -11,15 +11,15 @@ namespace ProductionChain.Tests.Repositories.Units;
 
 public class AssemblyProductionOrdersRepositoryTests
 {
-    private readonly ProductionChainDbContextFactory _dbContextFactory;
+    private readonly ProductionChainDbContextFactory _dbContextOptions;
 
     private readonly Mock<ILogger<AssemblyProductionOrdersRepository>> _loggerMock;
 
-    private readonly List<AssemblyProductionOrder> _productionOrdersList;
+    private List<AssemblyProductionOrder> _productionOrdersList;
 
     public AssemblyProductionOrdersRepositoryTests()
     {
-        _dbContextFactory = new ProductionChainDbContextFactory();
+        _dbContextOptions = new ProductionChainDbContextFactory();
 
         _loggerMock = new Mock<ILogger<AssemblyProductionOrdersRepository>>();
 
@@ -67,7 +67,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [Fact]
     public async Task GetProductionOrdersAsync_WithDefaultParameters_ReturnsPagedResult()
     {
-        using var context = _dbContextFactory.CreateContext();
+        using var context = _dbContextOptions.CreateContext();
 
         var dbSet = context.Set<AssemblyProductionOrder>();
 
@@ -86,7 +86,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [Fact]
     public async Task GetProductionOrders_FilterByTerm_ReturnsFilteredResults()
     {
-        using var context = _dbContextFactory.CreateContext();
+        using var context = _dbContextOptions.CreateContext();
 
         var dbSet = context.Set<AssemblyProductionOrder>();
 
