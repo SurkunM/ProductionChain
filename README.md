@@ -1,7 +1,5 @@
 Пет-проект моделирующий процесс сборки блоков питания на производстве. Система управляет заказами, производственными задачами, сотрудниками и складами компонентов/готовой продукции. Для работы с БД используются шаблоны Repository, Unit of work. Vue.js для клиентской части.
 
-(Сейчас пишу тесты.)
-
 ## Основные сущности:
 
 ### Базовые модели (ProductionChain.Model):
@@ -46,3 +44,9 @@
   2. Обновляется статус для AssemblyProductionOrders,
   3. Количество собранной продукции добавляется в склад AssemblyProductionWarehouse,
   4. В AssemblyProductionOrders удаляется "Производственный заказ".
+
+### Скриншоты интерфейса
+![Screenshot 2025-07-05 103128](https://github.com/user-attachments/assets/1396b686-4b0e-4d3d-9699-691b4020c8de)
+![Screenshot 2025-07-05 103229](https://github.com/user-attachments/assets/687c101f-2c6a-4448-8041-a4449cee4322)
+![Screenshot 2025-07-05 103108](https://github.com/user-attachments/assets/e31cb91b-fe6f-433f-a8b4-ffae05f0973d)
+
