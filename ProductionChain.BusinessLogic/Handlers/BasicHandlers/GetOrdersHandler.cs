@@ -3,7 +3,7 @@ using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
 
-namespace ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
+namespace ProductionChain.BusinessLogic.Handlers.BasicHandlers;
 
 public class GetOrdersHandler
 {

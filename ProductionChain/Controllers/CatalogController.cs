@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProductionChain.BusinessLogic.Handlers.BasicHandlers.Get;
+using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
 using ProductionChain.Contracts.QueryParameters;
 
 namespace ProductionChain.Controllers;
