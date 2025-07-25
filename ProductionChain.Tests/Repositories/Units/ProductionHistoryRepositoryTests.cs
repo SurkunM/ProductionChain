@@ -3,7 +3,7 @@ using Moq;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.WorkflowEntities;
-using ProductionChain.Tests.Repositories.Units.DbContextFactory;
+using ProductionChain.Tests.Repositories.Integration.DbContextFactory;
 
 namespace ProductionChain.Tests.Repositories.Units;
 
@@ -37,38 +37,5 @@ public class ProductionHistoryRepositoryTests
                 ProductsCount = 10
             }
         };
-    }
-
-    [Fact]
-    public async Task GetProductionHistoriesAsync_WithDefaultParameters_ReturnsPagedResult()
-    {
-        using var context = _dbContextFactory.CreateContext();
-
-        context.ProductionHistory.AddRange(_histories);
-        await context.SaveChangesAsync();
-
-        var mockRepository = new ProductionHistoryRepository(context, _loggerMock.Object);
-
-        var result = await mockRepository.GetProductionHistoriesAsync(new GetQueryParameters());
-
-        Assert.NotNull(result);
-        Assert.Equal(2, result.TotalCount);
-        Assert.Equal(2, result.Histories.Count);
-    }
-
-    [Fact]
-    public async Task GetProductionHistoriesAsync_FilterByTerm_ReturnsFilteredResults()
-    {
-        using var context = _dbContextFactory.CreateContext();
-
-        context.ProductionHistory.AddRange(_histories);
-        await context.SaveChangesAsync();
-
-        var mockRepository = new ProductionHistoryRepository(context, _loggerMock.Object);
-
-        var result = await mockRepository.GetProductionHistoriesAsync(new GetQueryParameters { Term = "Employee2" });
-
-        Assert.NotNull(result);
-        Assert.Equal("Employee2", result.Histories.First().Employee);
     }
 }

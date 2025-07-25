@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
-using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.BasicEntities;
-using ProductionChain.Tests.Repositories.Units.DbContextFactory;
+using ProductionChain.Tests.Repositories.Integration.DbContextFactory;
 
 namespace ProductionChain.Tests.Repositories.Units;
 
@@ -35,38 +34,5 @@ public class ProductsRepositoryTests
                 Model = "Model2"
             }
         };
-    }
-
-    [Fact]
-    public async Task GetProductsAsync_WithDefaultParameters_ReturnsPagedResult()
-    {
-        using var context = _dbContextFactory.CreateContext();
-
-        context.Products.AddRange(_products);
-        await context.SaveChangesAsync();
-
-        var mockRepository = new ProductsRepository(context, _loggerMock.Object);
-
-        var result = await mockRepository.GetProductsAsync(new GetQueryParameters());
-
-        Assert.NotNull(result);
-        Assert.Equal(2, result.TotalCount);
-        Assert.Equal(2, result.Products.Count);
-    }
-
-    [Fact]
-    public async Task GetProductsAsync_FilterByTerm_ReturnsFilteredResults()
-    {
-        using var context = _dbContextFactory.CreateContext();
-
-        context.Products.AddRange(_products);
-        await context.SaveChangesAsync();
-
-        var mockRepository = new ProductsRepository(context, _loggerMock.Object);
-
-        var result = await mockRepository.GetProductsAsync(new GetQueryParameters { Term = "Product2" });
-
-        Assert.NotNull(result);
-        Assert.Equal("Product2", result.Products.First().Name);
     }
 }

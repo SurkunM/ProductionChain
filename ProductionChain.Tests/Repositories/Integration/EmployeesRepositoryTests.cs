@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
+using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Tests.Repositories.Integration.DbContextFactory;
 
-namespace ProductionChain.Tests.Repositories.Units;
+namespace ProductionChain.Tests.Repositories.Integration;
 
 public class EmployeesRepositoryTests
 {
@@ -50,5 +51,38 @@ public class EmployeesRepositoryTests
                 Status = EmployeeStatusType.Available
             }
         };
+    }
+
+    [Fact]
+    public async Task GetEmployeesAsync_WithDefaultParameters_ReturnsPagedResult()
+    {
+        using var context = _dbContextFactory.CreateContext();
+
+        context.Employees.AddRange(_employees);
+        await context.SaveChangesAsync();
+
+        var mockRepository = new EmployeesRepository(context, _loggerMock.Object);
+
+        var result = await mockRepository.GetEmployeesAsync(new GetQueryParameters());
+
+        Assert.NotNull(result);
+        Assert.Equal(3, result.TotalCount);
+        Assert.Equal(3, result.Employees.Count);
+    }
+
+    [Fact]
+    public async Task GetEmployeesAsync_FilterByTerm_ReturnsFilteredResults()
+    {
+        using var context = _dbContextFactory.CreateContext();
+
+        context.Employees.AddRange(_employees);
+        await context.SaveChangesAsync();
+
+        var mockRepository = new EmployeesRepository(context, _loggerMock.Object);
+
+        var result = await mockRepository.GetEmployeesAsync(new GetQueryParameters { Term = "FirstName2" });
+
+        Assert.NotNull(result);
+        Assert.Equal("FirstName2", result.Employees.First().FirstName);
     }
 }

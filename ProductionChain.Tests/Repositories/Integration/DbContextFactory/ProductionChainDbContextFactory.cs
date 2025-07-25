@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductionChain.DataAccess;
 
-namespace ProductionChain.Tests.Repositories.Units.DbContextFactory;
+namespace ProductionChain.Tests.Repositories.Integration.DbContextFactory;
 
 public class ProductionChainDbContextFactory : IDisposable
 {

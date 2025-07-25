@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
-using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
-using ProductionChain.Tests.Repositories.Units.DbContextFactory;
+using ProductionChain.Tests.Repositories.Integration.DbContextFactory;
 
 namespace ProductionChain.Tests.Repositories.Units;
 
@@ -48,36 +47,5 @@ public class ComponentsWarehouseRepositoryTests
         };
     }
 
-    [Fact]
-    public async Task GetComponentsAsync_WithDefaultParameters_ReturnsPagedResult()
-    {
-        using var context = _dbContextFactory.CreateContext();
 
-        context.ComponentsWarehouse.AddRange(_componentsWarehouseItems);
-        await context.SaveChangesAsync();
-
-        var mockRepository = new ComponentsWarehouseRepository(context, _loggerMock.Object);
-
-        var result = await mockRepository.GetComponentsAsync(new GetQueryParameters());
-
-        Assert.NotNull(result);
-        Assert.Equal(3, result.TotalCount);
-        Assert.Equal(3, result.ComponentsWarehouseItems.Count);
-    }
-
-    [Fact]
-    public async Task GetComponentsAsync_FilterByTerm_ReturnsFilteredResults()
-    {
-        using var context = _dbContextFactory.CreateContext();
-
-        context.ComponentsWarehouse.AddRange(_componentsWarehouseItems);
-        await context.SaveChangesAsync();
-
-        var mockRepository = new ComponentsWarehouseRepository(context, _loggerMock.Object);
-
-        var result = await mockRepository.GetComponentsAsync(new GetQueryParameters { Term = "Product2" });
-
-        Assert.NotNull(result);
-        Assert.Equal("Product2", result.ComponentsWarehouseItems.First().ProductName);
-    }
 }

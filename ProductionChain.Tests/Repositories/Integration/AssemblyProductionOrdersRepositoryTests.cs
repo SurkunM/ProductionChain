@@ -1,27 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
-using ProductionChain.DataAccess;
+using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
+using ProductionChain.Tests.Repositories.Integration.DbContextFactory;
 
 namespace ProductionChain.Tests.Repositories.Integration;
 
 public class AssemblyProductionOrdersRepositoryTests
 {
-    private readonly DbContextOptions<ProductionChainDbContext> _dbContextOptions;
+    private readonly ProductionChainDbContextFactory _dbContextFactory;
 
     private readonly Mock<ILogger<AssemblyProductionOrdersRepository>> _loggerMock;
 
-    private AssemblyProductionOrder _productionOrder;
+    private readonly AssemblyProductionOrder _productionOrder;
+
+    private readonly List<AssemblyProductionOrder> _productionOrdersList;
 
     public AssemblyProductionOrdersRepositoryTests()
     {
-        _dbContextOptions = new DbContextOptionsBuilder<ProductionChainDbContext>()
-           .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-           .Options;
+        _dbContextFactory = new ProductionChainDbContextFactory();
 
         _loggerMock = new Mock<ILogger<AssemblyProductionOrdersRepository>>();
 
@@ -29,6 +29,13 @@ public class AssemblyProductionOrdersRepositoryTests
         {
             Name = "Product1",
             Model = "Model1"
+        };
+
+        var order = new Order
+        {
+            Customer = "Customer1",
+            Product = product,
+            StageType = ProgressStatusType.InProgress
         };
 
         _productionOrder = new AssemblyProductionOrder
@@ -41,12 +48,76 @@ public class AssemblyProductionOrdersRepositoryTests
             CompletedProductsCount = 0,
             TotalProductsCount = 200
         };
+
+        _productionOrdersList = new List<AssemblyProductionOrder>
+        {
+            new()
+            {
+                Id = 2,
+                Product = product,
+                Order = order,
+                StatusType = ProgressStatusType.Pending
+            },
+
+            new()
+            {
+                Id = 3,
+                Product = product,
+                Order = order,
+                StatusType = ProgressStatusType.Pending
+            },
+
+            new()
+            {
+                Id = 4,
+                Product = new Product{ Name = "Product2", Model = "Model2" },
+                Order = order,
+                StatusType = ProgressStatusType.Pending
+            }
+        };
+    }
+
+    [Fact]
+    public async Task GetProductionOrdersAsync_WithDefaultParameters_ReturnsPagedResult()
+    {
+        await using var context = _dbContextFactory.CreateContext();
+
+        var dbSet = context.Set<AssemblyProductionOrder>();
+
+        dbSet.AddRange(_productionOrdersList);
+        context.SaveChanges();
+
+        var mockRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
+
+        var result = await mockRepository.GetProductionOrdersAsync(new GetQueryParameters());
+
+        Assert.NotNull(result);
+        Assert.Equal(3, result.TotalCount);
+        Assert.Equal(3, result.ProductionOrders.Count);
+    }
+
+    [Fact]
+    public async Task GetProductionOrders_FilterByTerm_ReturnsFilteredResults()
+    {
+        await using var context = _dbContextFactory.CreateContext();
+
+        var dbSet = context.Set<AssemblyProductionOrder>();
+
+        dbSet.AddRange(_productionOrdersList);
+        context.SaveChanges();
+
+        var mockRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
+
+        var result = await mockRepository.GetProductionOrdersAsync(new GetQueryParameters { Term = "Product2" });
+
+        Assert.NotNull(result);
+        Assert.Equal("Product2", result.ProductionOrders.First().ProductName);
     }
 
     [Fact]
     public async Task AddInProgressCount_ShouldIncreaseBy100()
     {
-        await using var context = new ProductionChainDbContext(_dbContextOptions);
+        await using var context = _dbContextFactory.CreateContext();
 
         await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
@@ -63,7 +134,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [Fact]
     public async Task SubtractInProgressCount_ShouldDecreaseBy100()
     {
-        await using var context = new ProductionChainDbContext(_dbContextOptions);
+        await using var context = _dbContextFactory.CreateContext();
 
         await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
@@ -81,7 +152,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [Fact]
     public async Task AddCompletedCount_ShouldIncreaseBy100()
     {
-        await using var context = new ProductionChainDbContext(_dbContextOptions);
+        await using var context = _dbContextFactory.CreateContext();
 
         await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
@@ -103,7 +174,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [InlineData(100, 0, ProgressStatusType.InProgress)]
     public async Task UpdateProductionOrderStatus_ShouldReturnTrue(int inProgressCount, int completedCount, ProgressStatusType statusType)
     {
-        await using var context = new ProductionChainDbContext(_dbContextOptions);
+        await using var context = _dbContextFactory.CreateContext();
 
         _productionOrder.InProgressProductsCount = inProgressCount;
         _productionOrder.CompletedProductsCount = completedCount;
@@ -125,7 +196,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [Fact]
     public async Task IsCompleted_ShouldReturnTrue()
     {
-        await using var context = new ProductionChainDbContext(_dbContextOptions);
+        await using var context = _dbContextFactory.CreateContext();
 
         await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
@@ -142,7 +213,7 @@ public class AssemblyProductionOrdersRepositoryTests
     [Fact]
     public async Task HasInProgressTasks_ShouldReturnFalse()
     {
-        await using var context = new ProductionChainDbContext(_dbContextOptions);
+        await using var context = _dbContextFactory.CreateContext();
 
         await context.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
