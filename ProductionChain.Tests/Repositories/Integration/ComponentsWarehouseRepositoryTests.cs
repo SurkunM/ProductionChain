@@ -68,8 +68,8 @@ public class ComponentsWarehouseRepositoryTests
         var result = await mockRepository.GetComponentsAsync(new GetQueryParameters());
 
         Assert.NotNull(result);
-        Assert.Equal(3, result.TotalCount);
-        Assert.Equal(3, result.ComponentsWarehouseItems.Count);
+        Assert.Equal(4, result.TotalCount);
+        Assert.Equal(4, result.ComponentsWarehouseItems.Count);
     }
 
     [Fact]

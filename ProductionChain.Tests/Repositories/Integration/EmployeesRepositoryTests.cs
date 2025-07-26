@@ -58,7 +58,7 @@ public class EmployeesRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.Employees.AddRange(_employees);
+        await context.Employees.AddRangeAsync(_employees);
         await context.SaveChangesAsync();
 
         var mockRepository = new EmployeesRepository(context, _loggerMock.Object);
@@ -75,7 +75,7 @@ public class EmployeesRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.Employees.AddRange(_employees);
+        await context.Employees.AddRangeAsync(_employees);
         await context.SaveChangesAsync();
 
         var mockRepository = new EmployeesRepository(context, _loggerMock.Object);

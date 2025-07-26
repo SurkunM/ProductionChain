@@ -82,10 +82,8 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        var dbSet = context.Set<AssemblyProductionOrder>();
-
-        dbSet.AddRange(_productionOrdersList);
-        context.SaveChanges();
+        await context.AssemblyProductionOrders.AddRangeAsync(_productionOrdersList);
+        await context.SaveChangesAsync();
 
         var mockRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
 
@@ -101,10 +99,8 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        var dbSet = context.Set<AssemblyProductionOrder>();
-
-        dbSet.AddRange(_productionOrdersList);
-        context.SaveChanges();
+        await context.AssemblyProductionOrders.AddRangeAsync(_productionOrdersList);
+        await context.SaveChangesAsync();
 
         var mockRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
 
@@ -119,7 +115,7 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        await context.AddAsync(_productionOrder);
+        await context.AssemblyProductionOrders.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
@@ -136,7 +132,7 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        await context.AddAsync(_productionOrder);
+        await context.AssemblyProductionOrders.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
@@ -154,7 +150,7 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        await context.AddAsync(_productionOrder);
+        await context.AssemblyProductionOrders.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
@@ -179,7 +175,7 @@ public class AssemblyProductionOrdersRepositoryTests
         _productionOrder.InProgressProductsCount = inProgressCount;
         _productionOrder.CompletedProductsCount = completedCount;
 
-        await context.AddAsync(_productionOrder);
+        await context.AssemblyProductionOrders.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
@@ -198,7 +194,7 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        await context.AddAsync(_productionOrder);
+        await context.AssemblyProductionOrders.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);
@@ -215,7 +211,7 @@ public class AssemblyProductionOrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        await context.AddAsync(_productionOrder);
+        await context.AssemblyProductionOrders.AddAsync(_productionOrder);
         await context.SaveChangesAsync();
 
         var productionOrderRepository = new AssemblyProductionOrdersRepository(context, _loggerMock.Object);

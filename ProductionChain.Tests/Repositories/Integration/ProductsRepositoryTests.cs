@@ -42,7 +42,7 @@ public class ProductsRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.Products.AddRange(_products);
+        await context.Products.AddRangeAsync(_products);
         await context.SaveChangesAsync();
 
         var mockRepository = new ProductsRepository(context, _loggerMock.Object);
@@ -59,7 +59,7 @@ public class ProductsRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.Products.AddRange(_products);
+        await context.Products.AddRangeAsync(_products);
         await context.SaveChangesAsync();
 
         var mockRepository = new ProductsRepository(context, _loggerMock.Object);

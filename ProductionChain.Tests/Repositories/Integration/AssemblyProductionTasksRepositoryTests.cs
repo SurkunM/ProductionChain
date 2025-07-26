@@ -65,7 +65,7 @@ public class AssemblyProductionTasksRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.AssemblyProductionTasks.AddRange(_tasks);
+        await context.AssemblyProductionTasks.AddRangeAsync(_tasks);
         await context.SaveChangesAsync();
 
         var mockRepository = new AssemblyProductionTasksRepository(context, _loggerMock.Object);
@@ -82,7 +82,7 @@ public class AssemblyProductionTasksRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.AssemblyProductionTasks.AddRange(_tasks);
+        await context.AssemblyProductionTasks.AddRangeAsync(_tasks);
         await context.SaveChangesAsync();
 
         var mockRepository = new AssemblyProductionTasksRepository(context, _loggerMock.Object);

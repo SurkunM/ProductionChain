@@ -16,25 +16,33 @@ public class OrdersRepositoryTests
 
     private readonly List<Order> _orders;
 
+    private readonly Product _product;
+
     public OrdersRepositoryTests()
     {
         _dbContextFactory = new ProductionChainDbContextFactory();
 
         _loggerMock = new Mock<ILogger<OrdersRepository>>();
 
+        _product = new Product
+        {
+            Name = "Product1",
+            Model = "Model1"
+        };
+
         _orders = new List<Order>
         {
             new()
             {
                 Customer = "Customer1",
-                Product = new Product { Name  = "Product1", Model = "Model1"},
+                Product = _product,
                 StageType = ProgressStatusType.Pending
             },
 
             new()
             {
                 Customer = "Customer1",
-                Product = new Product { Name  = "Product1", Model = "Model1"},
+                Product = _product,
                 StageType = ProgressStatusType.Pending
             },
 
@@ -52,7 +60,7 @@ public class OrdersRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.Orders.AddRange(_orders);
+        await context.Orders.AddRangeAsync(_orders);
         await context.SaveChangesAsync();
 
         var mockRepository = new OrdersRepository(context, _loggerMock.Object);
@@ -69,7 +77,7 @@ public class OrdersRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.Orders.AddRange(_orders);
+        await context.Orders.AddRangeAsync(_orders);
         await context.SaveChangesAsync();
 
         var mockRepository = new OrdersRepository(context, _loggerMock.Object);
@@ -88,8 +96,7 @@ public class OrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        var product = GetProduct("Product1", "Model1");
-        var order = GetOrder(product, "Customer1", status);
+        var order = GetOrder(_product, "Customer1", status);
 
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
@@ -106,8 +113,7 @@ public class OrdersRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        var product = GetProduct("Product1", "Model1");
-        var order = GetOrder(product, "Customer1", ProgressStatusType.InProgress);
+        var order = GetOrder(_product, "Customer1", ProgressStatusType.InProgress);
 
         await context.Orders.AddAsync(order);
         await context.SaveChangesAsync();
@@ -121,15 +127,6 @@ public class OrdersRepositoryTests
         Assert.NotNull(updatedOrder);
 
         Assert.Equal(100, updatedOrder.AvailableProductsCount);
-    }
-
-    private static Product GetProduct(string name, string model)
-    {
-        return new Product
-        {
-            Name = name,
-            Model = model
-        };
     }
 
     private static Order GetOrder(Product product, string customer, ProgressStatusType status)

@@ -57,7 +57,7 @@ public class AssemblyProductionWarehouseRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.AssemblyProductionWarehouse.AddRange(_assemblyWarehouseItems);
+        await context.AssemblyProductionWarehouse.AddRangeAsync(_assemblyWarehouseItems);
         await context.SaveChangesAsync();
 
         var mockRepository = new AssemblyProductionWarehouseRepository(context, _loggerMock.Object);
@@ -74,7 +74,7 @@ public class AssemblyProductionWarehouseRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.AssemblyProductionWarehouse.AddRange(_assemblyWarehouseItems);
+        await context.AssemblyProductionWarehouse.AddRangeAsync(_assemblyWarehouseItems);
         await context.SaveChangesAsync();
 
         var mockRepository = new AssemblyProductionWarehouseRepository(context, _loggerMock.Object);
@@ -90,7 +90,7 @@ public class AssemblyProductionWarehouseRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        await context.AddAsync(_assemblyWarehouse);
+        await context.AssemblyProductionWarehouse.AddAsync(_assemblyWarehouse);
         await context.SaveChangesAsync();
 
         var assemblyWarehouseRepository = new AssemblyProductionWarehouseRepository(context, _loggerMock.Object);
@@ -109,7 +109,7 @@ public class AssemblyProductionWarehouseRepositoryTests
     {
         await using var context = _dbContextFactory.CreateContext();
 
-        await context.AddAsync(_assemblyWarehouse);
+        await context.AssemblyProductionWarehouse.AddAsync(_assemblyWarehouse);
         await context.SaveChangesAsync();
 
         var assemblyWarehouseRepository = new AssemblyProductionWarehouseRepository(context, _loggerMock.Object);

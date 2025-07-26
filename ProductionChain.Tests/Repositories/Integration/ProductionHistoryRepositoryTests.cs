@@ -44,7 +44,7 @@ public class ProductionHistoryRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.ProductionHistory.AddRange(_histories);
+        await context.ProductionHistory.AddRangeAsync(_histories);
         await context.SaveChangesAsync();
 
         var mockRepository = new ProductionHistoryRepository(context, _loggerMock.Object);
@@ -61,7 +61,7 @@ public class ProductionHistoryRepositoryTests
     {
         using var context = _dbContextFactory.CreateContext();
 
-        context.ProductionHistory.AddRange(_histories);
+        await context.ProductionHistory.AddRangeAsync(_histories);
         await context.SaveChangesAsync();
 
         var mockRepository = new ProductionHistoryRepository(context, _loggerMock.Object);
