@@ -35,18 +35,9 @@ public class CatalogController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
-        {
-            var employees = await _getEmployeesHandler.HandleAsync(queryParameters);
+        var employees = await _getEmployeesHandler.HandleAsync(queryParameters);
 
-            return Ok(employees);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Запрос на получение списка сотрудников не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return Ok(employees);
     }
 
     [HttpGet]
@@ -59,18 +50,9 @@ public class CatalogController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
-        {
-            var products = await _getProductsHandler.HandleAsync(queryParameters);
+        var products = await _getProductsHandler.HandleAsync(queryParameters);
 
-            return Ok(products);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Запрос на получение списка продукции не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return Ok(products);
     }
 
     [HttpGet]
@@ -83,17 +65,8 @@ public class CatalogController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
-        {
-            var orders = await _getOrdersHandler.HandleAsync(queryParameters);
+        var orders = await _getOrdersHandler.HandleAsync(queryParameters);
 
-            return Ok(orders);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Запрос на получение списка заказов не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return Ok(orders);
     }
 }

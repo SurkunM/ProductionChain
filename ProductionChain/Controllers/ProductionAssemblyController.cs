@@ -61,18 +61,9 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
-        {
-            var histories = await _getProductionHistoriesHandler.HandleAsync(queryParameters);
+        var histories = await _getProductionHistoriesHandler.HandleAsync(queryParameters);
 
-            return Ok(histories);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Запрос на получение списка истории не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return Ok(histories);
     }
 
     [HttpGet]
@@ -85,18 +76,9 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
-        {
-            var productionOrders = await _getProductionOrdersHandler.HandleAsync(queryParameters);
+        var productionOrders = await _getProductionOrdersHandler.HandleAsync(queryParameters);
 
-            return Ok(productionOrders);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Запрос на получение списка производственных заказов не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return Ok(productionOrders);
     }
 
     [HttpGet]
@@ -109,18 +91,9 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
-        {
-            var tasks = await _getProductionTasksHandler.HandleAsync(queryParameters);
+        var tasks = await _getProductionTasksHandler.HandleAsync(queryParameters);
 
-            return Ok(tasks);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Запрос на получение списка задач не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return Ok(tasks);
     }
 
     [HttpGet]
@@ -133,18 +106,9 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
-        {
-            var items = await _getAssemblyWarehouseItemsHandler.HandleAsync(queryParameters);
+        var items = await _getAssemblyWarehouseItemsHandler.HandleAsync(queryParameters);
 
-            return Ok(items);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Запрос на получение списка продукции из склада ГП не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return Ok(items);
     }
 
     [HttpGet]
@@ -157,18 +121,9 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
-        {
-            var items = await _getComponentsWarehouseItemsHandler.HandleAsync(queryParameters);
+        var items = await _getComponentsWarehouseItemsHandler.HandleAsync(queryParameters);
 
-            return Ok(items);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Запрос на получение списка продукции из склада компонентов не выполнен.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return Ok(items);
     }
 
     [HttpPost]
@@ -188,25 +143,9 @@ public class ProductionAssemblyController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        try
-        {
-            var isCreated = await _createProductionOrderHandler.HandleAsync(productionOrdersRequest);
+        await _createProductionOrderHandler.HandleAsync(productionOrdersRequest);
 
-            if (!isCreated)
-            {
-                _logger.LogError("Ошибка! Не удалось найти все сущности для создания производственной задачи.");//не верное сообщение
-
-                return BadRequest("Переданы не корректные данные для создания производственной задачи.");
-            }
-
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Не удалось создать производственную задачу.");
-
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return NoContent();
     }
 
     [HttpPost]
@@ -226,25 +165,16 @@ public class ProductionAssemblyController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        try
+        var isCreated = await _createProductionTaskHandler.HandleAsync(productionTaskRequest);
+
+        if (!isCreated)
         {
-            var isCreated = await _createProductionTaskHandler.HandleAsync(productionTaskRequest);
+            _logger.LogError("Ошибка! Не удалось найти все сущности для создания задачи");
 
-            if (!isCreated)
-            {
-                _logger.LogError("Ошибка! Не удалось найти все сущности для создания задачи");
-
-                return BadRequest("Переданы не корректные данные для создания новой задачи.");
-            }
-
-            return NoContent();
+            return BadRequest("Переданы не корректные данные для создания новой задачи.");
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Задача не создана.");
 
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return NoContent();
     }
 
     [HttpDelete]
@@ -257,25 +187,16 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest("Передано не корректное значение.");
         }
 
-        try
+        var isDeleted = await _deleteProductionOrderHandler.HandleAsync(id);
+
+        if (!isDeleted)
         {
-            var isDeleted = await _deleteProductionOrderHandler.HandleAsync(id);
+            _logger.LogError("Ошибка! Производственный заказ для удаления не существует. id={id}", id);
 
-            if (!isDeleted)
-            {
-                _logger.LogError("Ошибка! Производственный заказ для удаления не существует. id={id}", id);
-
-                return BadRequest("Производственный заказ для удаления не существует.");
-            }
-
-            return NoContent();
+            return BadRequest("Производственный заказ для удаления не существует.");
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Удаление производственного заказа не выполнено.");
 
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return NoContent();
     }
 
     [HttpDelete]
@@ -288,24 +209,15 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest("Не передан объект параметров.");
         }
 
-        try
+        var isDeleted = await _deleteProductionTaskHandler.HandleAsync(taskRequest);
+
+        if (!isDeleted)
         {
-            var isDeleted = await _deleteProductionTaskHandler.HandleAsync(taskRequest);
+            _logger.LogError("Ошибка! Задача для удаления не существует.");
 
-            if (!isDeleted)
-            {
-                _logger.LogError("Ошибка! Задача для удаления не существует.");
-
-                return BadRequest("Задача для удаления не существует.");
-            }
-
-            return NoContent();
+            return BadRequest("Задача для удаления не существует.");
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Ошибка! Удаление задачи не выполнено.");
 
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера.");
-        }
+        return NoContent();
     }
 }
