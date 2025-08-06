@@ -8,6 +8,7 @@ using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.DataAccess.UnitOfWork;
+using ProductionChain.Middleware;
 
 namespace ProductionChain;
 
@@ -85,6 +86,7 @@ public class ProductionChainProgram
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
+        app.UseMiddleware<ExceptionMiddleware>();
         app.UseRouting();
 
         app.UseAuthorization();
