@@ -66,9 +66,7 @@ public class CreateProductionOrderHandlerTests
         _uowMock.Setup(uow => uow.GetRepository<IProductsRepository>()).Returns(productsRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
 
-        var result = await _createProductionOrderHandler.HandleAsync(_productionOrdersRequest);
-
-        Assert.True(result);
+        await _createProductionOrderHandler.HandleAsync(_productionOrdersRequest);
 
         ordersRepositoryMock.Verify(r => r.IsOrderPending(_productionOrdersRequest.OrderId), Times.Once);
         ordersRepositoryMock.Verify(r => r.GetByIdAsync(_productionOrdersRequest.OrderId), Times.Once);
@@ -94,9 +92,7 @@ public class CreateProductionOrderHandlerTests
         _uowMock.Setup(uow => uow.GetRepository<IOrdersRepository>()).Returns(ordersRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IProductsRepository>()).Returns(productsRepositoryMock.Object);
 
-        var result = await _createProductionOrderHandler.HandleAsync(_productionOrdersRequest);
-
-        Assert.False(result);
+        await Assert.ThrowsAsync<Exception>(() => _createProductionOrderHandler.HandleAsync(_productionOrdersRequest));
 
         _uowMock.Verify(u => u.SaveAsync(), Times.Never);
 
