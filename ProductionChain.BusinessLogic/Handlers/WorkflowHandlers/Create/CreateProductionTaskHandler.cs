@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
@@ -19,7 +20,7 @@ public class CreateProductionTaskHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(_logger));
     }
 
-    public async Task<bool> HandleAsync(ProductionTaskRequest taskRequest)
+    public async Task HandleAsync(ProductionTaskRequest taskRequest)
     {
         var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
@@ -40,9 +41,7 @@ public class CreateProductionTaskHandler
                 _logger.LogError("Не удалось найти все сущности по переданным id для создания задачи: {ProductionOrderId}, {ProductId}, {EmployeeId}.",
                     taskRequest.ProductionOrderId, taskRequest.ProductId, taskRequest.EmployeeId);
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new NotFoundException("Не удалось найти все сущности по переданным id для создания задачи");
             }
 
             var success = componentsWarehouseRepository.TakeComponentsByProductId(taskRequest.ProductId, taskRequest.ProductsCount);
@@ -51,9 +50,7 @@ public class CreateProductionTaskHandler
             {
                 _logger.LogError("Не найдено нужно количество компонентов count={Count} для продукта id={ProductId}", taskRequest.ProductsCount, taskRequest.ProductId);
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new InsufficientComponentsException("Недостаточное количество компонентов на складе");
             }
 
             success = productionOrdersRepository.AddInProgressCount(taskRequest.ProductionOrderId, taskRequest.ProductsCount);
@@ -62,9 +59,7 @@ public class CreateProductionTaskHandler
             {
                 _logger.LogError("Не удалось увеличить значение строки InProgress на {Count} в производственном заказе.", taskRequest.ProductsCount);
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new UpdateStateException("Не удалось обновить значение продукции которая в состоянии \"Выполняется\"");
             }
 
             success = employeesRepository.UpdateEmployeeStatus(taskRequest.EmployeeId, EmployeeStatusType.Busy)
@@ -74,16 +69,12 @@ public class CreateProductionTaskHandler
             {
                 _logger.LogError("При изменении статуса сотрудника и производственного заказа произошла ошибка.");
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new UpdateStateException("При изменении статуса сотрудника и производственного заказа произошла ошибка");
             }
 
             await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee, DateTime.UtcNow));
 
             await _unitOfWork.SaveAsync();
-
-            return true;
         }
         catch (Exception ex)
         {
@@ -91,7 +82,7 @@ public class CreateProductionTaskHandler
 
             _logger.LogError(ex, "Ошибка. Транзакция отменена.");
 
-            return false;
+            throw;
         }
     }
 }

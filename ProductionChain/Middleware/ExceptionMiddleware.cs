@@ -34,7 +34,9 @@ public class ExceptionMiddleware
         {
             NotFoundException => (StatusCodes.Status404NotFound, exception.Message),
             ForbiddenException => (StatusCodes.Status403Forbidden, exception.Message),
-            InvalidOrderStateException => (StatusCodes.Status409Conflict, exception.Message),
+            InvalidStateException => (StatusCodes.Status409Conflict, exception.Message),
+            InsufficientComponentsException => (StatusCodes.Status400BadRequest, exception.Message),
+            UpdateStateException => (StatusCodes.Status422UnprocessableEntity, exception.Message),
             _ => (StatusCodes.Status500InternalServerError, "Ошибка сервера.")
         };
 

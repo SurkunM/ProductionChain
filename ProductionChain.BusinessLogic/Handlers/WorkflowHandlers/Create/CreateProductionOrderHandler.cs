@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
@@ -19,7 +20,7 @@ public class CreateProductionOrderHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> HandleAsync(ProductionOrdersRequest productionOrdersRequest)
+    public async Task HandleAsync(ProductionOrdersRequest productionOrdersRequest)
     {
         var ordersRepository = _unitOfWork.GetRepository<IOrdersRepository>();
         var productRepository = _unitOfWork.GetRepository<IProductsRepository>();
@@ -29,15 +30,6 @@ public class CreateProductionOrderHandler
         {
             _unitOfWork.BeginTransaction();
 
-            if (!ordersRepository.IsOrderPending(productionOrdersRequest.OrderId))
-            {
-                _logger.LogError("Ошибка. Попытка начать задачу которая уже находится в состоянии \"isProgress\" или \"Done\".");
-
-                _unitOfWork.RollbackTransaction();
-
-                return false;
-            }
-
             var order = await ordersRepository.GetByIdAsync(productionOrdersRequest.OrderId);
             var product = await productRepository.GetByIdAsync(productionOrdersRequest.ProductId);
 
@@ -46,9 +38,14 @@ public class CreateProductionOrderHandler
                 _logger.LogError("Не удалось найти сущности по переданному параметру {OrderId} или {ProductId}.",
                     productionOrdersRequest.OrderId, productionOrdersRequest.ProductId);
 
-                _unitOfWork.RollbackTransaction();
+                throw new NotFoundException("Не удалось найти заказ или продукт по переданным параметрам");
+            }
 
-                return false;
+            if (!ordersRepository.IsOrderPending(productionOrdersRequest.OrderId))
+            {
+                _logger.LogError("Попытка начать заказ который уже находится в состоянии \"isProgress\" или \"Done\".");
+
+                throw new InvalidStateException("Не корректное состояние заказа");
             }
 
             await productionOrdersRepository.CreateAsync(order.ToProductionOrderModel(product));
@@ -56,8 +53,6 @@ public class CreateProductionOrderHandler
             ordersRepository.UpdateOrderStatus(productionOrdersRequest.OrderId, ProgressStatusType.InProgress);
 
             await _unitOfWork.SaveAsync();
-
-            return true;
         }
         catch (Exception ex)
         {
@@ -65,7 +60,7 @@ public class CreateProductionOrderHandler
 
             _unitOfWork.RollbackTransaction();
 
-            return false;
+            throw;
         }
     }
 }
