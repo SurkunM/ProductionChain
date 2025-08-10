@@ -16,8 +16,8 @@ public class GetProductionHistoriesHandler
 
     public Task<ProductionHistoriesPage> HandleAsync(GetQueryParameters queryParameters)
     {
-        var productionHistoriyRepository = _unitOfWork.GetRepository<IProductionHistoryRepository>();
+        var productionHistoryRepository = _unitOfWork.GetRepository<IProductionHistoryRepository>();
 
-        return productionHistoriyRepository.GetProductionHistoriesAsync(queryParameters);
+        return productionHistoryRepository.GetProductionHistoriesAsync(queryParameters);
     }
 }
