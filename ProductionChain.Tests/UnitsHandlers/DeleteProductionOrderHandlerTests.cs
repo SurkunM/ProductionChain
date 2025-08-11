@@ -73,9 +73,7 @@ public class DeleteProductionOrderHandlerTests
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionWarehouseRepository>()).Returns(assemblyWarehouseRepositoryMok.Object);
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
 
-        var result = await _deleteProductionOrderHandler.HandleAsync(productionOrder.Id);
-
-        Assert.True(result);
+        await _deleteProductionOrderHandler.HandleAsync(productionOrder.Id);
 
         productionOrdersRepositoryMock.Verify(r => r.Delete(productionOrder), Times.Once);
         productionOrdersRepositoryMock.Verify(r => r.GetByIdAsync(productionOrder.Id), Times.Once);
@@ -85,6 +83,7 @@ public class DeleteProductionOrderHandlerTests
         ordersRepositoryMock.Verify(r => r.UpdateOrderStatus(It.IsAny<int>(), ProgressStatusType.Done), Times.Once);
 
         assemblyWarehouseRepositoryMok.Verify(r => r.AddWarehouseItems(It.IsAny<int>(), productionOrder.CompletedProductsCount), Times.Once);
+
         _uowMock.Verify(uow => uow.SaveAsync(), Times.Once);
     }
 
@@ -98,12 +97,9 @@ public class DeleteProductionOrderHandlerTests
 
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrderRepositoryMock.Object);
 
-        var result = await _deleteProductionOrderHandler.HandleAsync(id);
-
-        Assert.False(result);
+        await Assert.ThrowsAsync<Exception>(() => _deleteProductionOrderHandler.HandleAsync(id));
 
         _uowMock.Verify(u => u.SaveAsync(), Times.Never);
-
         _uowMock.Verify(u => u.BeginTransaction(), Times.Once);
         _uowMock.Verify(u => u.RollbackTransaction(), Times.Once);
     }

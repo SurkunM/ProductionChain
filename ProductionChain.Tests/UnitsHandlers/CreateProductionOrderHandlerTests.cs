@@ -95,7 +95,6 @@ public class CreateProductionOrderHandlerTests
         await Assert.ThrowsAsync<Exception>(() => _createProductionOrderHandler.HandleAsync(_productionOrdersRequest));
 
         _uowMock.Verify(u => u.SaveAsync(), Times.Never);
-
         _uowMock.Verify(u => u.BeginTransaction(), Times.Once);
         _uowMock.Verify(u => u.RollbackTransaction(), Times.Once);
     }

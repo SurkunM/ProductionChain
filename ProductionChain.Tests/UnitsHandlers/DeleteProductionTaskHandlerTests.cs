@@ -101,9 +101,7 @@ public class DeleteProductionTaskHandlerTests
         _uowMock.Setup(uow => uow.GetRepository<IEmployeesRepository>()).Returns(employeesRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IProductionHistoryRepository>()).Returns(historiesRepositoryMock.Object);
 
-        var result = await _deleteProductionTaskHandler.HandleAsync(_taskRequest);
-
-        Assert.True(result);
+        await _deleteProductionTaskHandler.HandleAsync(_taskRequest);
 
         productionOrdersRepositoryMock.Verify(r => r.SubtractInProgressCount(_taskRequest.ProductionOrderId, _taskRequest.ProductsCount), Times.Once);
         productionOrdersRepositoryMock.Verify(r => r.AddCompletedCount(_taskRequest.ProductionOrderId, _taskRequest.ProductsCount), Times.Once);
@@ -114,6 +112,8 @@ public class DeleteProductionTaskHandlerTests
 
         employeesRepositoryMock.Verify(r => r.UpdateEmployeeStatus(_taskRequest.EmployeeId, It.IsAny<EmployeeStatusType>()), Times.Once);
         historiesRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<ProductionHistory>()), Times.Once);
+
+        _uowMock.Verify(uow => uow.SaveAsync(), Times.Once);
     }
 
 
@@ -135,12 +135,9 @@ public class DeleteProductionTaskHandlerTests
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionTasksRepository>()).Returns(tasksRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IEmployeesRepository>()).Returns(employeesRepositoryMock.Object);
 
-        var result = await _deleteProductionTaskHandler.HandleAsync(_taskRequest);
-
-        Assert.False(result);
+        await Assert.ThrowsAsync<Exception>(() => _deleteProductionTaskHandler.HandleAsync(_taskRequest));
 
         _uowMock.Verify(u => u.SaveAsync(), Times.Never);
-
         _uowMock.Verify(u => u.BeginTransaction(), Times.Once);
         _uowMock.Verify(u => u.RollbackTransaction(), Times.Once);
     }

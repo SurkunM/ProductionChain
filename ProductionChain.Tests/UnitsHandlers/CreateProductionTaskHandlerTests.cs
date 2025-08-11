@@ -39,7 +39,6 @@ public class CreateProductionTaskHandlerTests
     }
 
     [Fact]
-
     public async Task ShouldSuccessfullyProcessAllStepsAndSaveChanges()
     {
         var product = new Product
@@ -97,9 +96,7 @@ public class CreateProductionTaskHandlerTests
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionTasksRepository>()).Returns(tasksRepositoryMock.Object);
 
-        var result = await _createProductionTaskHandler.HandleAsync(_taskRequest);
-
-        Assert.True(result);
+        await _createProductionTaskHandler.HandleAsync(_taskRequest);
 
         productionOrdersRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.ProductionOrderId), Times.Once);
         productionOrdersRepositoryMock.Verify(r => r.UpdateProductionOrderStatus(_taskRequest.ProductionOrderId), Times.Once);
@@ -132,12 +129,9 @@ public class CreateProductionTaskHandlerTests
         _uowMock.Setup(uow => uow.GetRepository<IProductsRepository>()).Returns(productsRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IEmployeesRepository>()).Returns(employeesRepositoryMock.Object);
 
-        var result = await _createProductionTaskHandler.HandleAsync(_taskRequest);
-
-        Assert.False(result);
+        await Assert.ThrowsAsync<Exception>(() => _createProductionTaskHandler.HandleAsync(_taskRequest));
 
         _uowMock.Verify(u => u.SaveAsync(), Times.Never);
-
         _uowMock.Verify(u => u.BeginTransaction(), Times.Once);
         _uowMock.Verify(u => u.RollbackTransaction(), Times.Once);
     }
