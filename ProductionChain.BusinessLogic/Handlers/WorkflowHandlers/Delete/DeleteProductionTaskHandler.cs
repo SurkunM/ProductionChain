@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
@@ -19,7 +20,7 @@ public class DeleteProductionTaskHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> HandleAsync(ProductionTaskRequest taskRequest)
+    public async Task HandleAsync(ProductionTaskRequest taskRequest)
     {
         var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
         var employeesRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
@@ -37,9 +38,7 @@ public class DeleteProductionTaskHandler
             {
                 _logger.LogError("При изменении значений \"InProgress\" и \"Completed\" в производственном заказе произошла ошибка.");
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new UpdateStateException("При обновлений в производственном заказе произошла ошибка");//Сделать более информативнее!
             }
 
             success = employeesRepository.UpdateEmployeeStatus(taskRequest.EmployeeId, EmployeeStatusType.Available)
@@ -49,9 +48,7 @@ public class DeleteProductionTaskHandler
             {
                 _logger.LogError("При изменении статуса сотрудника и производственного заказа произошла ошибка.");
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new UpdateStateException("При обновлений в статуса произошла ошибка");
             }
 
             var task = await tasksRepository.GetByIdAsync(taskRequest.Id);
@@ -60,9 +57,7 @@ public class DeleteProductionTaskHandler
             {
                 _logger.LogError("Не удалось найди задачу по переданному id={id}", taskRequest.Id);
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new NotFoundException("Не удалось найди задачу");
             }
 
             tasksRepository.SetTaskEndTime(taskRequest.Id);
@@ -71,8 +66,6 @@ public class DeleteProductionTaskHandler
             tasksRepository.Delete(task);
 
             await _unitOfWork.SaveAsync();
-
-            return true;
         }
         catch (Exception ex)
         {
@@ -80,7 +73,7 @@ public class DeleteProductionTaskHandler
 
             _logger.LogError(ex, "Ошибка! При удалении задачи из БД произошла ошибка. Транзакция отменена");
 
-            return false;
+            throw;
         }
     }
 }

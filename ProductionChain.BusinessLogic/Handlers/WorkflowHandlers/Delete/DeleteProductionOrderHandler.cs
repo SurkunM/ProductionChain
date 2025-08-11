@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Model.Enums;
@@ -17,7 +18,7 @@ public class DeleteProductionOrderHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> HandleAsync(int id)
+    public async Task HandleAsync(int id)
     {
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
         var ordersRepository = _unitOfWork.GetRepository<IOrdersRepository>();
@@ -33,18 +34,14 @@ public class DeleteProductionOrderHandler
             {
                 _logger.LogError("Не найден производственный заказ по id={id}", id);
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new NotFoundException("Не найден производственный заказ, обновление данных не выполнено");
             }
 
             if (productionOrdersRepository.HasInProgressTasks(id))
             {
                 _logger.LogError("Ошибка! Попытка завершить производственную задачу в которой есть незавершенные задачи.");
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new InvalidStateException("Не удалось завершить производственную задачу, найдены незавершенные задачи");
             }
 
             ordersRepository.SetAvailableProductsCount(productionOrder.OrderId, productionOrder.CompletedProductsCount);
@@ -64,16 +61,12 @@ public class DeleteProductionOrderHandler
             {
                 _logger.LogError("При добавлении собранной продукции в склад ГП произошла ошибка.");
 
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new NotFoundException("Продукт не найден в сладе, обновление данных не выполнено");
             }
 
             productionOrdersRepository.Delete(productionOrder);
 
             await _unitOfWork.SaveAsync();
-
-            return true;
         }
         catch (Exception ex)
         {
@@ -81,7 +74,7 @@ public class DeleteProductionOrderHandler
 
             _logger.LogError(ex, "Ошибка! При удалении производственного заказа из БД произошла ошибка. Транзакция отменена");
 
-            return false;
+            throw;
         }
     }
 }

@@ -165,14 +165,7 @@ public class ProductionAssemblyController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        var isCreated = await _createProductionTaskHandler.HandleAsync(productionTaskRequest);
-
-        if (!isCreated)
-        {
-            _logger.LogError("Ошибка! Не удалось найти все сущности для создания задачи");
-
-            return BadRequest("Переданы не корректные данные для создания новой задачи.");
-        }
+        await _createProductionTaskHandler.HandleAsync(productionTaskRequest);
 
         return NoContent();
     }
@@ -187,14 +180,7 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest("Передано не корректное значение.");
         }
 
-        var isDeleted = await _deleteProductionOrderHandler.HandleAsync(id);
-
-        if (!isDeleted)
-        {
-            _logger.LogError("Ошибка! Производственный заказ для удаления не существует. id={id}", id);
-
-            return BadRequest("Производственный заказ для удаления не существует.");
-        }
+        await _deleteProductionOrderHandler.HandleAsync(id);
 
         return NoContent();
     }
@@ -209,14 +195,7 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest("Не передан объект параметров.");
         }
 
-        var isDeleted = await _deleteProductionTaskHandler.HandleAsync(taskRequest);
-
-        if (!isDeleted)
-        {
-            _logger.LogError("Ошибка! Задача для удаления не существует.");
-
-            return BadRequest("Задача для удаления не существует.");
-        }
+        await _deleteProductionTaskHandler.HandleAsync(taskRequest);
 
         return NoContent();
     }
