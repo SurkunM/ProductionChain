@@ -77,7 +77,30 @@ export default createStore({
     },
 
     mutations: {
-        setEmployees(state, employees) {
+        setEmployeesMapping(state, employees) {
+            employees.forEach(e => {
+                if (e.status === "Available") {
+                    e.statusMap = "Свободен";
+                }
+                else if (e.status === "OnLeave") {
+                    e.statusMap = "Отсудствует";
+                } else {
+                    e.statusMap = "Занят";
+                }
+
+                if (e.position === "AssemblyREA") {
+                    e.positionMap = "Монтажник РЭА";
+                }
+                else if (e.position === "SolderPCB") {
+                    e.positionMap = "Пайщик";
+                }
+                else if (e.position === "TechnicianQA") {
+                    e.positionMap = "Настройщик";
+                } else {
+                    e.positionMap = "Упаковщик";
+                }
+            });
+
             state.employees = employees;
         },
 
@@ -85,9 +108,18 @@ export default createStore({
             state.products = products;
         },
 
-        setOrders(state, orders) {
+        setOrdersMapping(state, orders) {
             orders.forEach(o => {
                 o.productName = `${o.productName || ""} (${o.productModel || ""})`;
+
+                if (o.status === "InProgress") {
+                    o.statusMap = "В работе";
+                }
+                else if (o.status === "Pending") {
+                    o.statusMap = "В очереди";
+                } else {
+                    o.statusMap = "Выполнено";
+                }
             });
 
             state.orders = orders;
@@ -113,9 +145,18 @@ export default createStore({
             state.histories = histories;
         },
 
-        setProductionOrders(state, productionOrders) {
+        setProductionOrdersMapping(state, productionOrders) {
             productionOrders.forEach(po => {
                 po.name = `${po.productName || ""} (${po.productModel || ""})`;
+
+                if (po.status === "InProgress") {
+                    po.statusMap = "В работе";
+                }
+                else if (po.status === "Pending") {
+                    po.statusMap = "В очереди";
+                } else {
+                    po.statusMap = "Выполнено";
+                }
             });
 
             state.productionOrders = productionOrders;
@@ -196,7 +237,7 @@ export default createStore({
                 }
             }).then(response => {
                 commit("setResponseItemsIndex", response.data.employees);
-                commit("setEmployees", response.data.employees);
+                commit("setEmployeesMapping", response.data.employees);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
                 commit("setIsLoading", false);
@@ -236,7 +277,7 @@ export default createStore({
                 }
             }).then(response => {
                 commit("setResponseItemsIndex", response.data.orders);
-                commit("setOrders", response.data.orders);
+                commit("setOrdersMapping", response.data.orders);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
                 commit("setIsLoading", false);
@@ -296,7 +337,7 @@ export default createStore({
                 }
             }).then(response => {
                 commit("setResponseItemsIndex", response.data.productionOrders);
-                commit("setProductionOrders", response.data.productionOrders);
+                commit("setProductionOrdersMapping", response.data.productionOrders);
                 commit("setPageItemsCount", response.data.totalCount);
             }).finally(() => {
                 commit("setIsLoading", false);

@@ -86,10 +86,10 @@
                 </v-icon>
             </template>
 
-            <template v-slot:[`item.status`]="{ value }">
+            <template v-slot:[`item.status`]="{ value, item }">
                 <v-chip :border="`${getColor(value)} thin opacity-25`"
                         :color="getColor(value)"
-                        :text="value"
+                        :text="item.statusMap"
                         size="small"></v-chip>
             </template>
 
@@ -120,7 +120,7 @@
                     { value: "lastName", title: "Фамилия" },
                     { value: "firstName", title: "Имя" },
                     { value: "middleName", title: "Отчество" },
-                    { value: "position", title: "Должность" },
+                    { value: "positionMap", title: "Должность" },
                     { value: "status", title: "Состояние" }
                 ],
 

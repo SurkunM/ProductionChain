@@ -49,7 +49,7 @@
                             <tr v-for="order in orders" :key="order.id">
                                 <td>{{ order.index }}</td>
                                 <td>{{ order.customer }}</td>
-                                <td><v-chip :color="getOrderStatusColor(order.status)">{{ order.status }}</v-chip></td>
+                                <td><v-chip :color="getOrderStatusColor(order.status)">{{ order.statusMap }}</v-chip></td>
                             </tr>
                         </tbody>
                     </v-table>
@@ -71,8 +71,8 @@
                             <tr v-for="employee in employees" :key="employee.id">
                                 <td>{{ employee.index }}</td>
                                 <td>{{ employee.lastName }}</td>
-                                <td>{{ employee.position }}</td>
-                                <td><v-chip :color="getEmployeeStatusColor(employee.status)">{{ employee.status }}</v-chip></td>
+                                <td>{{ employee.positionMap }}</td>
+                                <td><v-chip :color="getEmployeeStatusColor(employee.status)">{{ employee.statusMap }}</v-chip></td>
                             </tr>
                         </tbody>
                     </v-table>
