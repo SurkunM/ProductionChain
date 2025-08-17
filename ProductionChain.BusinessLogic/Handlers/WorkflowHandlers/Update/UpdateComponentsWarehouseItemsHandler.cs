@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto.Responses;
+using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Mapping;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 
@@ -17,33 +19,29 @@ public class UpdateComponentsWarehouseItemsHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> HandleAsync(ComponentsWarehouseResponse componentsWarehouseDto)
+    public async Task HandleAsync(ComponentsWarehouseRequest componentsWarehouseDto)
     {
-        var projectsRepository = _unitOfWork.GetRepository<IProductsRepository>();
-        var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
+        var componentsWarehouseRepository = _unitOfWork.GetRepository<IComponentsWarehouseRepository>();
+        var productsRepository = _unitOfWork.GetRepository<IProductsRepository>();
 
         try
         {
             _unitOfWork.BeginTransaction();
 
-            var manager = await employeeRepository.GetEmployeesAsync(componentsWarehouseDto.Id);
+            var product = await productsRepository.GetByIdAsync(componentsWarehouseDto.ProductId);
 
-            if (manager is null)
+            if (product is null)
             {
-                _unitOfWork.RollbackTransaction();
-
-                return false;
+                throw new NotFoundException($"Не найден продукт по ProductId: {componentsWarehouseDto.ProductId}");
             }
-
-            projectsRepository.Update(projectDto.ToModel(manager));
+            //TODO: Нужен метод в репозиторий, который будет обновлять каждый items отдельно
+            componentsWarehouseRepository.Update(componentsWarehouseDto.ToComponentsWarehouseModel(product));
 
             await _unitOfWork.SaveAsync();
-
-            return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create project. Transaction rolled back");
+            _logger.LogError(ex, "Не найден продукт по id={ProductId}", componentsWarehouseDto.ProductId);
 
             _unitOfWork.RollbackTransaction();
 

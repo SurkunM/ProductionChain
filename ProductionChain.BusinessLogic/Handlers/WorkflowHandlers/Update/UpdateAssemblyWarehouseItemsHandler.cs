@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto.Responses;
+using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
+using ProductionChain.Contracts.Mapping;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
 
@@ -17,12 +19,33 @@ public class UpdateAssemblyWarehouseItemsHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task HandleAsync(AssemblyWarehouseItemResponse projectDto)
+    public async Task HandleAsync(AssemblyWarehouseRequest assemblyWarehouseDto)
     {
-        var employeesRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
+        var assemblyWarehouseRepository = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
+        var productsRepository = _unitOfWork.GetRepository<IProductsRepository>();
 
-        employeesRepository.Update(requestDto.ToModel());
+        try
+        {
+            _unitOfWork.BeginTransaction();
 
-        await _unitOfWork.SaveAsync();
+            var product = await productsRepository.GetByIdAsync(assemblyWarehouseDto.ProductId);
+
+            if (product is null)
+            {
+                throw new NotFoundException($"Не найден продукт по ProductId: {assemblyWarehouseDto.ProductId}");
+            }
+            //TODO: Нужен метод в репозиторий, который будет обновлять каждый items отдельно
+            assemblyWarehouseRepository.Update(assemblyWarehouseDto.ToAssemblyWarehouseModel(product)); 
+
+            await _unitOfWork.SaveAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Не найден продукт по id={ProductId}", assemblyWarehouseDto.ProductId);
+
+            _unitOfWork.RollbackTransaction();
+
+            throw;
+        }
     }
 }

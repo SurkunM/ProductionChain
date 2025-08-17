@@ -53,4 +53,27 @@ public static class MappingExtensions
             StatusType = status
         };
     }
+
+    public static AssemblyProductionWarehouse ToAssemblyWarehouseModel(this AssemblyWarehouseRequest request, Product product)
+    {
+        return new AssemblyProductionWarehouse
+        {
+            Id = request.Id,
+            Product = product,
+            ProductId = product.Id,
+            ProductsCount = request.ProductsCount
+        };
+    }
+
+    public static ComponentsWarehouse ToComponentsWarehouseModel(this ComponentsWarehouseRequest request, Product product)
+    {
+        return new ComponentsWarehouse
+        {
+            Id = request.Id,
+            Product = product,
+            ProductId = request.ProductId,
+            Type = request.Type,
+            ComponentsCount = request.ComponentsCount
+        };
+    }
 }
