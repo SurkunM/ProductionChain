@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
@@ -9,12 +10,13 @@ using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.DataAccess.UnitOfWork;
 using ProductionChain.Middleware;
+using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain;
 
-public class ProductionChainProgram
-{
-    public static void Main(string[] args)
+public class ProductionChainProgram//TODO:1. переименовать в правильной нотации для bool методов 2. Во фронте доделать HomeTab 
+{//3. попробовать сделать выгрузку в Excel истории(Возможно только если есть новые) 4. Добавить юнит-тестов
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,10 @@ public class ProductionChainProgram
                 .UseSqlServer(builder.Configuration.GetConnectionString("ProductionChainConnection"))
                 .UseLazyLoadingProxies();
         }, ServiceLifetime.Scoped, ServiceLifetime.Transient);
+
+        builder.Services.AddIdentity<Account, IdentityRole<int>>()
+            .AddEntityFrameworkStores<ProductionChainDbContext>()
+            .AddDefaultTokenProviders();
 
         builder.Services.AddControllersWithViews();
 
@@ -65,7 +71,7 @@ public class ProductionChainProgram
             try
             {
                 var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-                dbInitializer.Initialize();
+                await dbInitializer.Initialize();
             }
             catch (Exception ex)
             {
@@ -89,6 +95,7 @@ public class ProductionChainProgram
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();

@@ -2,7 +2,8 @@
 
 public enum EmployeeStatusType
 {
-    Available = 0,
-    Busy = 1,
-    OnLeave = 2
+    None = 0,
+    Available = 1,
+    Busy = 2,
+    OnLeave = 3
 }
