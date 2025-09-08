@@ -2,8 +2,10 @@
 
 public enum EmployeePositionType
 {
-    SolderPCB = 0,
-    AssemblyREA = 1,
-    TechnicianQA = 2,
-    Packer = 3
+    None = 0,   
+    SolderPCB = 1,
+    AssemblyREA = 2,
+    TechnicianQA = 3,
+    Packer = 4,
+    Manager = 5
 }

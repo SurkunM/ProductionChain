@@ -13,9 +13,19 @@ public class Employee
 
     public string? MiddleName { get; set; }
 
+    public int? AccountId { get; set; }
+
+    public virtual Account? Account { get; set; }
+
+    public int? ChiefId { get; set; }
+
+    public virtual Employee? Chief { get; set; }
+
     public required EmployeePositionType Position { get; set; }
 
     public required EmployeeStatusType Status { get; set; }
+
+    public virtual ICollection<Employee> Subordinates { get; set; } = new List<Employee>();
 
     public virtual ICollection<AssemblyProductionTask> ProductionTasks { get; set; } = new List<AssemblyProductionTask>();
 }

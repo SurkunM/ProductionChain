@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.WorkflowEntities;
 
 namespace ProductionChain.DataAccess;
 
-public class ProductionChainDbContext : DbContext
+public class ProductionChainDbContext : IdentityDbContext<Account, IdentityRole<int>, int>
 {
     public virtual DbSet<Employee> Employees { get; set; }
 
@@ -26,6 +28,16 @@ public class ProductionChainDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Account>().ToTable("Accounts");
+        modelBuilder.Entity<IdentityRole<int>>().ToTable("Roles");
+        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("AccountRoles");
+        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("AccountClaims");
+        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("AccountLogins");
+        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
+        modelBuilder.Entity<IdentityUserToken<int>>().ToTable("AccountTokens");
+
         modelBuilder.Entity<Employee>(b =>
         {
             b.Property(b => b.FirstName)
@@ -39,6 +51,17 @@ public class ProductionChainDbContext : DbContext
 
             b.Property(b => b.Position)
                 .HasMaxLength(50);
+
+            b.HasOne(e => e.Chief)
+                .WithMany(e => e.Subordinates)
+                .HasForeignKey(e => e.ChiefId);
+        });
+
+        modelBuilder.Entity<Account>(b =>
+        {
+            b.HasOne(a => a.Employee)
+                .WithOne(e => e.Account)
+                .HasForeignKey<Account>(a => a.EmployeeId);
         });
 
         modelBuilder.Entity<Order>(b =>

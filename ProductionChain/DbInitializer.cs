@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ProductionChain.DataAccess;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
@@ -10,31 +11,70 @@ public class DbInitializer
 {
     private readonly ProductionChainDbContext _dbContext;
 
-    public DbInitializer(ProductionChainDbContext dbContext)
+    private readonly RoleManager<IdentityRole<int>> _roleManager;
+
+    private readonly UserManager<Account> _userManager;
+
+    public DbInitializer(ProductionChainDbContext dbContext, RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
+        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     }
 
-    public void Initialize()
+    public async Task Initialize()
     {
         _dbContext.Database.Migrate();
 
         if (!_dbContext.Employees.Any() && !_dbContext.Products.Any() && !_dbContext.Orders.Any())
         {
-            CreateBaseData();
+            SeedBaseData();
 
             _dbContext.SaveChanges();
         }
 
         if (!_dbContext.AssemblyProductionWarehouse.Any() && !_dbContext.ComponentsWarehouse.Any())
         {
-            CreateWarehousesData();
+            SeedWarehousesData();
 
             _dbContext.SaveChanges();
         }
+
+        if (!_roleManager.Roles.Any())
+        {
+            await SeedRolesAsync();
+            await SeedAdminAccount();
+        }
     }
 
-    private void CreateBaseData()
+    private async Task SeedRolesAsync()
+    {
+        var roleNames = Enum.GetNames<RolesEnum>();
+
+        foreach (string roleName in roleNames)
+        {
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                await _roleManager.CreateAsync(new IdentityRole<int> { Name = roleName });
+            }
+        }
+    }
+
+    private async Task SeedAdminAccount()
+    {
+        var adminAccount = new Account
+        {
+            UserName = "Admin",
+            Employee = CreateEmployee("Admin", "Admin", "Admin", EmployeePositionType.None, EmployeeStatusType.None)
+        };
+
+        var passwordHash = _userManager.PasswordHasher.HashPassword(adminAccount, "admin123");
+
+        await _userManager.CreateAsync(adminAccount, passwordHash);
+        await _userManager.AddToRoleAsync(adminAccount, RolesEnum.Admin.ToString());
+    }
+
+    private void SeedBaseData()
     {
         var employee1 = CreateEmployee("Васильев", "Василий", "Васильевич", EmployeePositionType.AssemblyREA, EmployeeStatusType.Available);
         var employee2 = CreateEmployee("Александров", "Александр", "Александрович", EmployeePositionType.AssemblyREA, EmployeeStatusType.Available);
@@ -61,7 +101,7 @@ public class DbInitializer
         _dbContext.Orders.AddRange(order1, order2, order3, order4);
     }
 
-    private void CreateWarehousesData()
+    private void SeedWarehousesData()
     {
         var product1 = _dbContext.Products.FirstOrDefault(p => p.Id == 1) ?? throw new ArgumentNullException("Не найден продукт с id=1");
         var product2 = _dbContext.Products.FirstOrDefault(p => p.Id == 2) ?? throw new ArgumentNullException("Не найден продукт с id=2");
