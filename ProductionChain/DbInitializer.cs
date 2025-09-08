@@ -11,11 +11,11 @@ public class DbInitializer
 {
     private readonly ProductionChainDbContext _dbContext;
 
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<IdentityRole<int>> _roleManager;
 
     private readonly UserManager<Account> _userManager;
 
-    public DbInitializer(ProductionChainDbContext dbContext, RoleManager<IdentityRole> roleManager, UserManager<Account> userManager)
+    public DbInitializer(ProductionChainDbContext dbContext, RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
@@ -45,7 +45,6 @@ public class DbInitializer
             await SeedRolesAsync();
             await SeedAdminAccount();
         }
-
     }
 
     private async Task SeedRolesAsync()
@@ -56,7 +55,7 @@ public class DbInitializer
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
             {
-                await _roleManager.CreateAsync(new IdentityRole { Name = roleName });
+                await _roleManager.CreateAsync(new IdentityRole<int> { Name = roleName });
             }
         }
     }
