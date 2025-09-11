@@ -1,5 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using ProductionChain.BusinessLogic.Handlers.Authentication;
+using ProductionChain.BusinessLogic.Handlers.Authorization;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
@@ -11,6 +16,8 @@ using ProductionChain.DataAccess.Repositories;
 using ProductionChain.DataAccess.UnitOfWork;
 using ProductionChain.Middleware;
 using ProductionChain.Model.BasicEntities;
+using System.Security.Claims;
+using System.Text;
 
 namespace ProductionChain;
 
@@ -31,10 +38,50 @@ public class ProductionChainProgram//TODO:1. переименовать в правильной нотации 
             .AddEntityFrameworkStores<ProductionChainDbContext>()
             .AddDefaultTokenProviders();
 
+        builder.Services.Configure<IdentityOptions>(options =>
+        {
+            options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+        });
+
+        builder.Services.AddAuthorizationBuilder();
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                   
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"], // Кто издатель токена (ваше приложение)                    
+                    ValidAudience = builder.Configuration["Jwt:Audience"],// Для кого предназначен токен (ваше приложение)                   
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])), // Ключ для проверки подписи
+                    
+                    ValidateIssuerSigningKey = true,// Проверять подпись                    
+                    ValidateIssuer = true,// Проверять издателя                    
+                    ValidateAudience = true,// Проверять получателя                    
+                    ValidateLifetime = true,// Проверять срок действия
+                   
+                    ClockSkew = TimeSpan.FromMinutes(5) // Допустимое расхождение времени (для разных серверов)
+                };
+
+                // Для SPA приложений важно настроить CORS и события
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine("Token validated successfully");
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddScoped<DbInitializer>();
-
         builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<ProductionChainDbContext>());
         builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
@@ -63,6 +110,11 @@ public class ProductionChainProgram//TODO:1. переименовать в правильной нотации 
 
         builder.Services.AddTransient<DeleteProductionOrderHandler>();
         builder.Services.AddTransient<DeleteProductionTaskHandler>();
+
+        builder.Services.AddTransient<AccountRegisterHandler>();
+        builder.Services.AddTransient<LoginHandler>();
+
+        builder.Services.AddTransient<AccountAuthorizationHandler>();
 
         var app = builder.Build();
 
