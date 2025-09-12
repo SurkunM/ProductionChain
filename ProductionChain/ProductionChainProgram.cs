@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,8 +20,8 @@ using System.Text;
 
 namespace ProductionChain;
 
-public class ProductionChainProgram//TODO:1. переименовать в правильной нотации для bool методов 2. Во фронте доделать HomeTab 
-{//3. попробовать сделать выгрузку в Excel истории(Возможно только если есть новые) 4. Добавить юнит-тестов
+public class ProductionChainProgram
+{
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -51,19 +50,19 @@ public class ProductionChainProgram//TODO:1. переименовать в правильной нотации 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                    
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"], // Кто издатель токена (ваше приложение)                    
-                    ValidAudience = builder.Configuration["Jwt:Audience"],// Для кого предназначен токен (ваше приложение)                   
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])), // Ключ для проверки подписи
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],                    
+                    ValidAudience = builder.Configuration["Jwt:Audience"],                   
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
                     
-                    ValidateIssuerSigningKey = true,// Проверять подпись                    
-                    ValidateIssuer = true,// Проверять издателя                    
-                    ValidateAudience = true,// Проверять получателя                    
-                    ValidateLifetime = true,// Проверять срок действия
+                    ValidateIssuerSigningKey = true,                    
+                    ValidateIssuer = true,                 
+                    ValidateAudience = true,                 
+                    ValidateLifetime = true,
                    
                     ClockSkew = TimeSpan.FromMinutes(5) // Допустимое расхождение времени (для разных серверов)
                 };
 
-                // Для SPA приложений важно настроить CORS и события
+                // Для SPA приложений настроить CORS и события
                 options.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
@@ -78,6 +77,17 @@ public class ProductionChainProgram//TODO:1. переименовать в правильной нотации 
                     }
                 };
             });
+
+        //builder.Services.AddCors(options =>
+        //{
+        //    options.AddPolicy("VueFrontend", policy =>
+        //    {
+        //        policy.WithOrigins("http://localhost:8080") // Vue dev server
+        //              .AllowAnyHeader()
+        //              .AllowAnyMethod()
+        //              .AllowCredentials();
+        //    });
+        //});
 
         builder.Services.AddControllersWithViews();
 
@@ -152,6 +162,8 @@ public class ProductionChainProgram//TODO:1. переименовать в правильной нотации 
 
         app.MapControllers();
         app.MapFallbackToFile("index.html");
+
+        app.UseCors("VueFrontend");
 
         app.Run();
     }
