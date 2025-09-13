@@ -14,10 +14,10 @@ public class AuthenticationController : ControllerBase
 {
     private readonly LoginHandler _loginHandler;
 
-   // private readonly AccountRegisterHandler _accountRegisterHandler;
+    // private readonly AccountRegisterHandler _accountRegisterHandler;
 
-    public AuthenticationController(UserManager<Account> userManager, RoleManager<IdentityRole<int>> roleManager,LoginHandler loginHandler)
-       // AccountRegisterHandler accountRegisterHandler, 
+    public AuthenticationController(UserManager<Account> userManager, RoleManager<IdentityRole<int>> roleManager, LoginHandler loginHandler)
+    // AccountRegisterHandler accountRegisterHandler, 
     {
         //_accountRegisterHandler = accountRegisterHandler ?? throw new ArgumentNullException(nameof(accountRegisterHandler));
         _loginHandler = loginHandler ?? throw new ArgumentNullException(nameof(loginHandler));
@@ -26,7 +26,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     public async Task<AuthLoginResponse> Login(AuthLoginRequest loginRequest)
     {
-       var result = await _loginHandler.Login(loginRequest);
+        var result = await _loginHandler.HandleAsync(loginRequest);
 
         return result;
     }

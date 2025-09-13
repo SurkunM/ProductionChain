@@ -27,23 +27,23 @@ public class LoginHandler
 
     }
 
-    public async Task<AuthLoginResponse> Login(AuthLoginRequest loginRequest)
+    public async Task<AuthLoginResponse> HandleAsync(AuthLoginRequest loginRequest)
     {
-        var user = await _userManager.FindByNameAsync(loginRequest.UserLogin);
+        var account = await _userManager.FindByNameAsync(loginRequest.UserLogin);
 
-        if (user is null)
+        if (account is null)
         {
             throw new NotFoundException("Сотрудник под таким логином не зарегистрирован");
         }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, false);
+        var result = await _signInManager.CheckPasswordSignInAsync(account, loginRequest.Password, false);
 
         if (!result.Succeeded)
         {
             throw new UnauthorizedAccessException("Не удалось авторизоваться");
         }
 
-        var token = await _jwtGenerationService.GenerateTokenAsync(user);
+        var token = await _jwtGenerationService.GenerateTokenAsync(account);
 
         return new AuthLoginResponse
         {

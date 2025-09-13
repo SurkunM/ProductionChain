@@ -9,6 +9,7 @@ using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
 using ProductionChain.BusinessLogic.Services;
+using ProductionChain.Contracts.Authentication;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.DataAccess;
@@ -34,9 +35,16 @@ public class ProductionChainProgram
                 .UseLazyLoadingProxies();
         }, ServiceLifetime.Scoped, ServiceLifetime.Transient);
 
-        builder.Services.AddIdentity<Account, IdentityRole<int>>()
-            .AddEntityFrameworkStores<ProductionChainDbContext>()
-            .AddDefaultTokenProviders();
+        builder.Services.AddIdentity<Account, IdentityRole<int>>(options =>
+        {
+            options.Password.RequiredLength = 6;
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+        })
+        .AddEntityFrameworkStores<ProductionChainDbContext>()
+        .AddDefaultTokenProviders();
 
         builder.Services.Configure<IdentityOptions>(options =>
         {
@@ -45,45 +53,49 @@ public class ProductionChainProgram
 
         builder.Services.AddAuthorizationBuilder();
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                   
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],                    
-                    ValidAudience = builder.Configuration["Jwt:Audience"],                   
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
-                    
-                    ValidateIssuerSigningKey = true,                    
-                    ValidateIssuer = true,                 
-                    ValidateAudience = true,                 
-                    ValidateLifetime = true,
-                   
-                    ClockSkew = TimeSpan.FromMinutes(5)
-                };
 
-                // Сказано, что для SPA приложений настроить CORS и события
-                options.Events = new JwtBearerEvents
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
+
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+
+                ClockSkew = TimeSpan.FromMinutes(5)
+            };
+
+            // Сказано, что для SPA приложений настроить CORS и события
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
                 {
-                    OnAuthenticationFailed = context =>
-                    {
-                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        Console.WriteLine("Token validated successfully");
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                    Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = context =>
+                {
+                    Console.WriteLine("Token validated successfully");
+                    return Task.CompletedTask;
+                }
+            };
+        });
 
         builder.Services.AddCors(options =>  // Vue dev server. Эта настройка может быть не нужна
         {
             options.AddPolicy("VueFrontend", policy =>
             {
-                policy.WithOrigins("http://localhost:8080") 
+                policy.WithOrigins("http://localhost:8080")
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials();
@@ -98,6 +110,7 @@ public class ProductionChainProgram
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
         builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddTransient<IJwtGenerationService, JwtGenerationService>();
 
         builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
         builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
