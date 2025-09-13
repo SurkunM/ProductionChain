@@ -8,6 +8,7 @@ using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
+using ProductionChain.BusinessLogic.Services;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.DataAccess;
@@ -59,10 +60,10 @@ public class ProductionChainProgram
                     ValidateAudience = true,                 
                     ValidateLifetime = true,
                    
-                    ClockSkew = TimeSpan.FromMinutes(5) // Допустимое расхождение времени (для разных серверов)
+                    ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
-                // Для SPA приложений настроить CORS и события
+                // Сказано, что для SPA приложений настроить CORS и события
                 options.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
@@ -78,21 +79,24 @@ public class ProductionChainProgram
                 };
             });
 
-        //builder.Services.AddCors(options =>
-        //{
-        //    options.AddPolicy("VueFrontend", policy =>
-        //    {
-        //        policy.WithOrigins("http://localhost:8080") // Vue dev server
-        //              .AllowAnyHeader()
-        //              .AllowAnyMethod()
-        //              .AllowCredentials();
-        //    });
-        //});
+        builder.Services.AddCors(options =>  // Vue dev server. Эта настройка может быть не нужна
+        {
+            options.AddPolicy("VueFrontend", policy =>
+            {
+                policy.WithOrigins("http://localhost:8080") 
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+        });
 
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddScoped<DbInitializer>();
         builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<ProductionChainDbContext>());
+
+        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
         builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
         builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
@@ -168,3 +172,6 @@ public class ProductionChainProgram
         app.Run();
     }
 }
+//TODO:1. переименовать в правильной нотации для bool методов 
+// 2. Во фронте доделать HomeTab 
+// 3. попробовать сделать выгрузку в Excel истории(Возможно только если есть новые) 4. Добавить юнит-тестов

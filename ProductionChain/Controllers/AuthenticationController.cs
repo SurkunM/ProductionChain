@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProductionChain.BusinessLogic.Handlers.Authentication;
+using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain.Controllers;
@@ -10,10 +12,6 @@ namespace ProductionChain.Controllers;
 [Route("api/[controller]/[action]")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly UserManager<Account> _userManager;
-
-    private readonly RoleManager<IdentityRole<int>> _roleManager;
-
     private readonly LoginHandler _loginHandler;
 
    // private readonly AccountRegisterHandler _accountRegisterHandler;
@@ -23,16 +21,14 @@ public class AuthenticationController : ControllerBase
     {
         //_accountRegisterHandler = accountRegisterHandler ?? throw new ArgumentNullException(nameof(accountRegisterHandler));
         _loginHandler = loginHandler ?? throw new ArgumentNullException(nameof(loginHandler));
-        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-        _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login()
+    public async Task<AuthLoginResponse> Login(AuthLoginRequest loginRequest)
     {
-        await _loginHandler.Login();
+       var result = await _loginHandler.Login(loginRequest);
 
-        return Ok();
+        return result;
     }
 
     [HttpPost]

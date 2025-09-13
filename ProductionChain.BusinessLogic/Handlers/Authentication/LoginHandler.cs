@@ -1,4 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using ProductionChain.Contracts.Authentication;
+using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Dto.Responses;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain.BusinessLogic.Handlers.Authentication;
@@ -11,16 +15,41 @@ public class LoginHandler
 
     private readonly SignInManager<Account> _signInManager;
 
-    public LoginHandler(RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager, SignInManager<Account> signInManager)
+    private readonly IJwtGenerationService _jwtGenerationService;
+
+    public LoginHandler(RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager, SignInManager<Account> signInManager,
+         IJwtGenerationService jwtGenerationService)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+        _jwtGenerationService = jwtGenerationService ?? throw new ArgumentNullException(nameof(jwtGenerationService));
+
     }
 
-    public async Task Login()
+    public async Task<AuthLoginResponse> Login(AuthLoginRequest loginRequest)
     {
+        var user = await _userManager.FindByNameAsync(loginRequest.UserLogin);
 
+        if (user is null)
+        {
+            throw new NotFoundException("Сотрудник под таким логином не зарегистрирован");
+        }
+
+        var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, false);
+
+        if (!result.Succeeded)
+        {
+            throw new UnauthorizedAccessException("Не удалось авторизоваться");
+        }
+
+        var token = await _jwtGenerationService.GenerateTokenAsync(user);
+
+        return new AuthLoginResponse
+        {
+            Token = token,
+            Code = "test"
+        };
     }
 
     public async Task Logout()
