@@ -20,7 +20,7 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
 
     public EmployeesRepository(ProductionChainDbContext dbContext, ILogger<EmployeesRepository> logger) : base(dbContext)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger)) ;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<EmployeesPage> GetEmployeesAsync(GetQueryParameters queryParameters)
@@ -81,6 +81,20 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
         }
 
         employee.Status = statusType;
+
+        return true;
+    }
+
+    public bool AddAccount(int employeeId, Account account)
+    {
+        var employee = DbSet.FirstOrDefault(e => e.Id == employeeId);
+
+        if (employee is null)
+        {
+            return false;
+        }
+
+        employee.Account = account;
 
         return true;
     }

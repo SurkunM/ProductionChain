@@ -76,4 +76,13 @@ public static class MappingExtensions
             ComponentsCount = request.ComponentsCount
         };
     }
+
+    public static Account ToAccountModel(this AuthAccountRegisterRequest accountRegisterRequest, Employee employee)
+    {
+        return new Account
+        {
+            UserName = accountRegisterRequest.Login,
+            Employee = employee
+        };
+    }
 }

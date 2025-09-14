@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Mapping;
 using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Model.BasicEntities;
+using Microsoft.Extensions.Logging;
 
 namespace ProductionChain.BusinessLogic.Handlers.Authorization;
 
@@ -15,40 +17,61 @@ public class AccountAuthorizationHandler
 
     private readonly UserManager<Account> _userManager;
 
+    private readonly ILogger<AccountAuthorizationHandler> _logger;
+
     public AccountAuthorizationHandler(RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork, ILogger<AccountAuthorizationHandler> logger)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task HandleAsync(AuthAccountRegisterRequest accountRegisterRequest)
     {
         var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
 
-        var employee = await employeeRepository.GetByIdAsync(accountRegisterRequest.EmployeeId);
-
-        if (employee is null)
+        try
         {
-            throw new NotFoundException("Сотрудник не найден");
+            _unitOfWork.BeginTransaction();
+
+            var employee = await employeeRepository.GetByIdAsync(accountRegisterRequest.EmployeeId);
+
+            if (employee is null)
+            {
+                _logger.LogError("Сотрудник по id:{employeeId} не найден.", accountRegisterRequest.EmployeeId);
+
+                throw new NotFoundException("Сотрудник не найден.");
+            }
+
+            var account = accountRegisterRequest.ToAccountModel(employee);
+
+            var result = await _userManager.CreateAsync(account, accountRegisterRequest.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+
+                _logger.LogError("При создании аккаунта произошла ошибка. Errors: {errors}.", errors);
+
+                throw new AccountNotCreatedException("Аккаунт не создан.");//Сделать более информативнее
+            }
+
+            await _userManager.AddToRoleAsync(account, accountRegisterRequest.Role);
+
+            employeeRepository.AddAccount(employee.Id, account);
+
+            await _unitOfWork.SaveAsync();
+        }
+        catch (Exception ex)
+        {
+            _unitOfWork.RollbackTransaction();
+
+            _logger.LogError(ex, "При регистрации аккаунта произошла ошибка. Транзакция отменена.");
+
+            throw;
         }
 
-        var adminAccount = new Account//Сделать маппинг
-        {
-            UserName = accountRegisterRequest.Login,
-            Employee = employee
-        };
-
-        var result = await _userManager.CreateAsync(adminAccount, accountRegisterRequest.Password);
-
-        if (result.Succeeded)
-        {
-            await _userManager.AddToRoleAsync(adminAccount, accountRegisterRequest.Role);
-        }
-
-        //var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-
-        //throw new Exception($"Ошибка создания пользователя: {errors}");//Сделать кастомный exception
     }
 }
