@@ -6,12 +6,10 @@ namespace ProductionChain.Middleware;
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionMiddleware> _logger;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+    public ExceptionMiddleware(RequestDelegate next)
     {
-        _next = next;
-        _logger = logger;
+        _next = next ?? throw new ArgumentNullException(nameof(next));
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -22,8 +20,6 @@ public class ExceptionMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Произошло необработанное исключение: {Message}", ex.Message);
-
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -33,6 +29,7 @@ public class ExceptionMiddleware
         var (statusCode, message) = exception switch
         {
             NotFoundException => (StatusCodes.Status404NotFound, exception.Message),
+            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, exception.Message),
             ForbiddenException => (StatusCodes.Status403Forbidden, exception.Message),
             InvalidStateException => (StatusCodes.Status409Conflict, exception.Message),
             InsufficientComponentsException => (StatusCodes.Status400BadRequest, exception.Message),

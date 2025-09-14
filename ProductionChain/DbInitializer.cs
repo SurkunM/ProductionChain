@@ -68,9 +68,13 @@ public class DbInitializer
             Employee = CreateEmployee("Admin", "Admin", "Admin", EmployeePositionType.None, EmployeeStatusType.None)
         };
 
-        var passwordHash = _userManager.PasswordHasher.HashPassword(adminAccount, "admin123");
+        var result = await _userManager.CreateAsync(adminAccount, "Admin123");
 
-        await _userManager.CreateAsync(adminAccount, passwordHash);
+        if (!result.Succeeded)
+        {
+            throw new Exception("Не удалось создать аккаунт Admin");
+        }
+
         await _userManager.AddToRoleAsync(adminAccount, RolesEnum.Admin.ToString());
     }
 

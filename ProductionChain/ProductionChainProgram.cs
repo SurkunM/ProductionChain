@@ -138,9 +138,7 @@ public class ProductionChainProgram
         builder.Services.AddTransient<DeleteProductionOrderHandler>();
         builder.Services.AddTransient<DeleteProductionTaskHandler>();
 
-        builder.Services.AddTransient<AccountRegisterHandler>();
-        builder.Services.AddTransient<LoginHandler>();
-
+        builder.Services.AddTransient<AccountAuthenticationHandler>();
         builder.Services.AddTransient<AccountAuthorizationHandler>();
 
         var app = builder.Build();
@@ -179,8 +177,6 @@ public class ProductionChainProgram
 
         app.MapControllers();
         app.MapFallbackToFile("index.html");
-
-        app.UseCors("VueFrontend");
 
         app.Run();
     }

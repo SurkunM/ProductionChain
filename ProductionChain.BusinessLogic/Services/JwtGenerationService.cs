@@ -45,7 +45,6 @@ public class JwtGenerationService : IJwtGenerationService
         {
             new(ClaimTypes.NameIdentifier, account.Id.ToString()),
             new(ClaimTypes.Name, account.UserName),
-            new(ClaimTypes.Email, account.Email),
 
             new("EmployeeId", account.EmployeeId.ToString()),
             new("FirstName", account.Employee.FirstName),
