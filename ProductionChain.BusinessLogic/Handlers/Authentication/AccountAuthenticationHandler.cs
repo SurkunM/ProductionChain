@@ -7,7 +7,7 @@ using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain.BusinessLogic.Handlers.Authentication;
 
-public class LoginHandler
+public class AccountAuthenticationHandler
 {
     private readonly RoleManager<IdentityRole<int>> _roleManager;
 
@@ -17,7 +17,7 @@ public class LoginHandler
 
     private readonly IJwtGenerationService _jwtGenerationService;
 
-    public LoginHandler(RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager, SignInManager<Account> signInManager,
+    public AccountAuthenticationHandler(RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager, SignInManager<Account> signInManager,
          IJwtGenerationService jwtGenerationService)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
