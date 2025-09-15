@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
 using ProductionChain.Contracts.QueryParameters;
 
@@ -26,6 +27,7 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetEmployees([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
@@ -41,6 +43,7 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetProducts([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
@@ -56,6 +59,7 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetOrders([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)

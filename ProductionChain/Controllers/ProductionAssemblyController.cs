@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
@@ -52,6 +53,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetProductionHistory([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
@@ -67,6 +69,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetProductionOrders([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
@@ -82,6 +85,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager,Employee")]
     public async Task<IActionResult> GetProductionTasks([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
@@ -97,6 +101,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager,Employee")]
     public async Task<IActionResult> GetAssemblyWarehouseItems([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
@@ -112,6 +117,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Manager,Employee")]
     public async Task<IActionResult> GetComponentsWarehouseItems([FromQuery] GetQueryParameters queryParameters)
     {
         if (!ModelState.IsValid)
@@ -127,6 +133,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> CreateProductionOrder(ProductionOrdersRequest productionOrdersRequest)
     {
         if (productionOrdersRequest is null)
@@ -149,6 +156,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> CreateProductionTask(ProductionTaskRequest productionTaskRequest)
     {
         if (productionTaskRequest is null)
@@ -171,6 +179,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> DeleteProductionOrder([FromBody] int id)
     {
         if (id < 0)
@@ -186,6 +195,7 @@ public class ProductionAssemblyController : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> DeleteProductionTask([FromBody] ProductionTaskRequest taskRequest)
     {
         if (taskRequest is null)

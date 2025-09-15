@@ -10,16 +10,13 @@ namespace ProductionChain.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+[AllowAnonymous]
 public class AuthenticationController : ControllerBase
 {
-    private readonly LoginHandler _loginHandler;
+    private readonly AccountAuthenticationHandler _loginHandler;
 
-    // private readonly AccountRegisterHandler _accountRegisterHandler;
-
-    public AuthenticationController(UserManager<Account> userManager, RoleManager<IdentityRole<int>> roleManager, LoginHandler loginHandler)
-    // AccountRegisterHandler accountRegisterHandler, 
+    public AuthenticationController(UserManager<Account> userManager, RoleManager<IdentityRole<int>> roleManager, AccountAuthenticationHandler loginHandler)
     {
-        //_accountRegisterHandler = accountRegisterHandler ?? throw new ArgumentNullException(nameof(accountRegisterHandler));
         _loginHandler = loginHandler ?? throw new ArgumentNullException(nameof(loginHandler));
     }
 
@@ -32,7 +29,6 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> Logout()
     {
         await _loginHandler.Logout();
