@@ -1,5 +1,5 @@
 <template>
-    <v-card  id="app">
+    <v-card id="app">
         <v-layout>
             <v-navigation-drawer>
                 <!--expand-on-hover
@@ -22,6 +22,11 @@
                     <v-list-item prepend-icon="mdi-account-hard-hat-outline" to="/employees" title="Сотрудники"></v-list-item>
                     <v-list-item prepend-icon="mdi-clipboard-edit-outline" to="/products" title="Продукция"></v-list-item>
                     <v-list-item prepend-icon="mdi-av-timer" to="/history" title="История задач"></v-list-item>
+
+                    <v-divider></v-divider>
+                    <v-list-item prepend-icon="mdi-login" @click="show" title="Войти"></v-list-item>
+                    <v-list-item prepend-icon="mdi-file-document-edit-outline" to="/registr" title="Создать аккаунт"></v-list-item>
+
                 </v-list>
             </v-navigation-drawer>
 
@@ -30,4 +35,24 @@
             </v-main>
         </v-layout>
     </v-card>
+
+    <template>
+        <login-modal ref="loginModal" @save="createTask"></login-modal>
+    </template>
 </template>
+
+<script>
+    import LoginModal from "./components/LoginModal.vue";
+
+    export default {
+        components: {
+            LoginModal
+        },
+
+        methods: {
+            show() {
+                this.$refs.loginModal.show();
+            }
+        }
+    }
+</script>
