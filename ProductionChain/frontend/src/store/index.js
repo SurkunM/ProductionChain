@@ -259,9 +259,10 @@ export default createStore({
                 commit("setResponseItemsIndex", response.data.products);
                 commit("setProducts", response.data.products);
                 commit("setPageItemsCount", response.data.totalCount);
-            }).finally(() => {
-                commit("setIsLoading", false);
-            });
+            })
+                .finally(() => {
+                    commit("setIsLoading", false);
+                });
         },
 
         loadOrders({ commit, state }) {
@@ -359,12 +360,9 @@ export default createStore({
                 commit("setResponseItemsIndex", response.data.assemblyWarehouseItems);
                 commit("setAssemblyWarehouseItems", response.data.assemblyWarehouseItems);
                 commit("setPageItemsCount", response.data.totalCount);
-            })
-                .catch(() => {
-                    this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
-                }).finally(() => {
-                    commit("setIsLoading", false);
-                });
+            }).finally(() => {
+                commit("setIsLoading", false);
+            });
         },
 
         loadComponentsWarehouseItems({ commit, state }) {
@@ -435,6 +433,40 @@ export default createStore({
             }).finally(() => {
                 commit("setIsLoading", false);
             });
+        },
+
+        login({ commit }, { username, password }) {
+            commit("setIsLoading", true);
+
+            return axios.post("/api/Authentication/Login", {
+                UserLogin: username,
+                Password: password
+            }).then(response => {
+                if (!response.data?.token) {
+                    throw new Error("Токен аутентификации не получен");
+                }
+
+                localStorage.setItem("authToken", response.data.token);
+                axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+
+            }).finally(() => {
+                commit("setIsLoading", false);
+            });
+        },
+
+        logout() {
+            return axios.post("/api/Authentication/Logout");
+        },
+
+        register({ commit }, user) {
+            commit("setIsLoading", true);
+
+            return axios.post("/api/Authorization/AccountRegister", {
+                EmployeeId: user.employeeId,
+                Login: user.login,
+                Password: user.password,
+                Role: user.role
+            }).finally(() => commit("setIsLoading", false));
         }
     }
 })

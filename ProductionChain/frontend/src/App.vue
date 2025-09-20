@@ -24,8 +24,8 @@
                     <v-list-item prepend-icon="mdi-av-timer" to="/history" title="История задач"></v-list-item>
 
                     <v-divider></v-divider>
-                    <v-list-item prepend-icon="mdi-login" @click="show" title="Войти"></v-list-item>
-                    <v-list-item prepend-icon="mdi-file-document-edit-outline" to="/registr" title="Создать аккаунт"></v-list-item>
+                    <v-list-item prepend-icon="mdi-login" @click="showLoginModal" title="Войти"></v-list-item>
+                    <v-list-item prepend-icon="mdi-file-document-edit-outline" @click="showRegisterModal" title="Создать аккаунт"></v-list-item>
 
                 </v-list>
             </v-navigation-drawer>
@@ -39,19 +39,29 @@
     <template>
         <login-modal ref="loginModal" @save="createTask"></login-modal>
     </template>
+
+    <template>
+        <register-modal ref="registerModal" @save="createTask"></register-modal>
+    </template>
 </template>
 
 <script>
     import LoginModal from "./components/LoginModal.vue";
+    import RegisterModal from "./components/RegisterModal.vue";
 
     export default {
         components: {
-            LoginModal
+            LoginModal,
+            RegisterModal
         },
 
         methods: {
-            show() {
+            showLoginModal() {
                 this.$refs.loginModal.show();
+            },
+
+            showRegisterModal() {
+                this.$refs.registerModal.show();
             }
         }
     }
