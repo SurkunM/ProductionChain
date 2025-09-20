@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-dialog v-model="isShow" persistent max-width="600px">
+    <v-dialog v-model="isShow" persistent max-width="600px" @keydown.esc="hide">
         <v-card>
             <v-toolbar dark color="primary">
                 <v-toolbar-title>Создать аккаунт сотрудника</v-toolbar-title>
@@ -8,51 +8,44 @@
                 </v-btn>
             </v-toolbar>
 
-            <v-form ref="registrationForm" @submit.prevent="handleSubmit">
+            <v-form @submit.prevent="submitForm">
                 <v-card-text>
-                    <v-autocomplete v-model="formData.employee"
-                                    :items="employees"
-                                    item-title="fullName"
-                                    item-value="id"
-                                    label="Выбрать сотрудника"
-                                    prepend-icon="mdi-account-tie"
-                                    :rules="employeeRules"
-                                    v-model:search="employeeSearch"
-                                    clearable
-                                    class="mt-4"></v-autocomplete>
-
-                    <v-select v-model="formData.role"
-                              :items="roles"
-                              label="Выбрать роль"
-                              prepend-icon="mdi-account-key"
-                              :rules="roleRules"
-                              clearable></v-select>
-
-                    <v-text-field v-model="formData.username"
+                    <v-text-field v-model="accountData.login"
                                   label="Логин"
                                   prepend-icon="mdi-account"
-                                  :rules="usernameRules"
+                                  :error-messages="errors.login"
                                   autocomplete="off"></v-text-field>
 
-                    <v-text-field v-model="formData.password"
+                    <v-text-field v-model="accountData.password"
                                   label="Пароль"
                                   prepend-icon="mdi-lock"
                                   :type="showPassword ? 'text' : 'password'"
                                   :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                                  :rules="passwordRules"
                                   autocomplete="new-password"
+                                  :error-messages="errors.password"
                                   @click:append-inner="showPassword = !showPassword"></v-text-field>
 
-                    <v-alert v-if="errorMessage" type="error" class="mt-3">
-                        {{ errorMessage }}
-                    </v-alert>
+                    <v-autocomplete v-model="accountData.employeeId"
+                                    :items="employees"
+                                    item-title="lastName"
+                                    item-value="id"
+                                    label="Выбрать сотрудника"
+                                    prepend-icon="mdi-account-tie"
+                                    v-model:search="employeeSearch"
+                                    :error-messages="errors.employee"
+                                    autocomplete="off"
+                                    class="mt-4"></v-autocomplete>
+
+                    <v-select v-model="accountData.role"
+                              :items="roles"
+                              label="Выбрать роль"
+                              :error-messages="errors.role"
+                              prepend-icon="mdi-account-key"></v-select>
                 </v-card-text>
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" type="submit" :loading="isLoading">
-                        Создать
-                    </v-btn>
+                    <v-btn color="primary" type="submit">Создать</v-btn>
                     <v-btn color="error" @click="hide">Отменить</v-btn>
                 </v-card-actions>
             </v-form>
@@ -62,128 +55,108 @@
 
 <script>
     export default {
-        name: 'RegistrationModal',
-        props: {
-            //isShow: {
-            //    type: Boolean,
-            //    default: false
-            //}
-        },
         data() {
             return {
-                isShow: true,
-                isLoading: false,
+                isShow: false,
                 showPassword: false,
-                employeeSearch: '',
-                errorMessage: '',
-                formData: {
-                    employee: null,
+                employeeSearch: "",
+
+                accountData: {
+                    employeeId: null,
                     role: null,
-                    username: '',
-                    password: ''
+                    login: "",
+                    password: ""
                 },
-                employees: [
-                    { id: 1, fullName: 'Иванов Иван Иванович', position: 'Менеджер' },
-                    { id: 2, fullName: 'Петров Петр Петрович', position: 'Разработчик' },
-                    { id: 3, fullName: 'Сидорова Анна Владимировна', position: 'Дизайнер' },
-                    { id: 4, fullName: 'Кузнецов Дмитрий Сергеевич', position: 'Тестировщик' },
-                    { id: 5, fullName: 'Николаева Екатерина Александровна', position: 'Аналитик' }
-                ],
-                roles: [
-                    'Администратор',
-                    'Менеджер',
-                    'Разработчик',
-                    'Тестировщик',
-                    'Аналитик',
-                    'Дизайнер',
-                    'Оператор'
-                ],
-                usernameRules: [
-                    v => !!v || 'Логин обязателен для заполнения',
-                    v => (v && v.length >= 3) || 'Логин должен содержать минимум 3 символа',
-                    v => /^[a-zA-Z0-9_]+$/.test(v) || 'Логин может содержать только буквы, цифры и подчеркивания'
-                ],
-                passwordRules: [
-                    v => !!v || 'Пароль обязателен для заполнения',
-                    v => (v && v.length >= 6) || 'Пароль должен содержать минимум 6 символов',
-                    v => /[A-Z]/.test(v) || 'Пароль должен содержать хотя бы одну заглавную букву',
-                    v => /[0-9]/.test(v) || 'Пароль должен содержать хотя бы одну цифру'
-                ],
-                employeeRules: [
-                    v => !!v || 'Необходимо выбрать сотрудника'
-                ],
-                roleRules: [
-                    v => !!v || 'Необходимо выбрать роль'
+
+                errors: {
+                    employee: "",
+                    login: "",
+                    password: "",
+                    role: ""
+                },
+
+                roles: [//загружать с серверва!
+                    "Администратор",
+                    "Менеджер",
+                    "Employee"
                 ]
             }
         },
-        watch: {
-            //isShow(newVal) {
-            //    if (!newVal) {
-            //        this.resetForm();
-            //    }
-            //}
+
+        computed: {
+            employees() {
+                return this.$store.getters.employees;
+            },
         },
+
         methods: {
             show() {
+                this.$store.dispatch("loadEmployees")
+                    .catch(() => alert("Ошибка! Не удалось загрузить список сотрудников."));
+
                 this.isShow = true;
             },
+
             hide() {
+                this.resetForm();
                 this.isShow = false;
             },
 
-            async handleSubmit() {
-                if (this.$refs.registrationForm.validate()) {
-                    this.isLoading = true;
-                    this.errorMessage = '';
+            submitForm() {
 
-                    try {
-                        // Здесь будет вызов API для регистрации
-                        console.log('Данные регистрации:', this.formData);
+                if (!this.accountData.login) {
+                    this.errors.login = "Некорректный логин";
 
-                        // Имитация запроса
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    return;
+                }
 
-                        this.$emit('registered', this.formData);
+                if (!this.accountData.password || this.accountData.password.length < 6) {
+                    this.errors.password = "Некорректный парль";
+
+                    return;
+                }
+
+                if (!this.accountData.employeeId) {
+                    this.errors.employee = "Не выбран сотрудник";
+
+                    return;
+                }
+
+                if (!this.accountData.role) {
+                    this.errors.role = "Не выбрана роль";
+
+                    return;
+                }
+
+                this.$store.dispatch("register", this.accountData)
+                    .then(() => {
+                        alert("Success!");
                         this.hide();
-
-                        this.$emit('show-notification', {
-                            type: 'success',
-                            message: 'Аккаунт успешно создан'
-                        });
-
-                    } catch (error) {
-                        this.errorMessage = 'Ошибка при создании аккаунта: ' + error.message;
-                    } finally {
-                        this.isLoading = false;
-                    }
-                }
-            },
-
-            resetForm() {
-                this.formData = {
-                    employee: null,
-                    role: null,
-                    username: '',
-                    password: ''
-                };
-                this.errorMessage = '';
-                this.showPassword = false;
-                this.employeeSearch = '';
-
-                if (this.$refs.registrationForm) {
-                    this.$refs.registrationForm.resetValidation();
-                }
+                    })
+                    .catch(() => {
+                        alert("Ошибка! Не удалось создать аккаунт.");
+                    });
             },
 
             filterEmployees() {
-                if (!this.employeeSearch) return this.employees;
+                if (!this.employeeSearch) {
+                    return this.employees;
+                }
 
                 const searchTerm = this.employeeSearch.toLowerCase();
-                return this.employees.filter(employee =>
-                    employee.fullName.toLowerCase().includes(searchTerm) ||
-                    employee.position.toLowerCase().includes(searchTerm)
+
+                return this.employees.filter(e =>
+                    e.fullName.toLowerCase().includes(searchTerm) || e.position.toLowerCase().includes(searchTerm)
                 );
+            },
+
+            resetForm() {
+                this.accountData = {
+                    employeeId: null,
+                    role: null,
+                    login: "",
+                    password: ""
+                }
             }
         }
     }
