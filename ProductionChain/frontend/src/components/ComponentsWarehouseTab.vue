@@ -109,8 +109,13 @@
             this.$store.commit("setSearchParameters", this.term);
 
             this.$store.dispatch("loadComponentsWarehouseItems")
-                .catch(() => {
-                    this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
+                .catch(error => {
+                    if (error.status === 401) {
+                        this.showErrorAlert("Ошибка! Вы не авторизованы.");
+                        this.$store.commit("setIsShowLoginModal", true);
+                    } else {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
+                    }
                 });
         },
 
@@ -159,8 +164,12 @@
                 this.isSearchMode = false;
 
                 this.$store.dispatch("loadComponentsWarehouseItems")
-                    .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
+                    .catch(error => {
+                        if (error.status === 401) {
+                            this.showErrorAlert("Ошибка! Вы не авторизованы.");
+                        } else {
+                            this.showErrorAlert("Ошибка! Не удалось загрузить список компонентов.");
+                        }
                     });
             },
 

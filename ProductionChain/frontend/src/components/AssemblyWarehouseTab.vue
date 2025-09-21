@@ -108,8 +108,13 @@
             this.$store.commit("setSearchParameters", this.term);
 
             this.$store.dispatch("loadAssemblyWarehouseItems")
-                .catch(() => {
-                    this.showErrorAlert("Ошибка! Не удалось загрузить список собранных изделий.");
+                .catch(error => {
+                    if (error.status === 401) {
+                        this.showErrorAlert("Ошибка! Вы не авторизованы.");
+                        this.$store.commit("setIsShowLoginModal", true);
+                    } else {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список собранных изделий.");
+                    }
                 });
         },
 

@@ -100,8 +100,17 @@
             this.$store.commit("setSearchParameters", this.term);
 
             this.$store.dispatch("loadProducts")
-                .catch(() => {
-                    this.showErrorAlert("Ошибка! Не удалось загрузить список продукции.");
+                .catch(error => {
+                    if (error.status === 401) {
+                        this.showErrorAlert("Ошибка! Вы не авторизованы.");
+                        this.$store.commit("setIsShowLoginModal", true);
+                    }
+                    else if (error.status === 403) {
+                        this.showErrorAlert("У вас нет прав для получения данной информации.");
+                    }
+                    else {
+                        this.showErrorAlert("Ошибка! Не удалось загрузить список продукции.");
+                    }
                 });
         },
 
