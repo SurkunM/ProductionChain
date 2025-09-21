@@ -27,6 +27,8 @@
                     <v-list-item prepend-icon="mdi-login" @click="showLoginModal" title="Войти"></v-list-item>
                     <v-list-item prepend-icon="mdi-file-document-edit-outline" @click="showRegisterModal" title="Создать аккаунт"></v-list-item>
 
+                    <v-divider></v-divider>
+                    <v-list-item prepend-icon="mdi-logout" @click="logout" title="Выйти"></v-list-item>
                 </v-list>
             </v-navigation-drawer>
 
@@ -57,11 +59,17 @@
 
         methods: {
             showLoginModal() {
-                this.$refs.loginModal.show();
+                this.$store.commit("setIsShowLoginModal", true);
             },
 
             showRegisterModal() {
-                this.$refs.registerModal.show();
+                this.$store.commit("setIsShowRegisterModal", true);
+            },
+
+            logout() {
+                this.$store.dispatch("logout")
+                    .then(() => alert("logout success"))
+                    .catch(() => alert("logout error"));
             }
         }
     }

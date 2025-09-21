@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-dialog v-model="isShow" persistent max-width="600px" @keydown.esc="hide">
+    <v-dialog v-model="isShwoRegisterModal" persistent max-width="600px" @keydown.esc="hide">
         <v-card>
             <v-toolbar dark color="primary">
                 <v-toolbar-title>Создать аккаунт сотрудника</v-toolbar-title>
@@ -87,6 +87,10 @@
             employees() {
                 return this.$store.getters.employees;
             },
+
+            isShwoRegisterModal() {
+                return this.$store.getters.isShowRegisterModal;
+            }
         },
 
         methods: {
@@ -94,12 +98,12 @@
                 this.$store.dispatch("loadEmployees")
                     .catch(() => alert("Ошибка! Не удалось загрузить список сотрудников."));
 
-                this.isShow = true;
+                this.$store.commit("setIsShowRegisterModal", true);
             },
 
             hide() {
                 this.resetForm();
-                this.isShow = false;
+                this.$store.commit("setIsShowRegisterModal", false);
             },
 
             submitForm() {

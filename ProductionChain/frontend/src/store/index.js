@@ -24,6 +24,9 @@ export default createStore({
 
         sortByColumn: "",
         isDescending: false,
+
+        isShowRegisterModal: false,
+        isShwoLoginModal: false
     },
 
     getters: {
@@ -74,6 +77,14 @@ export default createStore({
         pageItemsCount(state) {
             return state.pageItemsCount;
         },
+
+        isShwoLoginModal(state) {
+            return state.isShwoLoginModal;
+        },
+
+        isShowRegisterModal(state) {
+            return state.isShowRegisterModal;
+        }
     },
 
     mutations: {
@@ -221,6 +232,14 @@ export default createStore({
             state.sortByColumn = sortBy;
             state.isDescending = isDesc;
         },
+
+        setIsShowLoginModal(state, isShow) {
+            state.isShwoLoginModal = isShow;
+        },
+
+        setIsShowRegisterModal(state, isShow) {
+            state.isShowRegisterModal = isShow;
+        }
     },
 
     actions: {
@@ -454,8 +473,20 @@ export default createStore({
             });
         },
 
-        logout() {
-            return axios.post("/api/Authentication/Logout");
+        logout({ dispatch }) {
+            return axios.post("/api/Authentication/Logout")
+                .finally(() => {
+                    dispatch("clearAuthData");
+                });
+        },
+
+        clearAuthData({ commit }) {
+            localStorage.removeItem("authToken");
+
+            delete axios.defaults.headers.common["Authorization"];
+
+            // Сбрасываем состояние в store
+            commit("setUser", null);
         },
 
         register({ commit }, user) {

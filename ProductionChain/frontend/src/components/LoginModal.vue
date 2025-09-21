@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-dialog v-model="isShow" persistent max-width="500px" @keydown.esc="hide">
+    <v-dialog v-model="isShwoLoginModal" persistent max-width="500px" @keydown.esc="hide">
         <v-card>
             <v-toolbar dark color="primary">
                 <v-toolbar-title>Войти в аккаунт</v-toolbar-title>
@@ -40,7 +40,6 @@
     export default {
         data() {
             return {
-                isShow: false,
                 showPassword: false,
 
                 accountData: {
@@ -54,14 +53,21 @@
                 }
             }
         },
+
+        computed: {
+            isShwoLoginModal() {
+                return this.$store.getters.isShwoLoginModal;
+            }
+        },
+
         methods: {
             show() {
-                this.isShow = true;
+                this.$store.commit("setIsShowLoginModal", true);
             },
 
             hide() {
                 this.resetForm();
-                this.isShow = false;
+                this.$store.commit("setIsShowLoginModal", false);
             },
 
             submitForm() {
