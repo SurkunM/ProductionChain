@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ProductionChain.Contracts.Dto.Contexts;
 using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;
@@ -27,6 +28,20 @@ public class AssemblyProductionTasksRepository : BaseEfRepository<AssemblyProduc
     {
         var queryDbSet = DbSet.AsNoTracking();
 
+        return await GetTasksAsync(queryDbSet, queryParameters);
+    }
+
+    public async Task<ProductionTasksPage> GetEmployeeTasksAsync(GetQueryParameters queryParameters, int employeeId)
+    {
+        var queryDbSet = DbSet.AsNoTracking();
+
+        queryDbSet = queryDbSet.Where(t => t.EmployeeId == employeeId);
+
+        return await GetTasksAsync(queryDbSet, queryParameters);
+    }
+
+    private async Task<ProductionTasksPage> GetTasksAsync(IQueryable<AssemblyProductionTask> queryDbSet, GetQueryParameters queryParameters)
+    {
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
             queryParameters.Term = queryParameters.Term.Trim();

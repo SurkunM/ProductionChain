@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
+using ProductionChain.Contracts.Dto.Contexts;
 using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Mapping;
 using ProductionChain.Contracts.QueryParameters;
+using System.Security.Claims;
 
 namespace ProductionChain.Controllers;
 
@@ -95,7 +98,7 @@ public class ProductionAssemblyController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var tasks = await _getProductionTasksHandler.HandleAsync(queryParameters);
+        var tasks = await _getProductionTasksHandler.HandleAsync(queryParameters, User.ToAccountContext());
 
         return Ok(tasks);
     }
