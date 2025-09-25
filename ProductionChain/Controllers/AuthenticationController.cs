@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using ProductionChain.BusinessLogic.Handlers.Authentication;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Dto.Responses;
+using ProductionChain.Contracts.Mapping;
 using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[AllowAnonymous]
 public class AuthenticationController : ControllerBase
 {
     private readonly AccountAuthenticationHandler _loginHandler;
@@ -21,6 +21,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<AuthLoginResponse> Login(AuthLoginRequest loginRequest)
     {
         var result = await _loginHandler.HandleAsync(loginRequest);
@@ -29,9 +30,12 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
-        await _loginHandler.Logout();
+        var token = HttpContext.GetBearerToken();
+
+        await _loginHandler.Logout(token);
 
         return Ok();
     }
