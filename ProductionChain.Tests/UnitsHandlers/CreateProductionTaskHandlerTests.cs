@@ -2,6 +2,7 @@
 using Moq;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Model.BasicEntities;
@@ -21,6 +22,14 @@ public class CreateProductionTaskHandlerTests
 
     private readonly ProductionTaskRequest _taskRequest;
 
+    private readonly Product _product;
+
+    private readonly Order _order;
+
+    private readonly AssemblyProductionOrder _productionOrder;
+
+    private readonly Employee _employee;
+
     public CreateProductionTaskHandlerTests()
     {
         _uowMock = new Mock<IUnitOfWork>();
@@ -36,53 +45,53 @@ public class CreateProductionTaskHandlerTests
             EmployeeId = 1,
             ProductsCount = 10
         };
-    }
 
-    [Fact]
-    public async Task ShouldSuccessfullyProcessAllStepsAndSaveChanges()
-    {
-        var product = new Product
+        _product = new Product
         {
             Id = _taskRequest.ProductId,
             Name = "Product1",
             Model = "Model1"
         };
 
-        var order = new Order
+        _order = new Order
         {
             Id = 1,
             Customer = "Customer1",
-            ProductId = product.Id,
-            Product = product,
+            ProductId = _product.Id,
+            Product = _product,
             StageType = ProgressStatusType.Pending
         };
 
-        var productionOrder = new AssemblyProductionOrder
+        _productionOrder = new AssemblyProductionOrder
         {
-            Order = order,
-            Product = product,
+            Order = _order,
+            Product = _product,
             StatusType = ProgressStatusType.Pending,
             TotalProductsCount = 100
         };
 
-        var employee = new Employee
+        _employee = new Employee
         {
             FirstName = "FirstName",
             LastName = "LastName",
             Position = EmployeePositionType.AssemblyREA,
             Status = EmployeeStatusType.Available
         };
+    }
 
+    [Fact]
+    public async Task Should_Successfully_ProcessAllSteps_And_SaveChanges()
+    {
         var productionOrdersRepositoryMock = new Mock<IAssemblyProductionOrdersRepository>();
-        productionOrdersRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductionOrderId)).ReturnsAsync(productionOrder);
+        productionOrdersRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductionOrderId)).ReturnsAsync(_productionOrder);
         productionOrdersRepositoryMock.Setup(r => r.UpdateProductionOrderStatus(_taskRequest.ProductionOrderId)).Returns(true);
         productionOrdersRepositoryMock.Setup(r => r.AddInProgressCount(_taskRequest.ProductionOrderId, _taskRequest.ProductsCount)).Returns(true);
 
         var productsRepositoryMock = new Mock<IProductsRepository>();
-        productsRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductId)).ReturnsAsync(product);
+        productsRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductId)).ReturnsAsync(_product);
 
         var employeesRepositoryMock = new Mock<IEmployeesRepository>();
-        employeesRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.EmployeeId)).ReturnsAsync(employee);
+        employeesRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.EmployeeId)).ReturnsAsync(_employee);
         employeesRepositoryMock.Setup(r => r.UpdateEmployeeStatus(_taskRequest.EmployeeId, EmployeeStatusType.Busy)).Returns(true);
 
         var componentsWarehouseRepositoryMock = new Mock<IComponentsWarehouseRepository>();
@@ -111,10 +120,12 @@ public class CreateProductionTaskHandlerTests
         tasksRepositoryMock.Verify(r => r.CreateAsync(It.IsNotNull<AssemblyProductionTask>()), Times.Once);
 
         _uowMock.Verify(uow => uow.SaveAsync(), Times.Once);
+        _uowMock.Verify(uow => uow.BeginTransaction(), Times.Once);
+        _uowMock.Verify(uow => uow.RollbackTransaction(), Times.Never);
     }
 
     [Fact]
-    public async Task ShouldBeginTransactionAndRollbackTransactionWhenException()
+    public async Task Should_BeginTransaction_And_RollbackTransaction_When_Exception()
     {
         var productionOrdersRepositoryMock = new Mock<IAssemblyProductionOrdersRepository>();
         productionOrdersRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductionOrderId)).ThrowsAsync(new Exception("Ошибка!"));
@@ -134,5 +145,101 @@ public class CreateProductionTaskHandlerTests
         _uowMock.Verify(u => u.SaveAsync(), Times.Never);
         _uowMock.Verify(u => u.BeginTransaction(), Times.Once);
         _uowMock.Verify(u => u.RollbackTransaction(), Times.Once);
+    }
+
+    [Fact]
+    public async Task Should_NotFoundException_When_ProductionOrder_IsNull()
+    {
+        var productionOrdersRepositoryMock = new Mock<IAssemblyProductionOrdersRepository>();
+        productionOrdersRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductionOrderId)).ReturnsAsync((AssemblyProductionOrder)null!);
+
+        var productsRepositoryMock = new Mock<IProductsRepository>();
+        productsRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductId)).ReturnsAsync(_product);
+
+        var employeesRepositoryMock = new Mock<IEmployeesRepository>();
+        employeesRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.EmployeeId)).ReturnsAsync(_employee);
+
+        var tasksRepositoryMock = new Mock<IAssemblyProductionTasksRepository>();
+
+        _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IProductsRepository>()).Returns(productsRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IEmployeesRepository>()).Returns(employeesRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionTasksRepository>()).Returns(tasksRepositoryMock.Object);
+
+        await Assert.ThrowsAsync<NotFoundException>(() => _createProductionTaskHandler.HandleAsync(_taskRequest));
+
+        productionOrdersRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.ProductionOrderId), Times.Once);
+        employeesRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.EmployeeId), Times.Once);
+        productsRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.ProductId), Times.Once);
+
+        tasksRepositoryMock.Verify(r => r.CreateAsync(It.IsNotNull<AssemblyProductionTask>()), Times.Never);
+
+        _uowMock.Verify(uow => uow.SaveAsync(), Times.Never);
+        _uowMock.Verify(uow => uow.BeginTransaction(), Times.Once);
+        _uowMock.Verify(uow => uow.RollbackTransaction(), Times.Once);
+    }
+
+    [Fact]
+    public async Task Should_NotFoundException_When_Product_IsNull()
+    {
+        var productionOrdersRepositoryMock = new Mock<IAssemblyProductionOrdersRepository>();
+        productionOrdersRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductionOrderId)).ReturnsAsync(_productionOrder);
+
+        var productsRepositoryMock = new Mock<IProductsRepository>();
+        productsRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductId)).ReturnsAsync((Product)null!);
+
+        var employeesRepositoryMock = new Mock<IEmployeesRepository>();
+        employeesRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.EmployeeId)).ReturnsAsync(_employee);
+
+        var tasksRepositoryMock = new Mock<IAssemblyProductionTasksRepository>();
+
+        _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IProductsRepository>()).Returns(productsRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IEmployeesRepository>()).Returns(employeesRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionTasksRepository>()).Returns(tasksRepositoryMock.Object);
+
+        await Assert.ThrowsAsync<NotFoundException>(() => _createProductionTaskHandler.HandleAsync(_taskRequest));
+
+        productionOrdersRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.ProductionOrderId), Times.Once);
+        employeesRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.EmployeeId), Times.Once);
+        productsRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.ProductId), Times.Once);
+
+        tasksRepositoryMock.Verify(r => r.CreateAsync(It.IsNotNull<AssemblyProductionTask>()), Times.Never);
+
+        _uowMock.Verify(uow => uow.SaveAsync(), Times.Never);
+        _uowMock.Verify(uow => uow.BeginTransaction(), Times.Once);
+        _uowMock.Verify(uow => uow.RollbackTransaction(), Times.Once);
+    }
+
+    [Fact]
+    public async Task Should_NotFoundException_When_Employee_IsNull()
+    {
+        var productionOrdersRepositoryMock = new Mock<IAssemblyProductionOrdersRepository>();
+        productionOrdersRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductionOrderId)).ReturnsAsync(_productionOrder);
+
+        var productsRepositoryMock = new Mock<IProductsRepository>();
+        productsRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductId)).ReturnsAsync(_product);
+
+        var employeesRepositoryMock = new Mock<IEmployeesRepository>();
+        employeesRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.EmployeeId)).ReturnsAsync((Employee)null!);
+
+        var tasksRepositoryMock = new Mock<IAssemblyProductionTasksRepository>();
+
+        _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IProductsRepository>()).Returns(productsRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IEmployeesRepository>()).Returns(employeesRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionTasksRepository>()).Returns(tasksRepositoryMock.Object);
+
+        await Assert.ThrowsAsync<NotFoundException>(() => _createProductionTaskHandler.HandleAsync(_taskRequest));
+
+        productionOrdersRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.ProductionOrderId), Times.Once);
+        employeesRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.EmployeeId), Times.Once);
+        productsRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.ProductId), Times.Once);
+
+        tasksRepositoryMock.Verify(r => r.CreateAsync(It.IsNotNull<AssemblyProductionTask>()), Times.Never);
+
+        _uowMock.Verify(uow => uow.SaveAsync(), Times.Never);
+        _uowMock.Verify(uow => uow.BeginTransaction(), Times.Once);
+        _uowMock.Verify(uow => uow.RollbackTransaction(), Times.Once);
     }
 }
