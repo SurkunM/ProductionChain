@@ -27,14 +27,18 @@ public class ProductionAssemblyController : ControllerBase
     private readonly DeleteProductionOrderHandler _deleteProductionOrderHandler;
     private readonly DeleteProductionTaskHandler _deleteProductionTaskHandler;
 
+    private readonly CreateTaskQueueHandler _createTaskQueueHandler;
+    private readonly GetTaskQueueHandler _getTaskQueueHandler;
+
     private readonly ILogger<ProductionAssemblyController> _logger;
 
     public ProductionAssemblyController(
         GetProductionHistoriesHandler getProductionHistoriesHandler, GetProductionOrdersHandler getProductionOrdersHandler,
         GetProductionTasksHandler getProductionTasksHandler, GetAssemblyWarehouseItemsHandler getAssemblyWarehouseItemsHandler,
-        GetComponentsWarehouseItemsHandler getComponentsWarehouseItemsHandler,
+        GetComponentsWarehouseItemsHandler getComponentsWarehouseItemsHandler, GetTaskQueueHandler getTaskQueueHandler,
 
         CreateProductionOrderHandler createProductionOrderHandler, CreateProductionTaskHandler createProductionTaskHandler,
+        CreateTaskQueueHandler createTaskQueueHandler,
 
         DeleteProductionOrderHandler deleteProductionOrderHandler, DeleteProductionTaskHandler deleteProductionTaskHandler,
 
@@ -44,6 +48,9 @@ public class ProductionAssemblyController : ControllerBase
 
         _createProductionOrderHandler = createProductionOrderHandler ?? throw new ArgumentNullException(nameof(createProductionOrderHandler));
         _createProductionTaskHandler = createProductionTaskHandler ?? throw new ArgumentNullException(nameof(createProductionTaskHandler));
+
+        _createTaskQueueHandler = createTaskQueueHandler ?? throw new ArgumentNullException(nameof(createTaskQueueHandler));
+        _getTaskQueueHandler = getTaskQueueHandler ?? throw new ArgumentNullException(nameof(getTaskQueueHandler));
 
         _getProductionHistoriesHandler = getProductionHistoriesHandler ?? throw new ArgumentNullException(nameof(getProductionHistoriesHandler));
         _getProductionOrdersHandler = getProductionOrdersHandler ?? throw new ArgumentNullException(nameof(getProductionOrdersHandler));
@@ -211,5 +218,32 @@ public class ProductionAssemblyController : ControllerBase
         await _deleteProductionTaskHandler.HandleAsync(taskRequest);
 
         return NoContent();
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<ActionResult> CreateTaskQueue(int employeeId)
+    {
+        await _createTaskQueueHandler.HandleAsync(employeeId);
+
+        return Created();
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
+    public ActionResult GetNextTaskQueueEmployee()
+    {
+        var employee = _getTaskQueueHandler.GetNextEmployeeHandle();
+
+        return Ok(employee);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
+    public ActionResult GetTaskQueue()
+    {
+        var employees = _getTaskQueueHandler.GetTaskQueueHandle();
+
+        return Ok(employees);
     }
 }

@@ -9,8 +9,8 @@ using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
 using ProductionChain.BusinessLogic.Services;
-using ProductionChain.Contracts.Authentication;
 using ProductionChain.Contracts.IRepositories;
+using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
@@ -111,6 +111,7 @@ public class ProductionChainProgram
 
         builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
         builder.Services.AddTransient<IJwtGenerationService, JwtGenerationService>();
+        builder.Services.AddSingleton<ITaskQueueService, TaskQueueService>();
 
         builder.Services.AddTransient<IEmployeesRepository, EmployeesRepository>();
         builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
