@@ -1,6 +1,6 @@
 ﻿using ProductionChain.Model.BasicEntities;
 
-namespace ProductionChain.Contracts.Authentication;
+namespace ProductionChain.Contracts.IServices;
 
 public interface IJwtGenerationService
 {

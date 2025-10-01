@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using ProductionChain.Contracts.Authentication;
+using ProductionChain.Contracts.IServices;
 using ProductionChain.Model.BasicEntities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
