@@ -2,6 +2,7 @@
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
+using ProductionChain.Contracts.Mapping;
 using ProductionChain.DataAccess.UnitOfWork;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
@@ -29,6 +30,6 @@ public class CreateTaskQueueHandler
             throw new NotFoundException("Сотрудник не найден");
         }
 
-        _tasksQueueService.EnqueueEmployee(employee);
+        _tasksQueueService.EnqueueEmployee(employee.ToTaskQueueDto());
     } 
 }

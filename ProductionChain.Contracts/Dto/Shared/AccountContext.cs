@@ -1,4 +1,4 @@
-﻿namespace ProductionChain.Contracts.Dto.Contexts;
+﻿namespace ProductionChain.Contracts.Dto.Shared;
 
 public class AccountContext
 {

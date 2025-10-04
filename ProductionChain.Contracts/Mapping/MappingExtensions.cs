@@ -1,4 +1,5 @@
 ﻿using ProductionChain.Contracts.Dto.Requests;
+using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
@@ -83,6 +84,19 @@ public static class MappingExtensions
         {
             UserName = accountRegisterRequest.Login,
             Employee = employee
+        };
+    }
+
+    public static TaskQueueDto ToTaskQueueDto(this Employee employee)
+    {
+        return new TaskQueueDto
+        {
+            EmployeeId = employee.Id,
+            FirstName = employee.FirstName,
+            LastName = employee.LastName,
+            MiddleName = employee.MiddleName,
+            Position = employee.Position.ToString(),
+            CreateDate = DateTime.UtcNow
         };
     }
 }

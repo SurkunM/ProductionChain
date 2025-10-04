@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ProductionChain.Contracts.Dto.Contexts;
+using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.QueryParameters;

@@ -1,14 +1,14 @@
-﻿using ProductionChain.Model.BasicEntities;
+﻿using ProductionChain.Contracts.Dto.Shared;
 
 namespace ProductionChain.Contracts.IServices;
 
 public interface ITaskQueueService
 {
-    void EnqueueEmployee(Employee employee);
+    void EnqueueEmployee(TaskQueueDto taskQueueDto);
 
-    Employee DequeueEmployee();
+    TaskQueueDto DequeueEmployee();
 
-    List<Employee> GetTaskQueueToList();
+    List<TaskQueueDto> GetTaskQueueToList();
 
-    Employee GetNextEmployee();
+    TaskQueueDto GetNextEmployee();
 }

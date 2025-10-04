@@ -1,4 +1,4 @@
-﻿using ProductionChain.Contracts.Dto.Contexts;
+﻿using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
 using ProductionChain.Model.WorkflowEntities;

@@ -1,10 +1,5 @@
-﻿using ProductionChain.Contracts.IServices;
-using ProductionChain.Model.BasicEntities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ProductionChain.Contracts.Dto.Shared;
+using ProductionChain.Contracts.IServices;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
 
@@ -17,12 +12,12 @@ public class GetTaskQueueHandler
         _tasksQueueService = tasksQueueService ?? throw new ArgumentNullException(nameof(tasksQueueService));
     }
 
-    public List<Employee> GetTaskQueueHandle()
+    public List<TaskQueueDto> GetTaskQueueHandle()
     {
         return _tasksQueueService.GetTaskQueueToList();
     }
 
-    public Employee GetNextEmployeeHandle()
+    public TaskQueueDto GetNextEmployeeHandle()
     {
         return _tasksQueueService.GetNextEmployee();
     }
