@@ -15,6 +15,7 @@ using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.DataAccess.UnitOfWork;
+using ProductionChain.Hubs;
 using ProductionChain.Middleware;
 using ProductionChain.Model.BasicEntities;
 using System.Security.Claims;
@@ -103,6 +104,7 @@ public class ProductionChainProgram
         });
 
         builder.Services.AddControllersWithViews();
+        builder.Services.AddSignalR();
 
         builder.Services.AddScoped<DbInitializer>();
         builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<ProductionChainDbContext>());
@@ -177,6 +179,8 @@ public class ProductionChainProgram
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.MapHub<TaskQueueAlertHub>("/taskAlertHub");
         app.MapFallbackToFile("index.html");
 
         app.Run();
