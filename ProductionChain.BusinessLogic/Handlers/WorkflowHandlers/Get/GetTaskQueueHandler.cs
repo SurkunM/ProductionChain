@@ -19,6 +19,6 @@ public class GetTaskQueueHandler
 
     public TaskQueueDto GetNextEmployeeHandle()
     {
-        return _tasksQueueService.GetNextEmployee();
+        return _tasksQueueService.GetNext();
     }
 }

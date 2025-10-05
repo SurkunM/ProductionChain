@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
-using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Mapping;
 using ProductionChain.Contracts.QueryParameters;
-using System.Security.Claims;
 
 namespace ProductionChain.Controllers;
 
@@ -233,17 +231,17 @@ public class ProductionAssemblyController : ControllerBase
     [Authorize(Roles = "Admin,Manager")]
     public ActionResult GetNextTaskQueueEmployee()
     {
-        var taskQueue = _getTaskQueueHandler.GetNextEmployeeHandle();
+        var nextEmployee = _getTaskQueueHandler.GetNextEmployeeHandle();
 
-        return Ok(taskQueue);
+        return Ok(nextEmployee);
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin,Manager")]
     public ActionResult GetTaskQueue()
     {
-        var taskQueue = _getTaskQueueHandler.GetTaskQueueHandle();
+        var taskQueueList = _getTaskQueueHandler.GetTaskQueueHandle();
 
-        return Ok(taskQueue);
+        return Ok(taskQueueList);
     }
 }

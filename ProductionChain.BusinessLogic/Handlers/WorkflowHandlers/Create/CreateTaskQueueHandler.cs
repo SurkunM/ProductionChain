@@ -3,7 +3,6 @@ using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
-using ProductionChain.DataAccess.UnitOfWork;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 
@@ -13,7 +12,7 @@ public class CreateTaskQueueHandler
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateTaskQueueHandler(ITaskQueueService tasksQueueService, UnitOfWork unitOfWork)
+    public CreateTaskQueueHandler(ITaskQueueService tasksQueueService, IUnitOfWork unitOfWork)
     {
         _tasksQueueService = tasksQueueService ?? throw new ArgumentNullException(nameof(tasksQueueService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -25,11 +24,11 @@ public class CreateTaskQueueHandler
 
         var employee = await employeeRepository.GetByIdAsync(employeeId);
 
-        if(employee is null)
+        if (employee is null)
         {
             throw new NotFoundException("Сотрудник не найден");
         }
 
-        _tasksQueueService.EnqueueEmployee(employee.ToTaskQueueDto());
-    } 
+        _tasksQueueService.EnqueueTaskQueue(employee.ToTaskQueueDto());
+    }
 }

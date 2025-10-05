@@ -4,11 +4,11 @@ namespace ProductionChain.Contracts.IServices;
 
 public interface ITaskQueueService
 {
-    void EnqueueEmployee(TaskQueueDto taskQueueDto);
+    void EnqueueTaskQueue(TaskQueueDto taskQueueDto);
 
-    TaskQueueDto DequeueEmployee();
+    TaskQueueDto DequeueTaskQueue();
 
     List<TaskQueueDto> GetTaskQueueToList();
 
-    TaskQueueDto GetNextEmployee();
+    TaskQueueDto GetNext();
 }

@@ -1,6 +1,5 @@
 ﻿using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.IServices;
-using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain.BusinessLogic.Services;
 
@@ -13,17 +12,17 @@ public class TaskQueueService : ITaskQueueService
         _queue = new Queue<TaskQueueDto>();
     }
 
-    public TaskQueueDto GetNextEmployee()
+    public TaskQueueDto GetNext()
     {
         return _queue.Peek();
     }
 
-    public void EnqueueEmployee(TaskQueueDto taskQueueDto)
+    public void EnqueueTaskQueue(TaskQueueDto taskQueueDto)
     {
         _queue.Enqueue(taskQueueDto);
     }
 
-    public TaskQueueDto DequeueEmployee()
+    public TaskQueueDto DequeueTaskQueue()
     {
         return _queue.Dequeue();
     }
