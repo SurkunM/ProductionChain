@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Dto.Responses;
+using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Model.BasicEntities;
@@ -44,11 +45,19 @@ public class AccountAuthenticationHandler
         }
 
         var token = await _jwtGenerationService.GenerateTokenAsync(account);
+        var roles = await _userManager.GetRolesAsync(account);
+
+        var employeeData = new EmployeeData//может перенести в метод в employeeRepository
+        {
+            UserId = account.EmployeeId,
+            UserName = $"{account.Employee.LastName} {account.Employee.FirstName[0]}.{account.Employee.MiddleName?[0] ?? ' '}.",
+            Roles = roles.ToList()
+        };
 
         return new AuthLoginResponse
         {
             Token = token,
-            Code = "test"
+            UserData = employeeData
         };
     }
 
