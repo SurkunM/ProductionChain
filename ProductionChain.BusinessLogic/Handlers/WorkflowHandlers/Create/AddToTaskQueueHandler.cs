@@ -6,13 +6,13 @@ using ProductionChain.Contracts.Mapping;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 
-public class CreateTaskQueueHandler
+public class AddToTaskQueueHandler
 {
     private readonly ITaskQueueService _tasksQueueService;
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateTaskQueueHandler(ITaskQueueService tasksQueueService, IUnitOfWork unitOfWork)
+    public AddToTaskQueueHandler(ITaskQueueService tasksQueueService, IUnitOfWork unitOfWork)
     {
         _tasksQueueService = tasksQueueService ?? throw new ArgumentNullException(nameof(tasksQueueService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));

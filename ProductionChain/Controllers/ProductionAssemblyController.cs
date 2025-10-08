@@ -25,7 +25,7 @@ public class ProductionAssemblyController : ControllerBase
     private readonly DeleteProductionOrderHandler _deleteProductionOrderHandler;
     private readonly DeleteProductionTaskHandler _deleteProductionTaskHandler;
 
-    private readonly CreateTaskQueueHandler _createTaskQueueHandler;
+    private readonly AddToTaskQueueHandler _addToTaskQueueHandler;
     private readonly GetTaskQueueHandler _getTaskQueueHandler;
 
     private readonly ILogger<ProductionAssemblyController> _logger;
@@ -36,7 +36,7 @@ public class ProductionAssemblyController : ControllerBase
         GetComponentsWarehouseItemsHandler getComponentsWarehouseItemsHandler, GetTaskQueueHandler getTaskQueueHandler,
 
         CreateProductionOrderHandler createProductionOrderHandler, CreateProductionTaskHandler createProductionTaskHandler,
-        CreateTaskQueueHandler createTaskQueueHandler,
+        AddToTaskQueueHandler addToTaskQueueHandler,
 
         DeleteProductionOrderHandler deleteProductionOrderHandler, DeleteProductionTaskHandler deleteProductionTaskHandler,
 
@@ -47,7 +47,7 @@ public class ProductionAssemblyController : ControllerBase
         _createProductionOrderHandler = createProductionOrderHandler ?? throw new ArgumentNullException(nameof(createProductionOrderHandler));
         _createProductionTaskHandler = createProductionTaskHandler ?? throw new ArgumentNullException(nameof(createProductionTaskHandler));
 
-        _createTaskQueueHandler = createTaskQueueHandler ?? throw new ArgumentNullException(nameof(createTaskQueueHandler));
+        _addToTaskQueueHandler = addToTaskQueueHandler ?? throw new ArgumentNullException(nameof(addToTaskQueueHandler));
         _getTaskQueueHandler = getTaskQueueHandler ?? throw new ArgumentNullException(nameof(getTaskQueueHandler));
 
         _getProductionHistoriesHandler = getProductionHistoriesHandler ?? throw new ArgumentNullException(nameof(getProductionHistoriesHandler));
@@ -220,9 +220,9 @@ public class ProductionAssemblyController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult> CreateTaskQueue(int employeeId)
+    public async Task<ActionResult> AddToTaskQueue([FromBody] int employeeId)
     {
-        await _createTaskQueueHandler.HandleAsync(employeeId);
+        await _addToTaskQueueHandler.HandleAsync(employeeId);
 
         return Created();
     }

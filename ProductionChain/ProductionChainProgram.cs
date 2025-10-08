@@ -127,7 +127,7 @@ public class ProductionChainProgram
 
         builder.Services.AddTransient<CreateProductionOrderHandler>();
         builder.Services.AddTransient<CreateProductionTaskHandler>(); 
-        builder.Services.AddTransient<CreateTaskQueueHandler>();
+        builder.Services.AddTransient<AddToTaskQueueHandler>();
 
         builder.Services.AddTransient<GetEmployeesHandler>();
         builder.Services.AddTransient<GetOrdersHandler>();
