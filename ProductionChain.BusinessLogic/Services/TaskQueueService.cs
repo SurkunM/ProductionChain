@@ -7,6 +7,8 @@ public class TaskQueueService : ITaskQueueService
 {
     private readonly Queue<TaskQueueDto> _queue;
 
+    private readonly object _lockObj = new object();
+
     public TaskQueueService()
     {
         _queue = new Queue<TaskQueueDto>();
@@ -19,16 +21,38 @@ public class TaskQueueService : ITaskQueueService
 
     public void EnqueueTaskQueue(TaskQueueDto taskQueueDto)
     {
-        _queue.Enqueue(taskQueueDto);
+        lock (_lockObj)
+        {
+            _queue.Enqueue(taskQueueDto);
+        }
     }
 
     public TaskQueueDto DequeueTaskQueue()
     {
-        return _queue.Dequeue();
+        lock (_lockObj)
+        {
+            if (_queue.Count <= 0)
+            {
+                throw new Exception();
+            }
+
+            return _queue.Dequeue();
+        }
     }
 
     public List<TaskQueueDto> GetTaskQueueToList()
     {
-        return _queue.ToList();
+        lock (_lockObj)
+        {
+            return _queue.ToList();
+        }
+    }
+
+    public int GetCount()
+    {
+        lock (_lockObj)
+        {
+            return _queue.Count;
+        }
     }
 }

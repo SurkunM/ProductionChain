@@ -1,8 +1,10 @@
-﻿namespace ProductionChain.Contracts.Dto.Responses;
+﻿using ProductionChain.Contracts.Dto.Shared;
+
+namespace ProductionChain.Contracts.Dto.Responses;
 
 public class AuthLoginResponse
 {
-    public string Token { get; set; }
+    public required string Token { get; set; }
 
-    public string Code { get; set; }
+    public required EmployeeData UserData { get; set; }
 }
