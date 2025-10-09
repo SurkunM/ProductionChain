@@ -9,11 +9,13 @@
 
         <v-snackbar v-model="isShowSuccessAlert"
                     :timeout="2000"
+                    location="bottom right"
                     color="success">
             {{alertText}}
         </v-snackbar>
         <v-snackbar v-model="isShowErrorAlert"
                     :timeout="2000"
+                    location="bottom right"
                     color="error">
             {{alertText}}
         </v-snackbar>

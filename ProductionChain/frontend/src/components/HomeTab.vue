@@ -1,6 +1,7 @@
 ﻿<template>
     <v-snackbar v-model="isShowErrorAlert"
                 :timeout="2000"
+                location="bottom right"
                 color="error">Не удалось загрузить данные</v-snackbar>
 
     <v-container fluid>

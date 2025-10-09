@@ -9,11 +9,13 @@
 
         <v-snackbar v-model="isShowSuccessAlert"
                     :timeout="2000"
+                    location="bottom right"
                     color="success">
             {{alertText}}
         </v-snackbar>
         <v-snackbar v-model="isShowErrorAlert"
                     :timeout="2000"
+                    location="bottom right"
                     color="error">
             {{alertText}}
         </v-snackbar>
@@ -49,6 +51,12 @@
                       hide-default-footer
                       :items-per-page="itemsPerPage"
                       no-data-text="Список пуст">
+
+            <!--<template v-slot:no-data>
+                <div class="d-flex justify-center mt-8">
+                    <v-btn color="primary" @click="fetchTask">Получить задачу</v-btn>
+                </div>
+            </template>-->
 
             <template v-slot:[`header.product`]="{ column }">
                 <button @click="sortBy(`product.Name`)">{{column.title}}</button>
