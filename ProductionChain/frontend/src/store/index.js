@@ -9,6 +9,8 @@ export default createStore({
         orders: [],
 
         tasks: [],
+        taskQueue: [],
+
         histories: [],
         productionOrders: [],
 
@@ -17,6 +19,7 @@ export default createStore({
 
         isLoading: false,
         term: "",
+        userData: { userName: "123", roles: [] },
 
         pageItemsCount: 0,
         pageNumber: 1,
@@ -48,6 +51,10 @@ export default createStore({
 
         tasks(state) {
             return state.tasks;
+        },
+
+        taskQueueCount() {
+            return 1//state.taskQueue.length; 
         },
 
         histories(state) {
@@ -84,6 +91,10 @@ export default createStore({
 
         isShowRegisterModal(state) {
             return state.isShowRegisterModal;
+        },
+
+        getUserData(state) {
+            return state.userData;
         }
     },
 
@@ -239,6 +250,10 @@ export default createStore({
 
         setIsShowRegisterModal(state, isShow) {
             state.isShowRegisterModal = isShow;
+        },
+
+        setUser(state, authUser) {
+            state.userData = authUser
         }
     },
 
@@ -454,6 +469,18 @@ export default createStore({
             });
         },
 
+        addToTaskQueue({ commit }, id) {
+            commit("setIsLoading", true);
+
+            return axios.post("/api/ProductionAssembly/AddToTaskQueue", {
+                employeeId: id
+            }).then(() => {
+                console.log("success");
+            }).finally(() => {
+                commit("setIsLoading", false);
+            });
+        },
+
         login({ commit }, { username, password }) {
             commit("setIsLoading", true);
 
@@ -468,6 +495,7 @@ export default createStore({
                 localStorage.setItem("authToken", response.data.token);
                 axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
 
+                commit("setUser", response.data.userData);
             }).finally(() => {
                 commit("setIsLoading", false);
             });
@@ -476,7 +504,7 @@ export default createStore({
         logout({ dispatch }) {
             return axios.post("/api/Authentication/Logout")
                 .finally(() => {
-                    dispatch("clearAuthData");
+                    dispatch("clearAuthData");//Нужно еще и сбрасывать состояние полей
                 });
         },
 
@@ -485,7 +513,6 @@ export default createStore({
 
             delete axios.defaults.headers.common["Authorization"];
 
-            // Сбрасываем состояние в store
             commit("setUser", null);
         },
 

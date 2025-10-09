@@ -1,31 +1,43 @@
 <template>
     <v-card id="app">
         <v-layout>
-            <v-navigation-drawer>
-                <!--expand-on-hover
-                rail-->
+            <v-app-bar>
+                <h3 class="ms-3">Пользователь: {{ userData.userName }} </h3>
+            </v-app-bar>
 
+            <v-navigation-drawer>
                 <v-list density="compact" nav>
-                    <v-list-item prepend-icon="mdi-home" to="/" title="Главная"></v-list-item>
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-home" to="/" title="Главная"></v-list-item>
 
                     <v-divider></v-divider>
-                    <v-list-item prepend-icon="mdi-layers-triple" to="/orders" title="Заказы"></v-list-item>
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-layers-triple" to="/orders" title="Заказы"></v-list-item>
 
-                    <v-list-item prepend-icon="mdi-cog-play" to="/productionOrders" title="Производство"></v-list-item>
-                    <v-list-item prepend-icon="mdi-cog-transfer" to="/task" title="Задачи"></v-list-item>
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-cog-play" to="/productionOrders" title="Производство"></v-list-item>
+
+                    <v-list-item v-if="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-cog-transfer" to="/task" title="Задачи"></v-list-item>
+                    <v-list-item v-else prepend-icon="mdi-cog-transfer" to="/task" title="Мои задачи"></v-list-item>
+
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-inbox-multiple" to="/task">
+                        <v-list-item-title class="d-flex justify-space-between align-center w-100">
+                            Очередь на задачи
+                            <v-badge v-if="taskQueueCount > 0" :content="taskQueueCount" color="primary" inline class="mr-2"></v-badge>
+                        </v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item prepend-icon="mdi-bell-ring" @click="showNewTaskModal" title="Получить задачу"></v-list-item>
 
                     <v-divider></v-divider>
                     <v-list-item prepend-icon="mdi-home-silo" to="/warehouse" title="Склад КП"></v-list-item>
                     <v-list-item prepend-icon="mdi-home-silo" to="/assemblywarehouse" title="Склад ГП"></v-list-item>
 
                     <v-divider></v-divider>
-                    <v-list-item prepend-icon="mdi-account-hard-hat-outline" to="/employees" title="Сотрудники"></v-list-item>
-                    <v-list-item prepend-icon="mdi-clipboard-edit-outline" to="/products" title="Продукция"></v-list-item>
-                    <v-list-item prepend-icon="mdi-av-timer" to="/history" title="История задач"></v-list-item>
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-account-hard-hat-outline" to="/employees" title="Сотрудники"></v-list-item>
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-clipboard-edit-outline" to="/products" title="Продукция"></v-list-item>
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-av-timer" to="/history" title="История задач"></v-list-item>
 
                     <v-divider></v-divider>
                     <v-list-item prepend-icon="mdi-login" @click="showLoginModal" title="Войти"></v-list-item>
-                    <v-list-item prepend-icon="mdi-file-document-edit-outline" @click="showRegisterModal" title="Создать аккаунт"></v-list-item>
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)" prepend-icon="mdi-file-document-edit-outline" @click="showRegisterModal" title="Создать аккаунт"></v-list-item>
 
                     <v-divider></v-divider>
                     <v-list-item prepend-icon="mdi-logout" @click="logout" title="Выйти"></v-list-item>
@@ -57,19 +69,41 @@
             RegisterModal
         },
 
+        computed: {
+            userData() {
+                return this.$store.getters.getUserData;
+            },
+
+            taskQueueCount() {
+                return this.$store.getters.taskQueueCount;
+            }
+        },
+
         methods: {
             showLoginModal() {
                 this.$store.commit("setIsShowLoginModal", true);
             },
 
             showRegisterModal() {
-                this.$store.commit("setIsShowRegisterModal", true);
+                this.$store.commit("setIsShowRegisterModal", true); 
+            },
+
+            showNewTaskModal() {
+                this.$store.dispatch("addToTaskQueue")
+                    .then(() => alert(" success"))
+                    .catch(() => alert(" error"));
             },
 
             logout() {
                 this.$store.dispatch("logout")
                     .then(() => alert("logout success"))
                     .catch(() => alert("logout error"));
+            },
+
+            isManagerOrAdmin(userRole) {
+                const allowedRoles = ["Manager", "Admin"];
+
+                return userRole.some(r => allowedRoles.includes(r));
             }
         }
     }
