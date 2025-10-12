@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using ProductionChain.Contracts.IHubs;
 
 namespace ProductionChain.Hubs;
 
-public class TaskQueueAlertHub : Hub
+public class TaskQueueAlertHub : Hub<ITaskQueueAlertHub>
 {
-    public async Task TaskQueueAlert()
+    public async Task TaskQueueAlert(string employee)
     {
-        await Clients.All.SendAsync("taskQueueAlert");
+        await Clients.All.TaskQueueAlert(employee);
     }
 }

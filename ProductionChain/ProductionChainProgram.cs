@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -8,6 +9,7 @@ using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
+using ProductionChain.BusinessLogic.Hubs;
 using ProductionChain.BusinessLogic.Services;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
@@ -15,7 +17,6 @@ using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.DataAccess.UnitOfWork;
-using ProductionChain.Hubs;
 using ProductionChain.Middleware;
 using ProductionChain.Model.BasicEntities;
 using System.Security.Claims;
@@ -90,13 +91,29 @@ public class ProductionChainProgram
                     return Task.CompletedTask;
                 }
             };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        path.StartsWithSegments("/TaskQueueAlertHub"))
+                    {
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
         });
 
         builder.Services.AddCors(options =>  // Vue dev server. Эта настройка может быть не нужна
         {
             options.AddPolicy("VueFrontend", policy =>
             {
-                policy.WithOrigins("http://localhost:8080")
+                policy.WithOrigins("http://localhost:8080", "https://localhost:8080")
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials();
@@ -104,7 +121,11 @@ public class ProductionChainProgram
         });
 
         builder.Services.AddControllersWithViews();
-        builder.Services.AddSignalR();
+        builder.Services.AddSignalR(options =>
+        {
+            options.EnableDetailedErrors = true;
+            options.MaximumReceiveMessageSize = 102400;
+        });
 
         builder.Services.AddScoped<DbInitializer>();
         builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<ProductionChainDbContext>());
@@ -126,7 +147,7 @@ public class ProductionChainProgram
         builder.Services.AddTransient<IComponentsWarehouseRepository, ComponentsWarehouseRepository>();
 
         builder.Services.AddTransient<CreateProductionOrderHandler>();
-        builder.Services.AddTransient<CreateProductionTaskHandler>(); 
+        builder.Services.AddTransient<CreateProductionTaskHandler>();
         builder.Services.AddTransient<AddToTaskQueueHandler>();
 
         builder.Services.AddTransient<GetEmployeesHandler>();
@@ -174,6 +195,8 @@ public class ProductionChainProgram
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
+        app.UseCors("VueFrontend");
+
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseRouting();
 
@@ -182,7 +205,8 @@ public class ProductionChainProgram
 
         app.MapControllers();
 
-        app.MapHub<TaskQueueAlertHub>("/taskAlertHub");
+        app.MapHub<TaskQueueAlertHub>("/TaskQueueAlertHub");
+
         app.MapFallbackToFile("index.html");
 
         app.Run();

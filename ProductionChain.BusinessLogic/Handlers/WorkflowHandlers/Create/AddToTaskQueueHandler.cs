@@ -1,4 +1,7 @@
-﻿using ProductionChain.Contracts.Exceptions;
+﻿using Microsoft.AspNetCore.SignalR;
+using ProductionChain.BusinessLogic.Hubs;
+using ProductionChain.Contracts.Exceptions;
+using ProductionChain.Contracts.IHubs;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
@@ -12,10 +15,13 @@ public class AddToTaskQueueHandler
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public AddToTaskQueueHandler(ITaskQueueService tasksQueueService, IUnitOfWork unitOfWork)
+    private readonly IHubContext<TaskQueueAlertHub, ITaskQueueAlertHub> _hubContext;
+
+    public AddToTaskQueueHandler(ITaskQueueService tasksQueueService, IUnitOfWork unitOfWork, IHubContext<TaskQueueAlertHub, ITaskQueueAlertHub> hubContext)
     {
         _tasksQueueService = tasksQueueService ?? throw new ArgumentNullException(nameof(tasksQueueService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
     }
 
     public async Task HandleAsync(int employeeId)
@@ -30,5 +36,17 @@ public class AddToTaskQueueHandler
         }
 
         _tasksQueueService.EnqueueTaskQueue(employee.ToTaskQueueDto());
+
+        if (_hubContext.Clients != null && !string.IsNullOrEmpty(employee.FirstName))
+        {
+            try
+            {
+                await _hubContext.Clients.All.TaskQueueAlert(employee.FirstName);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SignalR notification failed: {ex.Message}");
+            }
+        }
     }
 }

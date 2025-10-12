@@ -472,10 +472,8 @@ export default createStore({
         addToTaskQueue({ commit }, id) {
             commit("setIsLoading", true);
 
-            return axios.post("/api/ProductionAssembly/AddToTaskQueue", {
-                employeeId: id
-            }).then(() => {
-                console.log("success");
+            return axios.post("/api/ProductionAssembly/AddToTaskQueue", id, {
+                headers: { "Content-Type": "application/json" }
             }).finally(() => {
                 commit("setIsLoading", false);
             });
