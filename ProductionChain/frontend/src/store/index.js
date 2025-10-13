@@ -511,7 +511,7 @@ export default createStore({
 
             delete axios.defaults.headers.common["Authorization"];
 
-            commit("setUser", null);
+            commit("setUser", { userName: "", roles: [] });
         },
 
         register({ commit }, user) {
