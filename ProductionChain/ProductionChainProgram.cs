@@ -78,35 +78,35 @@ public class ProductionChainProgram
             };
 
             // Сказано, что для SPA приложений настроить CORS и события
-            options.Events = new JwtBearerEvents
-            {
-                OnAuthenticationFailed = context =>
-                {
-                    Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                    return Task.CompletedTask;
-                },
-                OnTokenValidated = context =>
-                {
-                    Console.WriteLine("Token validated successfully");
-                    return Task.CompletedTask;
-                }
-            };
+            //options.Events = new JwtBearerEvents
+            //{
+            //    OnAuthenticationFailed = context =>
+            //    {
+            //        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            //        return Task.CompletedTask;
+            //    },
+            //    OnTokenValidated = context =>
+            //    {
+            //        Console.WriteLine("Token validated successfully");
+            //        return Task.CompletedTask;
+            //    }
+            //};
 
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    var accessToken = context.Request.Query["access_token"];
-                    var path = context.HttpContext.Request.Path;
+            //options.Events = new JwtBearerEvents
+            //{
+            //    OnMessageReceived = context =>
+            //    {
+            //        var accessToken = context.Request.Query["access_token"];
+            //        var path = context.HttpContext.Request.Path;
 
-                    if (!string.IsNullOrEmpty(accessToken) &&
-                        path.StartsWithSegments("/TaskQueueAlertHub"))
-                    {
-                        context.Token = accessToken;
-                    }
-                    return Task.CompletedTask;
-                }
-            };
+            //        if (!string.IsNullOrEmpty(accessToken) &&
+            //            path.StartsWithSegments("/TaskQueueAlertHub"))
+            //        {
+            //            context.Token = accessToken;
+            //        }
+            //        return Task.CompletedTask;
+            //    }
+            //};
         });
 
         builder.Services.AddCors(options =>  // Vue dev server. Эта настройка может быть не нужна
@@ -121,11 +121,9 @@ public class ProductionChainProgram
         });
 
         builder.Services.AddControllersWithViews();
-        builder.Services.AddSignalR(options =>
-        {
-            options.EnableDetailedErrors = true;
-            options.MaximumReceiveMessageSize = 102400;
-        });
+
+        builder.Services.AddSignalR();
+        builder.Services.AddTransient<INotificationService, SignalRNotificationService>();
 
         builder.Services.AddScoped<DbInitializer>();
         builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<ProductionChainDbContext>());

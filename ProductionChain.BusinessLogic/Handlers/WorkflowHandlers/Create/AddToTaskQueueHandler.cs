@@ -15,13 +15,13 @@ public class AddToTaskQueueHandler
 
     private readonly IUnitOfWork _unitOfWork;
 
-    private readonly IHubContext<TaskQueueAlertHub, ITaskQueueAlertHub> _hubContext;
+    private readonly INotificationService _notificationService;
 
-    public AddToTaskQueueHandler(ITaskQueueService tasksQueueService, IUnitOfWork unitOfWork, IHubContext<TaskQueueAlertHub, ITaskQueueAlertHub> hubContext)
+    public AddToTaskQueueHandler(ITaskQueueService tasksQueueService, IUnitOfWork unitOfWork, INotificationService notificationService)
     {
         _tasksQueueService = tasksQueueService ?? throw new ArgumentNullException(nameof(tasksQueueService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
+        _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
     }
 
     public async Task HandleAsync(int employeeId)
@@ -37,16 +37,6 @@ public class AddToTaskQueueHandler
 
         _tasksQueueService.EnqueueTaskQueue(employee.ToTaskQueueDto());
 
-        if (_hubContext.Clients != null && !string.IsNullOrEmpty(employee.FirstName))
-        {
-            try
-            {
-                await _hubContext.Clients.All.TaskQueueAlert(employee.FirstName);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"SignalR notification failed: {ex.Message}");
-            }
-        }
+        await _notificationService.SendTaskQueueAlertAsync(employee.FirstName);
     }
 }
