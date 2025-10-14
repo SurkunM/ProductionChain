@@ -60,9 +60,9 @@
 </template>
 
 <script>
-    import LoginModal from "./components/LoginModal.vue";
-    import RegisterModal from "./components/RegisterModal.vue";
     import * as signalR from "@microsoft/signalr";
+import LoginModal from "./components/LoginModal.vue";
+import RegisterModal from "./components/RegisterModal.vue";
 
     export default {
         components: {
@@ -120,38 +120,39 @@
 
             initSignalR() {
                 this.connection = new signalR.HubConnectionBuilder()
-                    .withUrl("https://localhost:44303/TaskQueueAlertHub")
+                    .withUrl("https://localhost:44303/TaskQueueNotificationHub", {
+                        accessTokenFactory: () => {
+                            return localStorage.getItem("authToken");
+                        }
+                    })
+                    .withAutomaticReconnect()
                     .build();
 
-                this.connection.on("TaskQueueAlert", (employee) => {
-                    debugger;
-                    console.log("SignalR notification:", employee);
-                    alert(employee + " signaR");
+                this.connection.on("SendManagersTaskQueueNotificationAsync", (employee) => { //TaskQueueAlert
+                    alert(employee + " SendManagers ");
                 });
 
-                this.connection.onclose((error) => {
-                    console.log("SignalR connection closed", error);
+                this.connection.on("NotifyManagers", (employee) => {
+                    alert(employee + " NotifyManagers");
+                });
+
+                this.connection.onclose(() => {
+                    alert(" SignalR connection closed")
                     this.isConnected = false;
                 });
 
                 this.startConnection();
             },
 
-            async startConnection() {
-                try {
-                    await this.connection.start();
-                    this.isConnected = true;
-                    console.log("SignalR connected");
-                } catch (err) {
-                    console.error("SignalR connection error:", err);
-                    setTimeout(() => this.startConnection(), 5000);
-                }
-            },
-
-            beforeUnmount() {
-                if (this.connection) {
-                    this.connection.stop();
-                }
+            startConnection() {
+                this.connection.start()
+                    .then(() => {
+                        this.isConnected = true;
+                    })
+                    .catch((err) => {
+                        console.error("SignalR connection error:", err);
+                        setTimeout(() => this.startConnection(), 5000);
+                    });
             }
         }
     }

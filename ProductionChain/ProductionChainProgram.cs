@@ -92,21 +92,22 @@ public class ProductionChainProgram
             //    }
             //};
 
-            //options.Events = new JwtBearerEvents
-            //{
-            //    OnMessageReceived = context =>
-            //    {
-            //        var accessToken = context.Request.Query["access_token"];
-            //        var path = context.HttpContext.Request.Path;
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
 
-            //        if (!string.IsNullOrEmpty(accessToken) &&
-            //            path.StartsWithSegments("/TaskQueueAlertHub"))
-            //        {
-            //            context.Token = accessToken;
-            //        }
-            //        return Task.CompletedTask;
-            //    }
-            //};
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        path.StartsWithSegments("/TaskQueueNotificationHub"))
+                    {
+                        context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                }
+            };
         });
 
         builder.Services.AddCors(options =>  // Vue dev server. Эта настройка может быть не нужна
@@ -203,7 +204,7 @@ public class ProductionChainProgram
 
         app.MapControllers();
 
-        app.MapHub<TaskQueueAlertHub>("/TaskQueueAlertHub");
+        app.MapHub<TaskQueueNotificationHub>("/TaskQueueNotificationHub");
 
         app.MapFallbackToFile("index.html");
 

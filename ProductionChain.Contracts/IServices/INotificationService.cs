@@ -2,5 +2,5 @@
 
 public interface INotificationService
 {
-    Task SendTaskQueueAlertAsync(string employeeName);
+    Task SendManagersTaskQueueNotificationAsync(string employeeName);
 }

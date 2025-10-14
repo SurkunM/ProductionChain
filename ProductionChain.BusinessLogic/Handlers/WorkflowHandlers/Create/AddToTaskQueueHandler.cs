@@ -37,6 +37,6 @@ public class AddToTaskQueueHandler
 
         _tasksQueueService.EnqueueTaskQueue(employee.ToTaskQueueDto());
 
-        await _notificationService.SendTaskQueueAlertAsync(employee.FirstName);
+        await _notificationService.SendManagersTaskQueueNotificationAsync(employee.FirstName);
     }
 }

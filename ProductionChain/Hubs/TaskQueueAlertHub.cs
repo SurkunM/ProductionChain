@@ -3,10 +3,10 @@ using ProductionChain.Contracts.IHubs;
 
 namespace ProductionChain.Hubs;
 
-public class TaskQueueAlertHub : Hub<ITaskQueueAlertHub>
+public class TaskQueueAlertHub : Hub<ITaskQueueNotificationHub>
 {
     public async Task TaskQueueAlert(string employee)
     {
-        await Clients.All.TaskQueueAlert(employee);
+        await Clients.All.NotifyManagers(employee);
     }
 }
