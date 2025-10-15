@@ -18,8 +18,10 @@ export default createStore({
         componentsWarehouseItems: [],
 
         isLoading: false,
+        isAuthorized: false,
+
         term: "",
-        userData: { userName: "123", roles: [] },
+        userData: { userName: "", roles: ["Initial"] },
 
         pageItemsCount: 0,
         pageNumber: 1,
@@ -95,6 +97,10 @@ export default createStore({
 
         getUserData(state) {
             return state.userData;
+        },
+
+        isAuthorized(state) {
+            return state.isAuthorized;
         }
     },
 
@@ -254,6 +260,10 @@ export default createStore({
 
         setUser(state, authUser) {
             state.userData = authUser
+        },
+
+        setIsAuthorized(state, isAuthorized) {
+            state.isAuthorized = isAuthorized;
         }
     },
 
@@ -494,6 +504,7 @@ export default createStore({
                 axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
 
                 commit("setUser", response.data.userData);
+                commit("setIsAuthorized", true);
             }).finally(() => {
                 commit("setIsLoading", false);
             });
@@ -508,10 +519,10 @@ export default createStore({
 
         clearAuthData({ commit }) {
             localStorage.removeItem("authToken");
-
             delete axios.defaults.headers.common["Authorization"];
 
-            commit("setUser", { userName: "", roles: [] });
+            commit("setUser", { userName: "", roles: ["Initial"] });
+            commit("setIsAuthorized", false);
         },
 
         register({ commit }, user) {

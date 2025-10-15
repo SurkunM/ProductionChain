@@ -46,54 +46,75 @@
             </v-text-field>
         </template>
 
-        <v-data-table :headers="headers"
-                      :items="tasks"
-                      hide-default-footer
-                      :items-per-page="itemsPerPage"
-                      no-data-text="Список пуст">
+        <template v-if="isAuthorized">
+            <v-data-table :headers="headers"
+                          :items="tasks"
+                          hide-default-footer
+                          :items-per-page="itemsPerPage"
+                          no-data-text="Список пуст">
 
-            <!--<template v-slot:no-data>
-                <div class="d-flex justify-center mt-8">
-                    <v-btn color="primary" @click="fetchTask">Получить задачу</v-btn>
-                </div>
-            </template>-->
+                <template v-slot:[`header.product`]="{ column }">
+                    <button @click="sortBy(`product.Name`)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`header.product`]="{ column }">
-                <button @click="sortBy(`product.Name`)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`header.employee`]="{ column }">
+                    <button @click="sortBy(`employee.LastName`)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`header.employee`]="{ column }">
-                <button @click="sortBy(`employee.LastName`)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`header.productsCount`]="{ column }">
+                    <button @click="sortBy(`productsCount`)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`header.productsCount`]="{ column }">
-                <button @click="sortBy(`productsCount`)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`header.startTime`]="{ column }">
+                    <button @click="sortBy(`startTime`)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`header.startTime`]="{ column }">
-                <button @click="sortBy(`startTime`)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                    <div>
+                        <template v-if="!item.inProgress">
+                            <v-btn size="small" color="info" @click="completeTask(item)" class="me-2">Заверишть задачу</v-btn>
+                        </template>
+                    </div>
+                </template>
+            </v-data-table>
+        </template>
 
-            <template v-slot:[`item.actions`]="{ item }">
-                <div>
-                    <template v-if="!item.inProgress">
-                        <v-btn size="small" color="info" @click="completeTask(item)" class="me-2">Заверишть задачу</v-btn>
-                    </template>
-                </div>
-            </template>
-        </v-data-table>
+        <template v-else>
+            <v-container class="fill-height" fluid>
+                <v-row align="center" justify="center">
+                    <v-col cols="12" sm="8" md="6" lg="4">
+                        <v-card class="text-center pa-8">
+                            <v-icon size="64" color="grey-lighten-1" class="mb-4">
+                                mdi-account-lock
+                            </v-icon>
+                            <v-card-title class="text-h5 justify-center">
+                                Требуется авторизация
+                            </v-card-title>
+                            <v-card-text>
+                                <p class="text-body-1 mb-4">
+                                    Для просмотра этой страницы необходимо войти в систему
+                                </p>
+                                <v-btn color="primary" @click="showLoginModal()">
+                                    Войти
+                                </v-btn>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </template>
 
         <v-pagination v-model="currentPage"
                       :length="pagesCount"
@@ -130,21 +151,11 @@
         },
 
         created() {
-            this.$store.commit("setSearchParameters", this.term);
+            if (!this.isAuthorized) {
+                return;
+            }
 
-            this.$store.dispatch("loadProductionTasks")
-                .catch(error => {
-                    if (error.status === 401) {
-                        this.showErrorAlert("Ошибка! Вы не авторизованы.");
-                        this.$store.commit("setIsShowLoginModal", true);
-                    }
-                    else if (error.status === 403) {
-                        this.showErrorAlert("У вас нет прав для получения данной информации.");
-                    }
-                    else {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список задачи.");
-                    }
-                });
+            this.loadData();
         },
 
         computed: {
@@ -162,10 +173,31 @@
 
             isLoading() {
                 return this.$store.getters.isLoading;
+            },
+
+            isAuthorized() {
+                return this.$store.getters.isAuthorized;
             }
         },
 
         methods: {
+            loadData() {
+                this.$store.commit("setSearchParameters", this.term);
+
+                this.$store.dispatch("loadProductionTasks")
+                    .catch(error => {
+                        if (error.status === 401) {
+                            this.showErrorAlert("Ошибка! Вы не авторизованы.");
+                        }
+                        else if (error.status === 403) {
+                            this.showErrorAlert("У вас нет прав для получения данной информации.");
+                        }
+                        else {
+                            this.showErrorAlert("Ошибка! Не удалось загрузить список задачи.");
+                        }
+                    });
+            },
+
             completeTask(task) {
                 const parameters = {
                     id: task.id,

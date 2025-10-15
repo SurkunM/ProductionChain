@@ -46,62 +46,89 @@
             </v-text-field>
         </template>
 
-        <v-data-table :headers="headers"
-                      :items="orders"
-                      hide-default-footer
-                      :items-per-page="itemsPerPage"
-                      no-data-text="Список пуст">
+        <template v-if="isAuthorized">
+            <v-data-table :headers="headers"
+                          :items="orders"
+                          hide-default-footer
+                          :items-per-page="itemsPerPage"
+                          no-data-text="Список пуст">
 
-            <template v-slot:[`header.customer`]="{ column }">
-                <button @click="sortBy(`customer`)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`header.customer`]="{ column }">
+                    <button @click="sortBy(`customer`)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`header.productName`]="{ column }">
-                <button @click="sortBy(`product.Name`)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`header.productName`]="{ column }">
+                    <button @click="sortBy(`product.Name`)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`header.orderedProductsCount`]="{ column }">
-                <button @click="sortBy(`orderedProductsCount`)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`header.orderedProductsCount`]="{ column }">
+                    <button @click="sortBy(`orderedProductsCount`)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`header.availableProductsCount`]="{ column }">
-                <button @click="sortBy(`availableProductsCount`)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`header.availableProductsCount`]="{ column }">
+                    <button @click="sortBy(`availableProductsCount`)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`header.status`]="{ column }">
-                <button @click="sortBy(column.status)">{{column.title}}</button>
-                <v-icon v-if="sortByColumn === column.value">
-                    {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
-                </v-icon>
-            </template>
+                <template v-slot:[`header.status`]="{ column }">
+                    <button @click="sortBy(column.status)">{{column.title}}</button>
+                    <v-icon v-if="sortByColumn === column.value">
+                        {{ sortDesc ? 'mdi-menu-up' : 'mdi-menu-down' }}
+                    </v-icon>
+                </template>
 
-            <template v-slot:[`item.status`]="{ value, item }">
-                <v-chip :border="`${getColor(value)} thin opacity-25`"
-                        :color="getColor(value)"
-                        :text="item.statusMap"
-                        size="small"></v-chip>
-            </template>
+                <template v-slot:[`item.status`]="{ value, item }">
+                    <v-chip :border="`${getColor(value)} thin opacity-25`"
+                            :color="getColor(value)"
+                            :text="item.statusMap"
+                            size="small"></v-chip>
+                </template>
 
-            <template v-slot:[`item.actions`]="{ item }">
-                <div>
-                    <template v-if="isStatusPending(item.status)">
-                        <v-btn size="small" color="info" @click="createProductionOrder(item)">Начать</v-btn>
-                    </template>
-                </div>
-            </template>
-        </v-data-table>
+                <template v-slot:[`item.actions`]="{ item }">
+                    <div>
+                        <template v-if="isStatusPending(item.status)">
+                            <v-btn size="small" color="info" @click="createProductionOrder(item)">Начать</v-btn>
+                        </template>
+                    </div>
+                </template>
+            </v-data-table>
+        </template>
+
+        <template v-else>
+            <v-container class="fill-height" fluid>
+                <v-row align="center" justify="center">
+                    <v-col cols="12" sm="8" md="6" lg="4">
+                        <v-card class="text-center pa-8">
+                            <v-icon size="64" color="grey-lighten-1" class="mb-4">
+                                mdi-account-lock
+                            </v-icon>
+                            <v-card-title class="text-h5 justify-center">
+                                Требуется авторизация
+                            </v-card-title>
+                            <v-card-text>
+                                <p class="text-body-1 mb-4">
+                                    Для просмотра этой страницы необходимо войти в систему
+                                </p>
+                                <v-btn color="primary" @click="showLoginModal()">
+                                    Войти
+                                </v-btn>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </template>
 
         <v-pagination v-model="currentPage"
                       :length="pagesCount"
@@ -140,21 +167,11 @@
         },
 
         created() {
-            this.$store.commit("setSearchParameters", this.term);
+            if (!this.isAuthorized) {
+                return;
+            }
 
-            this.$store.dispatch("loadOrders")
-                .catch(error => {
-                    if (error.status === 401) {
-                        this.showErrorAlert("Ошибка! Вы не авторизованы.");
-                        this.$store.commit("setIsShowLoginModal", true);
-                    }
-                    else if (error.status === 403) {
-                        this.showErrorAlert("У вас нет прав для получения данной информации.");
-                    }
-                    else {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
-                    }
-                });
+            this.loadData();
         },
 
         computed: {
@@ -172,10 +189,31 @@
 
             isLoading() {
                 return this.$store.getters.isLoading;
+            },
+
+            isAuthorized() {
+                return this.$store.getters.isAuthorized;
             }
         },
 
         methods: {
+            loadData() {
+                this.$store.commit("setSearchParameters", this.term);
+
+                this.$store.dispatch("loadOrders")
+                    .catch(error => {
+                        if (error.status === 401) {
+                            this.showErrorAlert("Ошибка! Вы не авторизованы.");
+                        }
+                        else if (error.status === 403) {
+                            this.showErrorAlert("У вас нет прав для получения данной информации.");
+                        }
+                        else {
+                            this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
+                        }
+                    });
+            },
+
             createProductionOrder(order) {
                 const parameters = {
                     orderId: order.id,
