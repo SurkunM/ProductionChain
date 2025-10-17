@@ -32,7 +32,7 @@ public class JwtGenerationService : IJwtGenerationService
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.Now.AddMinutes(_jwtSettings.ExpiryMinutes),
+            expires: DateTime.Now.AddHours(_jwtSettings.ExpiryHours),
             signingCredentials: creds
         );
 

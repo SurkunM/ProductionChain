@@ -8,5 +8,5 @@ public class JwtSettings
 
     public string Audience { get; set; } = string.Empty;
 
-    public int ExpiryMinutes { get; set; }
+    public int ExpiryHours { get; set; }
 }

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -67,7 +66,7 @@ public class ProductionChainProgram
 
                 ValidIssuer = builder.Configuration["Jwt:Issuer"],
                 ValidAudience = builder.Configuration["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!)),
 
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = true,
@@ -110,7 +109,7 @@ public class ProductionChainProgram
             };
         });
 
-        builder.Services.AddCors(options =>  // Vue dev server. Эта настройка может быть не нужна
+        builder.Services.AddCors(options =>
         {
             options.AddPolicy("VueFrontend", policy =>
             {

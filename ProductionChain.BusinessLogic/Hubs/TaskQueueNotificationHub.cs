@@ -8,14 +8,9 @@ public class TaskQueueNotificationHub : Hub<ITaskQueueNotificationHub>
 {
     private readonly string _managerRole = RolesEnum.Manager.ToString();
 
-    public async Task SendManagersTaskQueueNotificationAsync(string employee)
-    {
-        await Clients.Group(_managerRole).NotifyManagers(employee);
-    }
-
     public override async Task OnConnectedAsync()
     {
-        if (Context.User?.IsInRole(_managerRole) == true)
+        if (Context.User?.Identity?.IsAuthenticated == true && Context.User.IsInRole(_managerRole))
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, _managerRole);
         }
