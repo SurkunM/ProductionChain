@@ -244,6 +244,10 @@
             showErrorAlert(text) {
                 this.alertText = text;
                 this.isShowErrorAlert = true;
+            },
+
+            showLoginModal() {
+                this.$store.commit("setIsShowLoginModal", true)
             }
         }
     }

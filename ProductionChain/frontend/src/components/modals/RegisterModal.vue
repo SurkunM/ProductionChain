@@ -45,8 +45,8 @@
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" type="submit">Создать</v-btn>
                     <v-btn color="error" @click="hide">Отменить</v-btn>
+                    <v-btn color="primary" type="submit">Создать</v-btn>
                 </v-card-actions>
             </v-form>
         </v-card>

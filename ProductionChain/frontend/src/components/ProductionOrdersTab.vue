@@ -142,7 +142,7 @@
     </template>
 </template>
 <script>
-    import ProductionTaskCreateModal from "./ProductionTaskCreateModal.vue";
+    import ProductionTaskCreateModal from "./modals/ProductionTaskCreateModal.vue";
 
     export default {
         components: {
@@ -325,6 +325,10 @@
             showErrorAlert(text) {
                 this.alertText = text;
                 this.isShowErrorAlert = true;
+            },
+
+            showLoginModal() {
+                this.$store.commit("setIsShowLoginModal", true)
             }
         }
     }

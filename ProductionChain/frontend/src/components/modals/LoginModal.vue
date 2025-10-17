@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-dialog v-model="isShwoLoginModal" persistent max-width="500px" @keydown.esc="hide">
+    <v-dialog v-model="isShowLoginModal" persistent max-width="500px" @keydown.esc="hide">
         <v-card>
             <v-toolbar dark color="primary">
                 <v-toolbar-title>Войти в аккаунт</v-toolbar-title>
@@ -27,8 +27,8 @@
 
                     <v-card-actions>
                         <v-spacer></v-spacer>
+                        <v-btn color="error" @click="hide">Закрыть</v-btn>
                         <v-btn color="primary" type="submit">Вход</v-btn>
-                        <v-btn color="grey" @click="hide">Закрыть</v-btn>
                     </v-card-actions>
                 </v-form>
             </v-card-text>
@@ -55,8 +55,8 @@
         },
 
         computed: {
-            isShwoLoginModal() {
-                return this.$store.getters.isShwoLoginModal;
+            isShowLoginModal() {
+                return this.$store.getters.isShowLoginModal;
             }
         },
 

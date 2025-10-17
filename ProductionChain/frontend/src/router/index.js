@@ -46,16 +46,6 @@ const routes = [
         path: "/history",
         name: "history",
         component: () => import("../components/ProductionHistoryTab.vue")
-    },
-    {
-        path: "/login",
-        name: "login",
-        component: () => import("../components/LoginModal.vue")
-    },
-    {
-        path: "/register",
-        name: "register",
-        component: () => import("../components/RegisterModal.vue")
     }
 ]
 

@@ -1,5 +1,6 @@
-import { createStore } from "vuex";
+import * as signalR from "@microsoft/signalr";
 import axios from "axios";
+import { createStore } from "vuex";
 
 export default createStore({
     state: {
@@ -31,7 +32,11 @@ export default createStore({
         isDescending: false,
 
         isShowRegisterModal: false,
-        isShwoLoginModal: false
+        isShowLoginModal: false,
+        isShowLogoutModal: false,
+
+        signalRConnection: null,
+        isSignalRConnected: false
     },
 
     getters: {
@@ -56,7 +61,7 @@ export default createStore({
         },
 
         taskQueueCount() {
-            return 1//state.taskQueue.length; 
+            return 0//state.taskQueue.length; 
         },
 
         histories(state) {
@@ -87,8 +92,12 @@ export default createStore({
             return state.pageItemsCount;
         },
 
-        isShwoLoginModal(state) {
-            return state.isShwoLoginModal;
+        isShowLoginModal(state) {
+            return state.isShowLoginModal;
+        },
+
+        isShowLogoutModal(state) {
+            return state.isShowLogoutModal;
         },
 
         isShowRegisterModal(state) {
@@ -101,6 +110,14 @@ export default createStore({
 
         isAuthorized(state) {
             return state.isAuthorized;
+        },
+
+        isSignalRConnected(state) {
+            return state.isSignalRConnected;
+        },
+
+        signalRConnection(state) {
+            return state.signalRConnection;
         }
     },
 
@@ -251,7 +268,11 @@ export default createStore({
         },
 
         setIsShowLoginModal(state, isShow) {
-            state.isShwoLoginModal = isShow;
+            state.isShowLoginModal = isShow;
+        },
+
+        setIsShowLogoutModal(state, isShow) {
+            state.isShowLogoutModal = isShow;
         },
 
         setIsShowRegisterModal(state, isShow) {
@@ -264,6 +285,14 @@ export default createStore({
 
         setIsAuthorized(state, isAuthorized) {
             state.isAuthorized = isAuthorized;
+        },
+
+        setSignalRIsConnected(state, isConnected) {
+            state.isSignalRConnected = isConnected;
+        },
+
+        setSignalRConnection(state, connection) {
+            state.signalRConnection = connection;
         }
     },
 
@@ -489,7 +518,7 @@ export default createStore({
             });
         },
 
-        login({ commit }, { username, password }) {
+        login({ commit, dispatch }, { username, password }) {
             commit("setIsLoading", true);
 
             return axios.post("/api/Authentication/Login", {
@@ -503,6 +532,7 @@ export default createStore({
                 localStorage.setItem("authToken", response.data.token);
                 axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
 
+                dispatch("startSignalRConnection");
                 commit("setUser", response.data.userData);
                 commit("setIsAuthorized", true);
             }).finally(() => {
@@ -514,6 +544,7 @@ export default createStore({
             return axios.post("/api/Authentication/Logout")
                 .finally(() => {
                     dispatch("clearAuthData");//Нужно еще и сбрасывать состояние полей
+                    dispatch("stopSignalRConnection");
                 });
         },
 
@@ -534,6 +565,71 @@ export default createStore({
                 Password: user.password,
                 Role: user.role
             }).finally(() => commit("setIsLoading", false));
+        },
+
+        initializeSignalR({ commit, dispatch, state }) {
+            if (state.signalRConnection) {
+                state.signalRConnection.stop();
+            }
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:44303/TaskQueueNotificationHub", {
+                    accessTokenFactory: () => {
+                        return localStorage.getItem("authToken");
+                    }
+                })
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("NotifyManagers", (employee) => {
+                alert(employee + " NotifyManagers");
+            });
+
+            connection.onclose(() => {
+                alert(" SignalR connection closed")
+                commit("setSignalRIsConnected", false);
+            });
+
+            commit("setSignalRConnection", connection);
+
+            if (state.isAuthorized) {
+                return dispatch("startSignalRConnection");
+            }
+
+            return Promise.resolve();
+        },
+
+        startSignalRConnection({ commit, state }) {
+            if (!state.signalRConnection || state.isSignalRConnected) {
+                return Promise.resolve();
+            }
+
+            return state.signalRConnection.start()
+                .then(() => {
+                    alert("SignalR connected successfully");
+                    commit("setSignalRIsConnected", true);
+                })
+                .catch((error) => {
+                    alert("SignalR connection failed:", error);
+                    commit("setSignalRIsConnected", false);
+
+                    throw error;
+                });
+        },
+
+        stopSignalRConnection({ commit, state }) {
+            if (state.signalRConnection) {
+                return state.signalRConnection.stop()
+                    .then(() => {
+                        commit("setSignalRConnected", false);
+                        console.log("SignalR connection stopped");
+                    })
+                    .catch((error) => {
+                        console.error("Error stopping SignalR connection:", error);
+                    });
+            }
+
+            return Promise.resolve();
         }
     }
 })

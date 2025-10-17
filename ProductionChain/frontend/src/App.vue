@@ -29,6 +29,7 @@
                                  title="Задачи"></v-list-item>
 
                     <v-list-item v-else prepend-icon="mdi-cog-transfer"
+                                 v-show="isEmployee(userData.roles)"
                                  to="/task"
                                  title="Мои задачи"></v-list-item>
 
@@ -49,6 +50,7 @@
                     <v-list-item prepend-icon="mdi-bell-ring"
                                  :disabled="!isAuthorized"
                                  @click="showNewTaskModal"
+                                 v-show="isEmployee(userData.roles)"
                                  title="Получить задачу"></v-list-item>
 
                     <v-divider></v-divider>
@@ -85,7 +87,7 @@
                                  @click="showLoginModal"
                                  title="Войти"></v-list-item>
                     <v-list-item prepend-icon="mdi-logout"
-                                 @click="logout"
+                                 @click="showLogoutModal"
                                  title="Выйти"></v-list-item>
                 </v-list>
             </v-navigation-drawer>
@@ -97,34 +99,32 @@
     </v-card>
 
     <template>
-        <login-modal ref="loginModal" @save="createTask"></login-modal>
+        <login-modal ref="loginModal"></login-modal>
     </template>
 
     <template>
-        <register-modal ref="registerModal" @save="createTask"></register-modal>
+        <logout-modal ref="logoutModal"></logout-modal>
+    </template>
+
+    <template>
+        <register-modal ref="registerModal"></register-modal>
     </template>
 </template>
 
 <script>
-    import * as signalR from "@microsoft/signalr";
-    import LoginModal from "./components/LoginModal.vue";
-    import RegisterModal from "./components/RegisterModal.vue";
+    import LoginModal from "./components/modals/LoginModal.vue";
+    import LogoutModal from "./components/modals/LogoutModal.vue";
+    import RegisterModal from "./components/modals/RegisterModal.vue";
 
     export default {
         components: {
             LoginModal,
+            LogoutModal,
             RegisterModal
         },
 
-        data() {
-            return {
-                connection: null,
-                isConnected: false
-            };
-        },
-
-        mounted() {
-            this.initSignalR();
+        created() {
+            this.$store.dispatch("initializeSignalR");
         },
 
         computed: {
@@ -138,12 +138,24 @@
 
             isAuthorized() {
                 return this.$store.getters.isAuthorized;
+            },
+
+            isSignalRConnected() {
+                return this.$store.getters.isSignalRConnected;
             }
         },
 
         methods: {
             showLoginModal() {
+                if (this.isAuthorized) {
+                    this.showLogoutModal();
+                }
+
                 this.$store.commit("setIsShowLoginModal", true);
+            },
+
+            showLogoutModal() {
+                this.$store.commit("setIsShowLogoutModal", true);
             },
 
             showRegisterModal() {
@@ -156,53 +168,14 @@
                     .catch(() => alert(" error"));
             },
 
-            logout() {
-                this.$store.dispatch("logout")
-                    .then(() => alert("logout success"))
-                    .catch(() => alert("logout error"));
-            },
-
             isManagerOrAdmin(userRole) {
-                const allowedRoles = ["Manager", "Admin", "Initial"];
+                const allowedRoles = ["Manager", "Admin"];
 
                 return userRole.some(r => allowedRoles.includes(r));
             },
 
-            initSignalR() {
-                this.connection = new signalR.HubConnectionBuilder()
-                    .withUrl("https://localhost:44303/TaskQueueNotificationHub", {
-                        accessTokenFactory: () => {
-                            return localStorage.getItem("authToken");
-                        }
-                    })
-                    .withAutomaticReconnect()
-                    .build();
-
-                this.connection.on("SendManagersTaskQueueNotificationAsync", (employee) => { //TaskQueueAlert
-                    alert(employee + " SendManagers ");
-                });
-
-                this.connection.on("NotifyManagers", (employee) => {
-                    alert(employee + " NotifyManagers");
-                });
-
-                this.connection.onclose(() => {
-                    alert(" SignalR connection closed")
-                    this.isConnected = false;
-                });
-
-                this.startConnection();
-            },
-
-            startConnection() {
-                this.connection.start()
-                    .then(() => {
-                        this.isConnected = true;
-                    })
-                    .catch((err) => {
-                        console.error("SignalR connection error:", err);
-                        setTimeout(() => this.startConnection(), 5000);
-                    });
+            isEmployee(userRole) {
+                return userRole.some(r => r === "Employee");
             }
         }
     }
