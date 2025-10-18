@@ -13,6 +13,7 @@ using ProductionChain.BusinessLogic.Services;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
+using ProductionChain.Contracts.Settings;
 using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.DataAccess.UnitOfWork;
@@ -75,21 +76,6 @@ public class ProductionChainProgram
 
                 ClockSkew = TimeSpan.FromMinutes(5)
             };
-
-            // Сказано, что для SPA приложений настроить CORS и события
-            //options.Events = new JwtBearerEvents
-            //{
-            //    OnAuthenticationFailed = context =>
-            //    {
-            //        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-            //        return Task.CompletedTask;
-            //    },
-            //    OnTokenValidated = context =>
-            //    {
-            //        Console.WriteLine("Token validated successfully");
-            //        return Task.CompletedTask;
-            //    }
-            //};
 
             options.Events = new JwtBearerEvents
             {
@@ -212,4 +198,4 @@ public class ProductionChainProgram
 }
 //TODO:1. переименовать в правильной нотации для bool методов 
 // 2. Во фронте доделать HomeTab 
-// 3. попробовать сделать выгрузку в Excel истории(Возможно только если есть новые) 4. Добавить юнит-тестов
+// 3. сделать выгрузку в Excel истории(Возможно только если есть новые) 4. Добавить юнит-тестов

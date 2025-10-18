@@ -10,18 +10,14 @@ namespace ProductionChain.BusinessLogic.Handlers.Authentication;
 
 public class AccountAuthenticationHandler
 {
-    private readonly RoleManager<IdentityRole<int>> _roleManager;
-
     private readonly UserManager<Account> _userManager;
 
     private readonly SignInManager<Account> _signInManager;
 
     private readonly IJwtGenerationService _jwtGenerationService;
 
-    public AccountAuthenticationHandler(RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager, SignInManager<Account> signInManager,
-         IJwtGenerationService jwtGenerationService)
+    public AccountAuthenticationHandler(UserManager<Account> userManager, SignInManager<Account> signInManager, IJwtGenerationService jwtGenerationService)
     {
-        _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
         _jwtGenerationService = jwtGenerationService ?? throw new ArgumentNullException(nameof(jwtGenerationService));

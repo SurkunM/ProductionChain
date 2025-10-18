@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using ProductionChain.Contracts.Dto.Requests;
-using ProductionChain.Contracts.Mapping;
 using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
+using ProductionChain.Contracts.Mapping;
 using ProductionChain.Model.BasicEntities;
-using Microsoft.Extensions.Logging;
 
 namespace ProductionChain.BusinessLogic.Handlers.Authorization;
 
@@ -13,16 +13,12 @@ public class AccountAuthorizationHandler
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    private readonly RoleManager<IdentityRole<int>> _roleManager;
-
     private readonly UserManager<Account> _userManager;
 
     private readonly ILogger<AccountAuthorizationHandler> _logger;
 
-    public AccountAuthorizationHandler(RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager,
-        IUnitOfWork unitOfWork, ILogger<AccountAuthorizationHandler> logger)
+    public AccountAuthorizationHandler(UserManager<Account> userManager, IUnitOfWork unitOfWork, ILogger<AccountAuthorizationHandler> logger)
     {
-        _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

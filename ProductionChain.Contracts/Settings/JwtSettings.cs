@@ -1,4 +1,4 @@
-﻿namespace ProductionChain.BusinessLogic.Services;
+﻿namespace ProductionChain.Contracts.Settings;
 
 public class JwtSettings
 {
