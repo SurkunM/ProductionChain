@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using ProductionChain.BusinessLogic.Hubs;
-using ProductionChain.Contracts.Exceptions;
-using ProductionChain.Contracts.IHubs;
+﻿using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
@@ -11,15 +8,15 @@ namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 
 public class AddToTaskQueueHandler
 {
-    private readonly ITaskQueueService _tasksQueueService;
+    private readonly ITaskQueueService _taskQueueService;
 
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly INotificationService _notificationService;
 
-    public AddToTaskQueueHandler(ITaskQueueService tasksQueueService, IUnitOfWork unitOfWork, INotificationService notificationService)
+    public AddToTaskQueueHandler(ITaskQueueService taskQueueService, IUnitOfWork unitOfWork, INotificationService notificationService)
     {
-        _tasksQueueService = tasksQueueService ?? throw new ArgumentNullException(nameof(tasksQueueService));
+        _taskQueueService = taskQueueService ?? throw new ArgumentNullException(nameof(taskQueueService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
     }
@@ -35,8 +32,10 @@ public class AddToTaskQueueHandler
             throw new NotFoundException("Сотрудник не найден");
         }
 
-        _tasksQueueService.EnqueueTaskQueue(employee.ToTaskQueueDto());
+        _taskQueueService.EnqueueTaskQueue(employee.ToTaskQueueDto());
 
-        await _notificationService.SendManagersTaskQueueNotificationAsync(employee.FirstName);
+        var response = _taskQueueService.GenerateResponse(employee);
+
+        await _notificationService.SendManagersTaskQueueNotificationAsync(response);
     }
 }

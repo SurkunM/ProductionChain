@@ -1,6 +1,8 @@
-﻿namespace ProductionChain.Contracts.IHubs;
+﻿using ProductionChain.Contracts.Dto.Responses;
+
+namespace ProductionChain.Contracts.IHubs;
 
 public interface ITaskQueueNotificationHub
 {
-    Task NotifyManagers(string employee);
+    Task NotifyManagers(NotifyManagersResponse notifyManagersResponse);
 }

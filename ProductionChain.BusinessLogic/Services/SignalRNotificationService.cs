@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using ProductionChain.BusinessLogic.Hubs;
+using ProductionChain.Contracts.Dto.Responses;
 using ProductionChain.Contracts.IHubs;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Model.Enums;
@@ -15,8 +16,8 @@ public class SignalRNotificationService : INotificationService
         _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
     }
 
-    public async Task SendManagersTaskQueueNotificationAsync(string employeeName)
+    public async Task SendManagersTaskQueueNotificationAsync(NotifyManagersResponse notifyManagersResponse)
     {
-        await _hubContext.Clients.Group(RolesEnum.Manager.ToString()).NotifyManagers(employeeName);
+        await _hubContext.Clients.Group(RolesEnum.Manager.ToString()).NotifyManagers(notifyManagersResponse);
     }
 }

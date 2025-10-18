@@ -1,5 +1,7 @@
-﻿using ProductionChain.Contracts.Dto.Shared;
+﻿using ProductionChain.Contracts.Dto.Responses;
+using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.IServices;
+using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain.BusinessLogic.Services;
 
@@ -54,5 +56,16 @@ public class TaskQueueService : ITaskQueueService
         {
             return _queue.Count;
         }
+    }
+
+    public NotifyManagersResponse GenerateResponse(Employee employee)
+    {
+        return new NotifyManagersResponse
+        {
+            EmployeeId = employee.Id,
+            FullName = $"{employee.LastName} {employee.FirstName[0]}.{employee.MiddleName?[0]}",
+            Date = DateTime.Now,
+            QueueCount = _queue.Count
+        };
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace ProductionChain.Contracts.IServices;
+﻿using ProductionChain.Contracts.Dto.Responses;
+
+namespace ProductionChain.Contracts.IServices;
 
 public interface INotificationService
 {
-    Task SendManagersTaskQueueNotificationAsync(string employeeName);
+    Task SendManagersTaskQueueNotificationAsync(NotifyManagersResponse notifyManagersResponse);
 }
