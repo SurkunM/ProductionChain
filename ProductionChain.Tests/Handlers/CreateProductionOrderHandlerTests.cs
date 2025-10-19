@@ -9,7 +9,7 @@ using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
 using ProductionChain.Model.WorkflowEntities;
 
-namespace ProductionChain.Tests.UnitsHandlers;
+namespace ProductionChain.Tests.Handlers;
 
 public class CreateProductionOrderHandlerTests
 {
