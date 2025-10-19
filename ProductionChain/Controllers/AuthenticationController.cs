@@ -22,7 +22,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<AuthLoginResponse> Login(AuthLoginRequest loginRequest)
+    public async Task<AuthenticationLoginResponse> Login(AuthenticationLoginRequest loginRequest)
     {
         var result = await _loginHandler.HandleAsync(loginRequest);
 

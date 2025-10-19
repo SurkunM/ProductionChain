@@ -21,10 +21,9 @@ public class AccountAuthenticationHandler
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
         _jwtGenerationService = jwtGenerationService ?? throw new ArgumentNullException(nameof(jwtGenerationService));
-
     }
 
-    public async Task<AuthLoginResponse> HandleAsync(AuthLoginRequest loginRequest)
+    public async Task<AuthenticationLoginResponse> HandleAsync(AuthenticationLoginRequest loginRequest)
     {
         var account = await _userManager.FindByNameAsync(loginRequest.UserLogin);
 
@@ -33,9 +32,9 @@ public class AccountAuthenticationHandler
             throw new NotFoundException("Сотрудник под таким логином не зарегистрирован");
         }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(account, loginRequest.Password, false);
+        var result = await _userManager.CheckPasswordAsync(account, loginRequest.Password);
 
-        if (!result.Succeeded)
+        if (!result)
         {
             throw new UnauthorizedAccessException("Не удалось авторизоваться");
         }
@@ -46,11 +45,12 @@ public class AccountAuthenticationHandler
         var employeeData = new EmployeeData//может перенести в метод в employeeRepository
         {
             UserId = account.EmployeeId,
-            UserName = $"{account.Employee.LastName} {account.Employee.FirstName[0]}.{account.Employee.MiddleName?[0] ?? ' '}.",
+            UserName = $"{account.Employee.LastName} {account.Employee.FirstName[0]}. " +
+            $"{(account.Employee.MiddleName is null ? " " : account.Employee.MiddleName[0].ToString() + ".")}",
             Roles = roles.ToList()
         };
 
-        return new AuthLoginResponse
+        return new AuthenticationLoginResponse
         {
             Token = token,
             UserData = employeeData
