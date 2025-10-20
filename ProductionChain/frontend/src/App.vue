@@ -5,6 +5,19 @@
                 <h3 class="ms-3"> {{ userData.userName }} </h3>
             </v-app-bar>
 
+            <v-snackbar v-model="showSuccessAlert"
+                        :timeout="2000"
+                        location="bottom right"
+                        color="success">
+                {{getAlertText}}
+            </v-snackbar>
+            <v-snackbar v-model="showErrorAlert"
+                        :timeout="2000"
+                        location="bottom right"
+                        color="error">
+                {{getAlertText}}
+            </v-snackbar>
+
             <v-navigation-drawer>
                 <v-list density="compact"
                         nav>
@@ -142,13 +155,26 @@
 
             isSignalRConnected() {
                 return this.$store.getters.isSignalRConnected;
+            },
+
+            showSuccessAlert() {
+                return this.$store.getters.showSuccessAlert;
+            },
+
+            showErrorAlert() {
+                return this.$store.getters.showErrorAlert;
+            },
+
+            getAlertText() {
+                return this.$store.getters.getAlertText;
             }
         },
 
         methods: {
             showLoginModal() {
                 if (this.isAuthorized) {
-                    this.showLogoutModal();
+                    this.$store.commit("showErrorAlert", "Вы уже авотризованы! Необходимо выйти из сессии.");
+                    return;
                 }
 
                 this.$store.commit("setIsShowLoginModal", true);
@@ -163,9 +189,13 @@
             },
 
             showNewTaskModal() {
-                this.$store.dispatch("addToTaskQueue", 1)
-                    .then(() => alert("addToTaskQueue success"))
-                    .catch(() => alert(" error"));
+                this.$store.dispatch("addToTaskQueue", this.userData.userId)
+                    .then(() => {
+                        this.$store.commit("showSuccessAlert", "Вы добавдены в очередь на получение задачи.");
+                    })
+                    .catch(() => {
+                        this.$store.commit("showErrorAlert", "Не удалось добавить в очередь на получение задачи.");
+                    });
             },
 
             isManagerOrAdmin(userRole) {

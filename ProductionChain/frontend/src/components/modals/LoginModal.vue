@@ -27,8 +27,8 @@
 
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="error" @click="hide">Закрыть</v-btn>
                         <v-btn color="primary" type="submit">Вход</v-btn>
+                        <v-btn color="error" @click="hide">Закрыть</v-btn>
                     </v-card-actions>
                 </v-form>
             </v-card-text>
@@ -75,24 +75,20 @@
 
                 if (!this.accountData.username) {
                     this.errors.username = "Некорректный логин";
-
                     return;
                 }
 
                 if (!this.accountData.password || this.accountData.password.length < 6) {
                     this.errors.password = "Некорректный пароль";
-
                     return;
                 }
 
                 this.$store.dispatch("login", this.accountData)
                     .then(() => {
-                        alert("Success");
+                        this.$store.commit("showSuccessAlert", "Вы вошли в систему.");
                         this.hide();
                     })
-                    .catch(() => {
-                        alert("Ошибка! Не удалось авторизоватся.");
-                    });
+                    .catch(() => this.$store.commit("showErrorAlert", "Не удалось войти."));
             },
 
             clearErrors() {

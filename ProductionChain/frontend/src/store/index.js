@@ -22,7 +22,7 @@ export default createStore({
         isAuthorized: false,
 
         term: "",
-        userData: { userName: "", roles: ["Initial"] },
+        userData: { userId: 0, userName: "", roles: ["Initial"] },
 
         pageItemsCount: 0,
         pageNumber: 1,
@@ -36,7 +36,11 @@ export default createStore({
         isShowLogoutModal: false,
 
         signalRConnection: null,
-        isSignalRConnected: false
+        isSignalRConnected: false,
+
+        isShowSuccessAlert: false,
+        isShowErrorAlert: false,
+        alertText: ""
     },
 
     getters: {
@@ -118,6 +122,18 @@ export default createStore({
 
         signalRConnection(state) {
             return state.signalRConnection;
+        },
+
+        showSuccessAlert(state) {
+            return state.isShowSuccessAlert;
+        },
+
+        showErrorAlert(state) {
+            return state.isShowErrorAlert;
+        },
+
+        getAlertText(state) {
+            return state.alertText;
         }
     },
 
@@ -293,6 +309,16 @@ export default createStore({
 
         setSignalRConnection(state, connection) {
             state.signalRConnection = connection;
+        },
+
+        showSuccessAlert(state, text) {
+            state.alertText = text;
+            state.isShowSuccessAlert = true;
+        },
+
+        showErrorAlert(state, text) {
+            state.alertText = text;
+            state.isShowErrorAlert = true;
         }
     },
 
@@ -552,7 +578,7 @@ export default createStore({
             localStorage.removeItem("authToken");
             delete axios.defaults.headers.common["Authorization"];
 
-            commit("setUser", { userName: "", roles: ["Initial"] });
+            commit("setUser", { userId: 0, userName: "", roles: ["Initial"] });
             commit("setIsAuthorized", false);
         },
 
@@ -581,12 +607,12 @@ export default createStore({
                 .withAutomaticReconnect()
                 .build();
 
-            connection.on("NotifyManagers", (employee) => {
-                alert(employee + " NotifyManagers");
+            connection.on("NotifyManagers", (response) => {
+               // alert(response.employeeId + "\\" + response.fullName + " NotifyManagers " + response.date);
+                commit("showSuccessAlert", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
             });
 
             connection.onclose(() => {
-                alert(" SignalR connection closed")
                 commit("setSignalRIsConnected", false);
             });
 
@@ -606,14 +632,12 @@ export default createStore({
 
             return state.signalRConnection.start()
                 .then(() => {
-                    alert("SignalR connected successfully");
                     commit("setSignalRIsConnected", true);
                 })
-                .catch((error) => {
-                    alert("SignalR connection failed:", error);
+                .catch(() => {
                     commit("setSignalRIsConnected", false);
 
-                    throw error;
+                    throw new Error("SignalR connection start is failed.");
                 });
         },
 
@@ -622,10 +646,6 @@ export default createStore({
                 return state.signalRConnection.stop()
                     .then(() => {
                         commit("setSignalRConnected", false);
-                        console.log("SignalR connection stopped");
-                    })
-                    .catch((error) => {
-                        console.error("Error stopping SignalR connection:", error);
                     });
             }
 

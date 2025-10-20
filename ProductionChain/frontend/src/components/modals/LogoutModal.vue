@@ -17,8 +17,8 @@
 
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="error" @click="hide">Отмена</v-btn>
                 <v-btn color="success" @click="logout">Выйти</v-btn>
+                <v-btn color="error" @click="hide">Отмена</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -48,10 +48,10 @@
             logout() {
                 this.$store.dispatch("logout")
                     .then(() => {
-                        alert("Вы успешно вышли.");
+                        this.$store.commit("showSuccessAlert", "Вы вышли из системы.");
                     })
-                    .catch((err) => {
-                        alert(`Ошибка выхода: ${err.message}`);
+                    .catch(() => {
+                        this.$store.commit("showErrorAlert", "Не удалось выйти.");
                     })
                     .finally(() => this.hide());
             }

@@ -129,7 +129,7 @@
 
                 isShowSuccessAlert: false,
                 isShowErrorAlert: false,
-                alertText: "",
+                alertText: ""
             }
         },
 
