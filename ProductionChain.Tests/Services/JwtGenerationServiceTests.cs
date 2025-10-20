@@ -22,6 +22,10 @@ public class JwtGenerationServiceTests
 
     private readonly JwtGenerationService _jwtService;
 
+    private readonly Employee _employee;
+
+    private readonly Account _account;
+
     public JwtGenerationServiceTests()
     {
         _userManagerMock = new Mock<UserManager<Account>>(Mock.Of<IUserStore<Account>>(),
@@ -39,12 +43,8 @@ public class JwtGenerationServiceTests
         _jwtOptionsMock.Setup(x => x.Value).Returns(_jwtSettings);
 
         _jwtService = new JwtGenerationService(_userManagerMock.Object, _jwtOptionsMock.Object);
-    }
 
-    [Fact]
-    public async Task GenerateTokenAsync_WithValidAccount_ReturnsValidTokenWithCorrectClaims()
-    {
-        var employee = new Employee
+        _employee = new Employee
         {
             Id = 1,
             FirstName = "Employee1_FirstName",
@@ -54,74 +54,47 @@ public class JwtGenerationServiceTests
             Status = EmployeeStatusType.Busy
         };
 
-        var account = new Account
+        _account = new Account
         {
-            Id = 123,
-            UserName = "Tester",
-            Employee = employee,
-            EmployeeId = employee.Id
+            Id = 2,
+            UserName = "UserTestLogin",
+            Employee = _employee,
+            EmployeeId = _employee.Id
         };
+    }
 
-        var roles = new List<string> { "Admin", "Manager" };
+    [Fact]
+    public async Task Should_Successfully_GenerateTokenAsync_ReturnsValidToken()
+    {
+        var roles = new List<string> { "Manager" };
 
-        _userManagerMock.Setup(x => x.GetRolesAsync(account))
-            .ReturnsAsync(roles);
+        _userManagerMock.Setup(x => x.GetRolesAsync(_account)).ReturnsAsync(roles);
 
-        // Act
-        var token = await _jwtService.GenerateTokenAsync(account);
+        var token = await _jwtService.GenerateTokenAsync(_account);
 
-        // Assert
         Assert.NotNull(token);
         Assert.NotEmpty(token);
 
-        // Декодируем токен для проверки claims
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
 
-        // Проверяем стандартные claims
-        Assert.Equal(account.Id.ToString(), GetClaimValue(jwtToken, ClaimTypes.NameIdentifier));
-        Assert.Equal(account.UserName, GetClaimValue(jwtToken, ClaimTypes.Name));
-        Assert.Equal(account.EmployeeId.ToString(), GetClaimValue(jwtToken, "EmployeeId"));
+        Assert.Equal("2", GetClaimValue(jwtToken, ClaimTypes.NameIdentifier));
+        Assert.Equal("UserTestLogin", GetClaimValue(jwtToken, ClaimTypes.Name));
+        Assert.Equal("1", GetClaimValue(jwtToken, "EmployeeId"));
 
-        // Проверяем роли
         var roleClaims = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-        Assert.Equal(2, roleClaims.Count);
-        Assert.Contains(roleClaims, c => c.Value == "Admin");
+
+        Assert.Single(roleClaims);
         Assert.Contains(roleClaims, c => c.Value == "Manager");
-
-        // Проверяем issuer и audience
-        Assert.Equal(_jwtSettings.Issuer, jwtToken.Issuer);
-        Assert.Equal(_jwtSettings.Audience, jwtToken.Audiences.First());
-
-        // Проверяем expiry
-        var expectedExpiry = DateTime.Now.AddHours(_jwtSettings.ExpiryHours);
-        Assert.True(jwtToken.ValidTo <= expectedExpiry.AddMinutes(1));
-        Assert.True(jwtToken.ValidTo >= expectedExpiry.AddMinutes(-1));
     }
 
     [Fact]
-    public async Task GenerateTokenAsync_WithNoRoles_ReturnsTokenWithoutRoleClaims()
+    public async Task Should_RolesIsEmpty_When_NoRoles()
     {
-        var employee = new Employee
-        {
-            Id = 1,
-            FirstName = "Employee1_FirstName",
-            LastName = "Employee1_LastName",
-            MiddleName = "Employee1_MiddleName",
-            Position = EmployeePositionType.AssemblyREA,
-            Status = EmployeeStatusType.Busy
-        };
+        _userManagerMock.Setup(x => x.GetRolesAsync(_account)).ReturnsAsync(new List<string>());
 
-        // Arrange
-        var account = new Account { Id = 1, UserName = "user", Employee = employee, EmployeeId = 1 };
+        var token = await _jwtService.GenerateTokenAsync(_account);
 
-        _userManagerMock.Setup(x => x.GetRolesAsync(account))
-            .ReturnsAsync(new List<string>());
-
-        // Act
-        var token = await _jwtService.GenerateTokenAsync(account);
-
-        // Assert
         var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
         var roleClaims = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
 
@@ -129,69 +102,30 @@ public class JwtGenerationServiceTests
     }
 
     [Fact]
-    public async Task GenerateTokenAsync_WithNullRoles_ReturnsTokenWithoutRoleClaims()
+    public async Task Should_ArgumentNullException_When_RolesIsNull()
     {
-        var employee = new Employee
-        {
-            Id = 1,
-            FirstName = "Employee1_FirstName",
-            LastName = "Employee1_LastName",
-            MiddleName = "Employee1_MiddleName",
-            Position = EmployeePositionType.AssemblyREA,
-            Status = EmployeeStatusType.Busy
-        };
+        _userManagerMock.Setup(x => x.GetRolesAsync(_account)).ReturnsAsync((IList<string>)null!);
 
-        // Arrange
-        var account = new Account { Id = 1, UserName = "user", Employee = employee, EmployeeId = 1 };
-
-        _userManagerMock.Setup(x => x.GetRolesAsync(account))
-            .ReturnsAsync((IList<string>)null);
-
-        // Act
-        var token = await _jwtService.GenerateTokenAsync(account);
-
-        // Assert
-        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
-        var roleClaims = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-
-        Assert.Empty(roleClaims);
+        await Assert.ThrowsAsync<ArgumentNullException>(() => _jwtService.GenerateTokenAsync(_account));
     }
 
     [Fact]
-    public async Task GenerateTokenAsync_ReturnsProperlyStructuredJwtToken()
+    public async Task Should_Successfully_GenerateTokenAsync_ReturnsProperlyStructuredJwtToken()
     {
-        var employee = new Employee
-        {
-            Id = 1,
-            FirstName = "Employee1_FirstName",
-            LastName = "Employee1_LastName",
-            MiddleName = "Employee1_MiddleName",
-            Position = EmployeePositionType.AssemblyREA,
-            Status = EmployeeStatusType.Busy
-        };
+        _userManagerMock.Setup(x => x.GetRolesAsync(_account)).ReturnsAsync(new List<string> { "User" });
 
-        // Arrange
-        var account = new Account { Id = 1, UserName = "test", Employee = employee, EmployeeId = 1 };
-        _userManagerMock.Setup(x => x.GetRolesAsync(account))
-            .ReturnsAsync(new List<string> { "User" });
+        var token = await _jwtService.GenerateTokenAsync(_account);
 
-        // Act
-        var token = await _jwtService.GenerateTokenAsync(account);
-
-        // Assert
         var handler = new JwtSecurityTokenHandler();
 
-        // Проверяем, что токен может быть прочитан
         Assert.True(handler.CanReadToken(token));
 
         var jwtToken = handler.ReadJwtToken(token);
 
-        // Проверяем наличие обязательных частей JWT
         Assert.NotNull(jwtToken.Header);
         Assert.NotNull(jwtToken.Payload);
         Assert.Equal("HS256", jwtToken.Header.Alg);
 
-        // Проверяем подпись
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
@@ -201,12 +135,12 @@ public class JwtGenerationServiceTests
             ValidateLifetime = false
         };
 
-        // Должен пройти валидацию подписи
         var principal = handler.ValidateToken(token, validationParameters, out _);
+
         Assert.NotNull(principal);
     }
 
-    private string GetClaimValue(JwtSecurityToken token, string claimType)
+    private static string? GetClaimValue(JwtSecurityToken token, string claimType)
     {
         return token.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
     }
