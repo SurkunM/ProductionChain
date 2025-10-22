@@ -7,19 +7,6 @@
                            height="4">
         </v-progress-linear>
 
-        <v-snackbar v-model="isShowSuccessAlert"
-                    :timeout="2000"
-                    location="bottom right"
-                    color="success">
-            {{alertText}}
-        </v-snackbar>
-        <v-snackbar v-model="isShowErrorAlert"
-                    :timeout="2000"
-                    location="bottom right"
-                    color="error">
-            {{alertText}}
-        </v-snackbar>
-
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
@@ -142,11 +129,7 @@
                     { value: "productsCount", title: "шт" },
                     { value: "startTime", title: "Начало" },
                     { value: "actions", title: "" }
-                ],
-
-                isShowSuccessAlert: false,
-                isShowErrorAlert: false,
-                alertText: "",
+                ]
             }
         },
 
@@ -187,13 +170,16 @@
                 this.$store.dispatch("loadProductionTasks")
                     .catch(error => {
                         if (error.status === 401) {
-                            this.showErrorAlert("Ошибка! Вы не авторизованы.");
+                            this.$store.commit("setAlertMessage", "Ошибка! Вы не авторизованы.");
+                            this.$store.commit("isShowErrorAlert", true);
                         }
                         else if (error.status === 403) {
-                            this.showErrorAlert("У вас нет прав для получения данной информации.");
+                            this.$store.commit("setAlertMessage", "У вас нет прав для получения данной информации.");
+                            this.$store.commit("isShowErrorAlert", true);
                         }
                         else {
-                            this.showErrorAlert("Ошибка! Не удалось загрузить список задачи.");
+                            this.$store.commit("setAlertMessage", "Ошибка! Не удалось загрузить список задачи.");
+                            this.$store.commit("isShowErrorAlert", true);
                         }
                     });
             },
@@ -209,10 +195,12 @@
 
                 this.$store.dispatch("deleteProductionTask", parameters)
                     .then(() => {
-                        this.showSuccessAlert("Задача успешно завершена.");
+                        this.$store.commit("setAlertMessage", "Задача успешно завершена.");
+                        this.$store.commit("isShowSuccessAlert", true);
                     })
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось завершить задачу.");
+                        this.$store.commit("setAlertMessage", "Ошибка! Не удалось завершить задачу.");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -227,7 +215,8 @@
 
                 this.$store.dispatch("loadProductionTasks")
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список задачи.");
+                        this.$store.commit("setAlertMessage", "Ошибка! Не удалось загрузить список задачи.");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -243,7 +232,8 @@
 
                 this.$store.dispatch("loadProductionTasks")
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список задачи.");
+                        this.$store.commit("setAlertMessage", "Ошибка! Не удалось загрузить список задачи.");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -262,7 +252,8 @@
 
                 this.$store.dispatch("loadProductionTasks")
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список задачи.");
+                        this.$store.commit("setAlertMessage", "Ошибка! Не удалось загрузить список задачи.");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -271,18 +262,9 @@
 
                 this.$store.dispatch("loadProductionTasks")
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список задачи.");
+                        this.$store.commit("setAlertMessage", "Ошибка! Не удалось загрузить список задачи.");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
-            },
-
-            showSuccessAlert(text) {
-                this.alertText = text;
-                this.isShowSuccessAlert = true;
-            },
-
-            showErrorAlert(text) {
-                this.alertText = text;
-                this.isShowErrorAlert = true;
             },
 
             showLoginModal() {

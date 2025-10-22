@@ -124,11 +124,11 @@ export default createStore({
             return state.signalRConnection;
         },
 
-        showSuccessAlert(state) {
+        isShowSuccessAlert(state) {
             return state.isShowSuccessAlert;
         },
 
-        showErrorAlert(state) {
+        isShowErrorAlert(state) {
             return state.isShowErrorAlert;
         },
 
@@ -311,14 +311,16 @@ export default createStore({
             state.signalRConnection = connection;
         },
 
-        showSuccessAlert(state, text) {
-            state.alertText = text;
-            state.isShowSuccessAlert = true;
+        isShowSuccessAlert(state, value) {
+            state.isShowSuccessAlert = value;
         },
 
-        showErrorAlert(state, text) {
+        isShowErrorAlert(state, value) {
+            state.isShowErrorAlert = value;
+        },
+
+        setAlertMessage(state, text) {
             state.alertText = text;
-            state.isShowErrorAlert = true;
         }
     },
 
@@ -607,9 +609,9 @@ export default createStore({
                 .withAutomaticReconnect()
                 .build();
 
-            connection.on("NotifyManagers", (response) => {
-               // alert(response.employeeId + "\\" + response.fullName + " NotifyManagers " + response.date);
-                commit("showSuccessAlert", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
+            connection.on("NotifyManagers", (response) => {//TODO: Не работают сет таймауты для алертов в компонентах( не сбрасваються)
+                commit("setAlertMessage", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
+                commit("isShowSuccessAlert", true);
             });
 
             connection.onclose(() => {

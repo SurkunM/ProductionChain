@@ -41,7 +41,7 @@
 </template>
 
 <script>
-    export default {
+    export default {//TODO: Доделать! нужно через $store.
         data() {
             return {
                 isShow: false,

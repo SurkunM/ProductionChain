@@ -85,10 +85,15 @@
 
                 this.$store.dispatch("login", this.accountData)
                     .then(() => {
-                        this.$store.commit("showSuccessAlert", "Вы вошли в систему.");
+                        this.$store.commit("setAlertMessage", "Вы вошли в систему.");
+
+                        this.$store.commit("isShowSuccessAlert", true);
                         this.hide();
                     })
-                    .catch(() => this.$store.commit("showErrorAlert", "Не удалось войти."));
+                    .catch(() => {
+                        this.$store.commit("setAlertMessage", "Не удалось войти");
+                        this.$store.commit("isShowErrorAlert", true);
+                    });
             },
 
             clearErrors() {

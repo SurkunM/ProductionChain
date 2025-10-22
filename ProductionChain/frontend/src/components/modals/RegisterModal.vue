@@ -75,7 +75,7 @@
                     role: ""
                 },
 
-                roles: [//загружать с серверва!
+                roles: [//TODO:загружать с серверва!
                     "Администратор",
                     "Менеджер",
                     "Employee"
@@ -96,7 +96,10 @@
         methods: {
             show() {
                 this.$store.dispatch("loadEmployees")
-                    .catch(() => alert("Ошибка! Не удалось загрузить список сотрудников."));
+                    .catch(() => {
+                        this.$store.commit("setAlertMessage", "Не удалось загрузить список сотрудников.");
+                        this.$store.commit("isShowErrorAlert", true);
+                    });
 
                 this.$store.commit("setIsShowRegisterModal", true);
             },
@@ -134,11 +137,13 @@
 
                 this.$store.dispatch("register", this.accountData)
                     .then(() => {
-                        alert("Success!");
+                        this.$store.commit("setAlertMessage", "Аккаунт успешно создан");
+                        this.$store.commit("isShowSuccessAlert", true);
                         this.hide();
                     })
                     .catch(() => {
-                        alert("Ошибка! Не удалось создать аккаунт.");
+                        this.$store.commit("setAlertMessage", "Не удалось создать аккаунт");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 

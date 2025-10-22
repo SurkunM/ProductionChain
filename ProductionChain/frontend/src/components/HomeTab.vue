@@ -7,7 +7,7 @@
     </v-snackbar>
 
     <template v-if="isAuthorized">
-        <v-container fluid class="fill-height">
+        <v-container fluid>
             <v-row>
                 <v-col cols="12" md="4">
                     <v-card title="Заказы в производстве" subtitle="В работе" prepend-icon="mdi-cart-plus">

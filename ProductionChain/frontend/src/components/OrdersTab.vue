@@ -7,19 +7,6 @@
                            height="4">
         </v-progress-linear>
 
-        <v-snackbar v-model="isShowSuccessAlert"
-                    :timeout="2000"
-                    location="bottom right"
-                    color="success">
-            {{alertText}}
-        </v-snackbar>
-        <v-snackbar v-model="isShowErrorAlert"
-                    :timeout="2000"
-                    location="bottom right"
-                    color="error">
-            {{alertText}}
-        </v-snackbar>
-
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
@@ -158,11 +145,7 @@
                     { value: "availableProductsCount", title: "В налиии (шт)" },
                     { value: "status", title: "Статус" },
                     { value: "actions", title: "" },
-                ],
-
-                isShowSuccessAlert: false,
-                isShowErrorAlert: false,
-                alertText: "",
+                ]
             }
         },
 
@@ -203,13 +186,16 @@
                 this.$store.dispatch("loadOrders")
                     .catch(error => {
                         if (error.status === 401) {
-                            this.showErrorAlert("Ошибка! Вы не авторизованы.");
+                            this.$store.commit("setAlertMessage", "Вы не авторизованы");
+                            this.$store.commit("isShowErrorAlert", true);
                         }
                         else if (error.status === 403) {
-                            this.showErrorAlert("У вас нет прав для получения данной информации.");
+                            this.$store.commit("setAlertMessage", "У вас нет прав для получения данной информации");
+                            this.$store.commit("isShowErrorAlert", true);
                         }
                         else {
-                            this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
+                            this.$store.commit("setAlertMessage", "Не удалось загрузить список заказов");
+                            this.$store.commit("isShowErrorAlert", true);
                         }
                     });
             },
@@ -224,10 +210,12 @@
 
                 this.$store.dispatch("createProductionOrder", parameters)
                     .then(() => {
-                        this.showSuccessAlert("Производственная задача успешно создана.");
+                        this.$store.commit("setAlertMessage", "Производственная задача успешно создана.");
+                        this.$store.commit("isShowSuccessAlert", true);
                     })
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось создать производственную задачу.");
+                        this.$store.commit("setAlertMessage", "Не удалось создать производственную задачу");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -242,7 +230,8 @@
 
                 this.$store.dispatch("loadOrders")
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
+                        this.$store.commit("setAlertMessage", "Не удалось загрузить список заказов");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -258,7 +247,8 @@
 
                 this.$store.dispatch("loadOrders")
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
+                        this.$store.commit("setAlertMessage", "Не удалось загрузить список заказов");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -277,7 +267,8 @@
 
                 this.$store.dispatch("loadOrders")
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
+                        this.$store.commit("setAlertMessage", "Не удалось загрузить список заказов");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -286,7 +277,8 @@
 
                 this.$store.dispatch("loadOrders")
                     .catch(() => {
-                        this.showErrorAlert("Ошибка! Не удалось загрузить список заказов.");
+                        this.$store.commit("setAlertMessage", "Не удалось загрузить список заказов");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
             },
 
@@ -310,16 +302,6 @@
                 }
 
                 return false;
-            },
-
-            showSuccessAlert(text) {
-                this.alertText = text;
-                this.isShowSuccessAlert = true;
-            },
-
-            showErrorAlert(text) {
-                this.alertText = text;
-                this.isShowErrorAlert = true;
             },
 
             showLoginModal() {

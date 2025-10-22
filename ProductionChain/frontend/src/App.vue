@@ -5,16 +5,18 @@
                 <h3 class="ms-3"> {{ userData.userName }} </h3>
             </v-app-bar>
 
-            <v-snackbar v-model="showSuccessAlert"
+            <v-snackbar v-model="isShowSuccessAlert"
                         :timeout="2000"
                         location="bottom right"
-                        color="success">
+                        color="success"
+                        @update:model-value="hideSuccessAlert">
                 {{getAlertText}}
             </v-snackbar>
-            <v-snackbar v-model="showErrorAlert"
+            <v-snackbar v-model="isShowErrorAlert"
                         :timeout="2000"
                         location="bottom right"
-                        color="error">
+                        color="error"
+                        @update:model-value="hideErrorAlert">
                 {{getAlertText}}
             </v-snackbar>
 
@@ -126,8 +128,8 @@
 
 <script>
     import LoginModal from "./components/modals/LoginModal.vue";
-    import LogoutModal from "./components/modals/LogoutModal.vue";
-    import RegisterModal from "./components/modals/RegisterModal.vue";
+import LogoutModal from "./components/modals/LogoutModal.vue";
+import RegisterModal from "./components/modals/RegisterModal.vue";
 
     export default {
         components: {
@@ -157,12 +159,12 @@
                 return this.$store.getters.isSignalRConnected;
             },
 
-            showSuccessAlert() {
-                return this.$store.getters.showSuccessAlert;
+            isShowSuccessAlert() {
+                return this.$store.getters.isShowSuccessAlert;
             },
 
-            showErrorAlert() {
-                return this.$store.getters.showErrorAlert;
+            isShowErrorAlert() {
+                return this.$store.getters.isShowErrorAlert;
             },
 
             getAlertText() {
@@ -173,7 +175,7 @@
         methods: {
             showLoginModal() {
                 if (this.isAuthorized) {
-                    this.$store.commit("showErrorAlert", "Вы уже авотризованы! Необходимо выйти из сессии.");
+                    this.$store.commit("isShowErrorAlert", "Вы уже авотризованы! Необходимо выйти из сессии.");
                     return;
                 }
 
@@ -191,11 +193,23 @@
             showNewTaskModal() {
                 this.$store.dispatch("addToTaskQueue", this.userData.userId)
                     .then(() => {
-                        this.$store.commit("showSuccessAlert", "Вы добавдены в очередь на получение задачи.");
+                        this.$store.commit("setAlertMessage", "Вы добавдены в очередь на получение задачи.");
+                        this.$store.commit("isShowSuccessAlert", true);
                     })
                     .catch(() => {
-                        this.$store.commit("showErrorAlert", "Не удалось добавить в очередь на получение задачи.");
+                        this.$store.commit("setAlertMessage", "Не удалось добавить в очередь на получение задачи.");
+                        this.$store.commit("isShowErrorAlert", true);
                     });
+            },
+
+            hideSuccessAlert() {
+                this.$store.commit("setAlertMessage", "");
+                this.$store.commit("isShowSuccessAlert", false);
+            },
+
+            hideErrorAlert() {
+                this.$store.commit("setAlertMessage", "");
+                this.$store.commit("isShowErrorAlert", false);
             },
 
             isManagerOrAdmin(userRole) {

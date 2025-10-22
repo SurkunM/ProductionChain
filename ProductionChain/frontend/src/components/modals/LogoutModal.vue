@@ -48,10 +48,12 @@
             logout() {
                 this.$store.dispatch("logout")
                     .then(() => {
-                        this.$store.commit("showSuccessAlert", "Вы вышли из системы.");
+                        this.$store.commit("setAlertMessage", "Вы вышли из системы.");
+                        this.$store.commit("isShowSuccessAlert", true);
                     })
                     .catch(() => {
-                        this.$store.commit("showErrorAlert", "Не удалось выйти.");
+                        this.$store.commit("setAlertMessage", "Не удалось выйти.");
+                        this.$store.commit("isShowErrorAlert", true);
                     })
                     .finally(() => this.hide());
             }
