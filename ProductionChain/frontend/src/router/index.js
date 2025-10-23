@@ -43,6 +43,11 @@ const routes = [
         component: () => import("../components/ProductionTaskTab.vue")
     },
     {
+        path: "/taskQueue",
+        name: "taskQueue",
+        component: () => import("../components/TaskQueueComponent.vue")
+    },
+    {
         path: "/history",
         name: "history",
         component: () => import("../components/ProductionHistoryTab.vue")

@@ -64,8 +64,12 @@ export default createStore({
             return state.tasks;
         },
 
-        taskQueueCount() {
-            return 0//state.taskQueue.length; 
+        taskQueue(state) {
+            return state.taskQueue;
+        },
+
+        taskQueueCount(state) {
+            return state.taskQueue.length;
         },
 
         histories(state) {
@@ -249,7 +253,7 @@ export default createStore({
             state.isLoading = value;
         },
 
-        setSearchParameters(state, value) {//TODO: Сломан поиск в Tab-х(CompnetnsWarehouseTab). Нету поиска по названию!
+        setSearchParameters(state, value) {//Сломан поиск в Tab-х(CompnetnsWarehouseTab). Нету поиска по названию!
             state.term = value;
             state.pageNumber = 1;
         },
@@ -321,6 +325,10 @@ export default createStore({
 
         setAlertMessage(state, text) {
             state.alertText = text;
+        },
+
+        addTaskQueue(state, employee) {
+            state.taskQueue.push(employee);
         }
     },
 
@@ -571,7 +579,7 @@ export default createStore({
         logout({ dispatch }) {
             return axios.post("/api/Authentication/Logout")
                 .finally(() => {
-                    dispatch("clearAuthData");//Нужно еще и сбрасывать состояние полей
+                    dispatch("clearAuthData");
                     dispatch("stopSignalRConnection");
                 });
         },
@@ -609,9 +617,10 @@ export default createStore({
                 .withAutomaticReconnect()
                 .build();
 
-            connection.on("NotifyManagers", (response) => {//TODO: Не работают сет таймауты для алертов в компонентах( не сбрасваються)
+            connection.on("NotifyManagers", (response) => {
                 commit("setAlertMessage", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
                 commit("isShowSuccessAlert", true);
+                commit("addTaskQueue", response);
             });
 
             connection.onclose(() => {

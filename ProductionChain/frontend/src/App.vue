@@ -51,7 +51,7 @@
                     <v-list-item v-show="isManagerOrAdmin(userData.roles)"
                                  :disabled="!isAuthorized"
                                  prepend-icon="mdi-inbox-multiple"
-                                 to="/task">
+                                 to="/taskQueue">
                         <v-list-item-title class="d-flex justify-space-between align-center w-100">
                             Очередь на задачи
                             <v-badge v-if="taskQueueCount > 0"
@@ -128,8 +128,8 @@
 
 <script>
     import LoginModal from "./components/modals/LoginModal.vue";
-import LogoutModal from "./components/modals/LogoutModal.vue";
-import RegisterModal from "./components/modals/RegisterModal.vue";
+    import LogoutModal from "./components/modals/LogoutModal.vue";
+    import RegisterModal from "./components/modals/RegisterModal.vue";
 
     export default {
         components: {
