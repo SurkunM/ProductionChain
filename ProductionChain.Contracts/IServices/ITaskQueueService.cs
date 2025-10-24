@@ -1,20 +1,16 @@
-﻿using ProductionChain.Contracts.Dto.Responses;
-using ProductionChain.Contracts.Dto.Shared;
-using ProductionChain.Model.BasicEntities;
+﻿using ProductionChain.Contracts.Dto.Shared;
 
 namespace ProductionChain.Contracts.IServices;
 
 public interface ITaskQueueService
 {
-    void EnqueueTaskQueue(TaskQueueDto taskQueueDto);
+    void AddEmployee(TaskQueueDto taskQueueDto);
 
-    NotifyManagersResponse GenerateResponse(Employee employee);
+    bool RemoveEmployee(int id);
 
-    TaskQueueDto DequeueTaskQueue();
+    bool ContainsEmployee(int employeeId);
+
+    TaskQueueDto? GetEmployeeFromQueue(int employeeId);
 
     List<TaskQueueDto> GetTaskQueueToList();
-
-    TaskQueueDto GetNext();
-
-    int GetCount();
 }

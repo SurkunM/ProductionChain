@@ -1,71 +1,63 @@
-﻿using ProductionChain.Contracts.Dto.Responses;
-using ProductionChain.Contracts.Dto.Shared;
+﻿using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.IServices;
-using ProductionChain.Model.BasicEntities;
+using System.Collections.Concurrent;
 
 namespace ProductionChain.BusinessLogic.Services;
 
 public class TaskQueueService : ITaskQueueService
 {
-    private readonly Queue<TaskQueueDto> _queue;
+    private readonly ConcurrentDictionary<int, TaskQueueDto> _queueDictionary;
 
     private readonly object _lockObj = new object();
 
     public TaskQueueService()
     {
-        _queue = new Queue<TaskQueueDto>();
+        _queueDictionary = new ConcurrentDictionary<int, TaskQueueDto>();
     }
 
-    public TaskQueueDto GetNext()
-    {
-        return _queue.Peek();
-    }
-
-    public void EnqueueTaskQueue(TaskQueueDto taskQueueDto)
+    public void AddEmployee(TaskQueueDto taskQueueDto)
     {
         lock (_lockObj)
         {
-            _queue.Enqueue(taskQueueDto);
+            if (!_queueDictionary.TryAdd(taskQueueDto.EmployeeId, taskQueueDto))
+            {
+                throw new InvalidOperationException("Сотрудник уже в очереди");
+            }
         }
     }
 
-    public TaskQueueDto DequeueTaskQueue()
+    public bool RemoveEmployee(int id)
     {
         lock (_lockObj)
         {
-            if (_queue.Count <= 0)
+            if (_queueDictionary.IsEmpty)
             {
-                throw new Exception();
+                throw new InvalidOperationException("Очередь пуста");
             }
 
-            return _queue.Dequeue();
+            return _queueDictionary.TryRemove(id, out _);
         }
     }
+
 
     public List<TaskQueueDto> GetTaskQueueToList()
     {
         lock (_lockObj)
         {
-            return _queue.ToList();
+            return _queueDictionary.Values.ToList();
         }
     }
 
-    public int GetCount()
+    public bool ContainsEmployee(int employeeId)
+    {
+        return _queueDictionary.ContainsKey(employeeId);
+    }
+
+    public TaskQueueDto? GetEmployeeFromQueue(int employeeId)
     {
         lock (_lockObj)
         {
-            return _queue.Count;
+            return _queueDictionary.TryGetValue(employeeId, out var employee) ? employee : null;
         }
-    }
-
-    public NotifyManagersResponse GenerateResponse(Employee employee)
-    {
-        return new NotifyManagersResponse
-        {
-            EmployeeId = employee.Id,
-            FullName = $"{employee.LastName} {employee.FirstName[0]}.{employee.MiddleName?[0]}",
-            Date = DateTime.Now,
-            QueueCount = _queue.Count
-        };
     }
 }
