@@ -25,7 +25,7 @@ public class ProductionAssemblyController : ControllerBase
     private readonly DeleteProductionOrderHandler _deleteProductionOrderHandler;
     private readonly DeleteProductionTaskHandler _deleteProductionTaskHandler;
 
-    private readonly AddToTaskQueueHandler _addToTaskQueueHandler;
+    private readonly AddToTaskQueueAndManagersNotificationHandler _addToTaskQueueHandler;
     private readonly GetTaskQueueHandler _getTaskQueueHandler;
 
     private readonly ILogger<ProductionAssemblyController> _logger;
@@ -36,7 +36,7 @@ public class ProductionAssemblyController : ControllerBase
         GetComponentsWarehouseItemsHandler getComponentsWarehouseItemsHandler, GetTaskQueueHandler getTaskQueueHandler,
 
         CreateProductionOrderHandler createProductionOrderHandler, CreateProductionTaskHandler createProductionTaskHandler,
-        AddToTaskQueueHandler addToTaskQueueHandler,
+        AddToTaskQueueAndManagersNotificationHandler addToTaskQueueHandler,
 
         DeleteProductionOrderHandler deleteProductionOrderHandler, DeleteProductionTaskHandler deleteProductionTaskHandler,
 
@@ -222,6 +222,11 @@ public class ProductionAssemblyController : ControllerBase
     [Authorize]
     public async Task<ActionResult> AddToTaskQueue([FromBody] int employeeId)
     {
+        if(employeeId < 0)
+        {
+            return BadRequest("Передано не корректное значение");
+        }
+
         await _addToTaskQueueHandler.HandleAsync(employeeId);
 
         return Created();

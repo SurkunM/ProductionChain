@@ -6,7 +6,7 @@ using ProductionChain.Contracts.Mapping;
 
 namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 
-public class AddToTaskQueueHandler
+public class AddToTaskQueueAndManagersNotificationHandler
 {
     private readonly ITaskQueueService _taskQueueService;
 
@@ -14,7 +14,7 @@ public class AddToTaskQueueHandler
 
     private readonly INotificationService _notificationService;
 
-    public AddToTaskQueueHandler(ITaskQueueService taskQueueService, IUnitOfWork unitOfWork, INotificationService notificationService)
+    public AddToTaskQueueAndManagersNotificationHandler(ITaskQueueService taskQueueService, IUnitOfWork unitOfWork, INotificationService notificationService)
     {
         _taskQueueService = taskQueueService ?? throw new ArgumentNullException(nameof(taskQueueService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -23,18 +23,18 @@ public class AddToTaskQueueHandler
 
     public async Task HandleAsync(int employeeId)
     {
-        var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
-
-        var employee = await employeeRepository.GetByIdAsync(employeeId);
-
-        if (employee is null)
+        if (_taskQueueService.ContainsEmployee(employeeId))
         {
-            throw new NotFoundException("Сотрудник не найден");
+            throw new InvalidOperationException("Сотрудник уже добавлен");
         }
 
-        _taskQueueService.EnqueueTaskQueue(employee.ToTaskQueueDto());
+        var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
+        var employee = await employeeRepository.GetByIdAsync(employeeId) ?? throw new NotFoundException("Сотрудник не найден");
+        var employeeDto = employee.ToTaskQueueDto();
 
-        var response = _taskQueueService.GenerateResponse(employee);
+        _taskQueueService.AddEmployee(employeeDto);
+
+        var response = _notificationService.GenerateNotifyManagersResponse(employeeDto);
 
         await _notificationService.SendManagersTaskQueueNotificationAsync(response);
     }
