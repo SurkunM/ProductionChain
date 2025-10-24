@@ -7,17 +7,13 @@
                            height="4">
         </v-progress-linear>
 
-        <template v-if="!isAuthorized">
+        <template v-if="isAuthorized">
             <v-data-table :headers="headers"
                           :items="taskQueue"
                           hide-default-footer
                           no-data-text="Список пуст">
 
-                <template v-slot:[`header.employee`]="{ column }">
-                    {{column.title}}
-                </template>
-
-                <template v-slot:[`header.productsCount`]="{ column }">
+                <template v-slot:[`header.fullName`]="{ column }">
                     {{column.title}}
                 </template>
 
@@ -70,7 +66,7 @@
     </template>
 </template>
 <script>
-    import ProductionTaskCreateModal from "./modals/ProductionTaskCreateModal.vue";
+    import ProductionTaskCreateModal from "./modals/TaskCreateModal.vue";
 
     export default {
         components: {
@@ -81,8 +77,7 @@
             return {
                 headers: [
                     { value: "index", title: "№", align: 'center' },
-                    { value: "employee", title: "Сотрудник" },
-                    { value: "productsCount", title: "шт" },
+                    { value: "fullName", title: "Сотрудник" },
                     { value: "date", title: "Дата" },
                     { value: "actions", title: "" }
                 ]
@@ -97,7 +92,7 @@
 
         computed: {
             taskQueue() {
-                return this.$store.getters.tasks;
+                return this.$store.getters.taskQueue;
             },
 
             isLoading() {

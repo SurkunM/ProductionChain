@@ -175,7 +175,8 @@
         methods: {
             showLoginModal() {
                 if (this.isAuthorized) {
-                    this.$store.commit("isShowErrorAlert", "Вы уже авотризованы! Необходимо выйти из сессии.");
+                    this.$store.commit("setAlertMessage", "Вы уже авотризованы! Необходимо выйти из сессии");
+                    this.$store.commit("isShowErrorAlert", true);
                     return;
                 }
 
@@ -183,6 +184,10 @@
             },
 
             showLogoutModal() {
+                if (!this.isAuthorized) {
+                    return;
+                }
+
                 this.$store.commit("setIsShowLogoutModal", true);
             },
 
@@ -193,11 +198,16 @@
             showNewTaskModal() {
                 this.$store.dispatch("addToTaskQueue", this.userData.userId)
                     .then(() => {
-                        this.$store.commit("setAlertMessage", "Вы добавдены в очередь на получение задачи.");
+                        this.$store.commit("setAlertMessage", "Вы добавдены в очередь на получение задачи");
                         this.$store.commit("isShowSuccessAlert", true);
                     })
-                    .catch(() => {
-                        this.$store.commit("setAlertMessage", "Не удалось добавить в очередь на получение задачи.");
+                    .catch((error) => {
+                        if (error.status === 409) {
+                            this.$store.commit("setAlertMessage", "Вы уже добавлены");
+                        } else {
+                            this.$store.commit("setAlertMessage", "Не удалось добавить в очередь на получение задачи");
+                        }
+
                         this.$store.commit("isShowErrorAlert", true);
                     });
             },

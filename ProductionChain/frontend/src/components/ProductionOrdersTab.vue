@@ -126,15 +126,15 @@
     </v-card>
 
     <template>
-        <production-task-create-modal ref="productionTaskCreateModal" @save="createTask"></production-task-create-modal>
+        <task-create-modal ref="taskCreateModal" @save="createTask"></task-create-modal>
     </template>
 </template>
 <script>
-    import ProductionTaskCreateModal from "./modals/ProductionTaskCreateModal.vue";
+    import TaskCreateModal from "./modals/TaskCreateModal.vue";
 
     export default {
         components: {
-            ProductionTaskCreateModal
+            TaskCreateModal
         },
 
         data() {
@@ -214,7 +214,7 @@
             createTask(newTask) {
                 this.$store.dispatch("createProductionTask", newTask)
                     .then(() => {
-                        this.$refs.productionTaskCreateModal.hide();
+                        this.$refs.taskCreateModal.hide();
                         this.$store.commit("setAlertMessage", "Задача успешно создана");
                         this.$store.commit("isShowSuccessAlert", true);
                     })
@@ -225,7 +225,7 @@
             },
 
             showTaskCreateModal(productionOrder) {
-                this.$refs.productionTaskCreateModal.show(productionOrder);
+                this.$refs.taskCreateModal.show(productionOrder);
             },
 
             endProductionOrder(productionOrder) {

@@ -40,7 +40,7 @@ const routes = [
     {
         path: "/task",
         name: "task",
-        component: () => import("../components/ProductionTaskTab.vue")
+        component: () => import("../components/TaskTab.vue")
     },
     {
         path: "/taskQueue",
@@ -50,7 +50,7 @@ const routes = [
     {
         path: "/history",
         name: "history",
-        component: () => import("../components/ProductionHistoryTab.vue")
+        component: () => import("../components/HistoryTab.vue")
     }
 ]
 

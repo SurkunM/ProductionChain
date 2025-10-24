@@ -328,6 +328,16 @@ export default createStore({
         },
 
         addTaskQueue(state, employee) {
+            employee.date = new Date(employee.date).toLocaleString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit",
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }).replace(',', '');
+
+            employee.index = state.taskQueue.length + 1;
+
             state.taskQueue.push(employee);
         }
     },
@@ -618,9 +628,9 @@ export default createStore({
                 .build();
 
             connection.on("NotifyManagers", (response) => {
+                commit("addTaskQueue", response);
                 commit("setAlertMessage", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
                 commit("isShowSuccessAlert", true);
-                commit("addTaskQueue", response);
             });
 
             connection.onclose(() => {
