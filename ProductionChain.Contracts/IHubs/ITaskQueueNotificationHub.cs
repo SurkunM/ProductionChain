@@ -5,4 +5,6 @@ namespace ProductionChain.Contracts.IHubs;
 public interface ITaskQueueNotificationHub
 {
     Task NotifyManagers(NotifyManagersResponse notifyManagersResponse);
+
+    Task NotifyEmployees(NotifyEmployeeResponse notifyEmployeeResponse);
 }

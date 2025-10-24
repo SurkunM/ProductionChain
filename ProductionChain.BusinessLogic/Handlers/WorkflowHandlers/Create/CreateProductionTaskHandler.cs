@@ -17,7 +17,7 @@ public class CreateProductionTaskHandler
     public CreateProductionTaskHandler(IUnitOfWork unitOfWork, ILogger<CreateProductionTaskHandler> logger)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _logger = logger ?? throw new ArgumentNullException(nameof(_logger));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task HandleAsync(ProductionTaskRequest taskRequest)

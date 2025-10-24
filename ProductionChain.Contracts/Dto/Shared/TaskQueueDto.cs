@@ -4,13 +4,13 @@ public class TaskQueueDto
 {
     public int EmployeeId { get; set; }
 
-    public required string FirstName { get; set; }
+    public string EmployeeFullName { get; set; } = string.Empty;
 
-    public required string LastName { get; set; }
-
-    public string? MiddleName { get; set; }
-
-    public required string Position { get; set; }
+    public string Position { get; set; } = string.Empty;
 
     public required DateTime CreateDate { get; set; }
+
+    public string TaskProductName { get; set; } = string.Empty;
+
+    public int ProductCount { get; set; }
 }

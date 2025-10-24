@@ -92,10 +92,18 @@ public static class MappingExtensions
         return new TaskQueueDto
         {
             EmployeeId = employee.Id,
-            FirstName = employee.FirstName,
-            LastName = employee.LastName,
-            MiddleName = employee.MiddleName,
+            EmployeeFullName = $"{employee.LastName} {employee.FirstName[0]}.{employee.MiddleName?[0]}",
             Position = employee.Position.ToString(),
+            CreateDate = DateTime.UtcNow
+        };
+    }
+
+    public static TaskQueueDto ToTaskQueueDto(this AssemblyProductionTask task)
+    {
+        return new TaskQueueDto
+        {
+            TaskProductName = task.Product.Name,
+            ProductCount = task.ProductsCount,
             CreateDate = DateTime.UtcNow
         };
     }
