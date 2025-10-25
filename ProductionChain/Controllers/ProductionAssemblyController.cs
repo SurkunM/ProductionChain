@@ -234,15 +234,6 @@ public class ProductionAssemblyController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,Manager")]
-    public ActionResult GetNextTaskQueueEmployee()
-    {
-        var nextEmployee = _getTaskQueueHandler.GetNextEmployeeHandle();
-
-        return Ok(nextEmployee);
-    }
-
-    [HttpPost]
-    [Authorize(Roles = "Admin,Manager")]
     public ActionResult GetTaskQueue()
     {
         var taskQueueList = _getTaskQueueHandler.GetTaskQueueHandle();
