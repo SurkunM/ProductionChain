@@ -34,6 +34,7 @@ public class ExceptionMiddleware
             InvalidStateException => (StatusCodes.Status409Conflict, exception.Message),
             InsufficientComponentsException => (StatusCodes.Status400BadRequest, exception.Message),
             UpdateStateException => (StatusCodes.Status422UnprocessableEntity, exception.Message),
+            AccountNotCreatedException => (StatusCodes.Status409Conflict, exception.Message),
             _ => (StatusCodes.Status500InternalServerError, "Ошибка сервера.")
         };
 

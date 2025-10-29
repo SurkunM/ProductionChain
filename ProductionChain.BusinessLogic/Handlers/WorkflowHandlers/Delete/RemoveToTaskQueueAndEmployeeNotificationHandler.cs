@@ -30,11 +30,10 @@ public class RemoveToTaskQueueAndEmployeeNotificationHandler
 
         var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
         var task = await tasksRepository.GetByIdAsync(taskId) ?? throw new NotFoundException("Задача не найдена");
-        var taskDto = task.ToTaskQueueDto();
 
         _taskQueueService.RemoveEmployee(employeeId);
 
-        var response = _notificationService.GenerateNotifyEmployeeResponse(taskDto);
+        var response = _notificationService.GenerateNotifyEmployeeResponse(task.ToTaskQueueDto());
 
         await _notificationService.SendEmployeesTaskQueueNotificationAsync(employeeId, response);
     }

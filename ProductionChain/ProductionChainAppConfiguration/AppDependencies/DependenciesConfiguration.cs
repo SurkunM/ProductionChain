@@ -63,5 +63,6 @@ public static class DependenciesConfiguration
 
         services.AddTransient<AccountAuthenticationHandler>();
         services.AddTransient<AccountAuthorizationHandler>();
+        services.AddTransient<RemoveToTaskQueueAndEmployeeNotificationHandler>();
     }
 }

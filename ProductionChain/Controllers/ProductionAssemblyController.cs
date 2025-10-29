@@ -25,7 +25,8 @@ public class ProductionAssemblyController : ControllerBase
     private readonly DeleteProductionOrderHandler _deleteProductionOrderHandler;
     private readonly DeleteProductionTaskHandler _deleteProductionTaskHandler;
 
-    private readonly AddToTaskQueueAndManagersNotificationHandler _addToTaskQueueHandler;
+    private readonly AddToTaskQueueAndManagersNotificationHandler _addQueueAndNotificationManagerHandler;
+    private readonly RemoveToTaskQueueAndEmployeeNotificationHandler _removeQueueAndNotificationEmployeeHandler;
     private readonly GetTaskQueueHandler _getTaskQueueHandler;
 
     private readonly ILogger<ProductionAssemblyController> _logger;
@@ -39,6 +40,7 @@ public class ProductionAssemblyController : ControllerBase
         AddToTaskQueueAndManagersNotificationHandler addToTaskQueueHandler,
 
         DeleteProductionOrderHandler deleteProductionOrderHandler, DeleteProductionTaskHandler deleteProductionTaskHandler,
+        RemoveToTaskQueueAndEmployeeNotificationHandler removeToTaskQueue,
 
         ILogger<ProductionAssemblyController> logger)
     {
@@ -47,7 +49,7 @@ public class ProductionAssemblyController : ControllerBase
         _createProductionOrderHandler = createProductionOrderHandler ?? throw new ArgumentNullException(nameof(createProductionOrderHandler));
         _createProductionTaskHandler = createProductionTaskHandler ?? throw new ArgumentNullException(nameof(createProductionTaskHandler));
 
-        _addToTaskQueueHandler = addToTaskQueueHandler ?? throw new ArgumentNullException(nameof(addToTaskQueueHandler));
+        _addQueueAndNotificationManagerHandler = addToTaskQueueHandler ?? throw new ArgumentNullException(nameof(addToTaskQueueHandler));
         _getTaskQueueHandler = getTaskQueueHandler ?? throw new ArgumentNullException(nameof(getTaskQueueHandler));
 
         _getProductionHistoriesHandler = getProductionHistoriesHandler ?? throw new ArgumentNullException(nameof(getProductionHistoriesHandler));
@@ -58,6 +60,7 @@ public class ProductionAssemblyController : ControllerBase
 
         _deleteProductionOrderHandler = deleteProductionOrderHandler ?? throw new ArgumentNullException(nameof(deleteProductionOrderHandler));
         _deleteProductionTaskHandler = deleteProductionTaskHandler ?? throw new ArgumentNullException(nameof(deleteProductionTaskHandler));
+        _removeQueueAndNotificationEmployeeHandler = removeToTaskQueue ?? throw new ArgumentNullException(nameof(removeToTaskQueue));
     }
 
     [HttpGet]
@@ -222,17 +225,31 @@ public class ProductionAssemblyController : ControllerBase
     [Authorize]
     public async Task<ActionResult> AddToTaskQueue([FromBody] int employeeId)
     {
-        if(employeeId < 0)
+        if (employeeId < 0)
         {
             return BadRequest("Передано не корректное значение");
         }
 
-        await _addToTaskQueueHandler.HandleAsync(employeeId);
+        await _addQueueAndNotificationManagerHandler.HandleAsync(employeeId);
 
         return Created();
     }
 
-    [HttpPost]
+    [HttpDelete]
+    [Authorize]
+    public async Task<ActionResult> RemoveToTaskQueue([FromBody] int employeeId, int taskId)
+    {
+        if (employeeId < 0 || taskId < 0)
+        {
+            return BadRequest("Передано не корректное значение");
+        }
+
+        await _removeQueueAndNotificationEmployeeHandler.HandleAsync(employeeId, taskId);
+
+        return NoContent();
+    }
+
+    [HttpGet]
     [Authorize(Roles = "Admin,Manager")]
     public ActionResult GetTaskQueue()
     {
