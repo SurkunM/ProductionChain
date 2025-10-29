@@ -23,7 +23,8 @@
             <v-navigation-drawer>
                 <v-list density="compact"
                         nav>
-                    <v-list-item prepend-icon="mdi-home"
+                    <v-list-item v-show="isManagerOrAdmin(userData.roles)"
+                                 prepend-icon="mdi-home"
                                  to="/"
                                  title="Главная"></v-list-item>
 
@@ -192,6 +193,12 @@
             },
 
             showRegisterModal() {
+                this.$store.dispatch("loadEmployees")
+                    .catch(() => {
+                        this.$store.commit("setAlertMessage", "Не удалось загрузить список сотрудников.");
+                        this.$store.commit("isShowErrorAlert", true);
+                    });
+
                 this.$store.commit("setIsShowRegisterModal", true);
             },
 

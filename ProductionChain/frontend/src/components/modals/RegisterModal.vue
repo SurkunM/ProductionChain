@@ -94,16 +94,6 @@
         },
 
         methods: {
-            show() {
-                this.$store.dispatch("loadEmployees")
-                    .catch(() => {
-                        this.$store.commit("setAlertMessage", "Не удалось загрузить список сотрудников.");
-                        this.$store.commit("isShowErrorAlert", true);
-                    });
-
-                this.$store.commit("setIsShowRegisterModal", true);
-            },
-
             hide() {
                 this.resetForm();
                 this.$store.commit("setIsShowRegisterModal", false);

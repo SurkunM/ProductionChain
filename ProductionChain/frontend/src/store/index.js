@@ -11,6 +11,7 @@ export default createStore({
 
         tasks: [],
         taskQueue: [],
+        createdTaskData: [],
 
         histories: [],
         productionOrders: [],
@@ -34,6 +35,7 @@ export default createStore({
         isShowRegisterModal: false,
         isShowLoginModal: false,
         isShowLogoutModal: false,
+        isShowTaskCreateModal: false,
 
         signalRConnection: null,
         isSignalRConnected: false,
@@ -105,7 +107,11 @@ export default createStore({
         },
 
         isShowLogoutModal(state) {
-            return state.isShowLogoutModal;
+            return state.isShowLogoutModal; 
+        },
+
+        isShowTaskCreateModal(state) {
+            return state.isShowTaskCreateModal;
         },
 
         isShowRegisterModal(state) {
@@ -327,8 +333,35 @@ export default createStore({
             state.alertText = text;
         },
 
-        addTaskQueue(state, employee) {
-            employee.date = new Date(employee.date).toLocaleString("ru-RU", {
+        isShowTaskCreateModal(state, value) {
+            state.isShowTaskCreateModal = value;
+        },
+
+        setTaskCreatedProductionOrderData(state, productionOrder) {//TODO: Костыль, переделать!
+            state.createdTaskData.productionOrderId = productionOrder.id;
+            state.createdTaskData.productId = productionOrder.productId;
+            state.createdTaskData.productName = `${productionOrder.productName || ''} (${productionOrder.productModel || ''})`;
+        },
+
+        setTaskQueue(state, taskQueue) {
+
+            taskQueue.forEach((tq, i) => {
+                tq.createDate = new Date(tq.createDate).toLocaleString("ru-RU", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                }).replace(',', '');
+
+                tq.index = i + 1;
+            });
+
+            state.taskQueue = taskQueue;
+        },
+
+        addEmployeeToTaskQueue(state, employee) {
+            employee.createDate = new Date(employee.createDate).toLocaleString("ru-RU", {
                 hour: "2-digit",
                 minute: "2-digit",
                 day: "2-digit",
@@ -504,6 +537,18 @@ export default createStore({
             });
         },
 
+        loadTaskQueue({ commit }) {
+            commit("setIsLoading", true);
+
+            return axios.get("/api/ProductionAssembly/GetTaskQueue")
+                .then(response => {
+                    commit("setTaskQueue", response.data);
+                })
+                .finally(() => {
+                    commit("setIsLoading", false);
+                });
+        },
+
         createProductionOrder({ commit, dispatch }, parameters) {
             commit("setIsLoading", true);
 
@@ -516,8 +561,12 @@ export default createStore({
                 });
         },
 
-        createProductionTask({ commit, dispatch }, task) {
+        createProductionTask({ state, commit, dispatch }, task) {
             commit("setIsLoading", true);
+
+            task.productionOrderId = state.createdTaskData.productionOrderId;
+            task.productId = state.createdTaskData.productId;
+            task.productName = state.createdTaskData.productName;
 
             return axios.post("/api/ProductionAssembly/CreateProductionTask", task)
                 .then(() => {
@@ -628,10 +677,16 @@ export default createStore({
                 .build();
 
             connection.on("NotifyManagers", (response) => {
-                commit("addTaskQueue", response);
+                commit("addEmployeeToTaskQueue", response.data);
                 commit("setAlertMessage", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
                 commit("isShowSuccessAlert", true);
             });
+
+            //connection.on("NotifyEmployees", (response) => {
+            //    commit("addTaskQueue", response);
+            //    commit("setAlertMessage", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
+            //    commit("isShowSuccessAlert", true);
+            //});
 
             connection.onclose(() => {
                 commit("setSignalRIsConnected", false);
