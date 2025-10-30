@@ -9,7 +9,7 @@
                 </v-btn>
             </v-toolbar>
 
-            <v-form @submit.prevent="submitForm">
+            <v-form @submit.prevent="submitForm(productionOrderData)">
                 <v-card-text>
                     <div class="mb-2">
                         <span class="text-h6 font-weight-bold ms-1">Изделие: </span>
@@ -41,11 +41,9 @@
 </template>
 
 <script>
-    export default {//TODO: Доделать! нужно через $store.
+    export default {//TODO: Добавить инпуты для productionOrder (id, productId). Сделать валидацию для !id<=0
         data() {
             return {
-                isShow: false,
-
                 task: {
                     id: 0,
                     productName: "",
@@ -64,10 +62,26 @@
             };
         },
 
+        created() {
+            this.$store.dispatch("loadEmployees")
+                .catch(() => {
+                    this.$store.commit("setAlertMessage", "Не удалось загрузить список сотрудников.");
+                    this.$store.commit("isShowErrorAlert", true);
+                });
+        },
+
         computed: {
             employees() {
                 return this.$store.getters.employees;
             },
+
+            isShow() {
+                return this.$store.getters.isShowTaskCreateModal;
+            },
+
+            productionOrderData() {
+                return this.$store.getters.getProductionOrderData;
+            }
         },
 
         methods: {
@@ -97,12 +111,26 @@
                 }
             },
 
-            submitForm() {
+            submitForm(productionOrderData) {
                 if (!this.checkEditingFieldsIsvalid(this.task)) {
                     return;
                 }
 
-                this.$emit('save', this.task)
+                this.task.productionOrderId = productionOrderData.id;
+                this.task.productId = productionOrderData.productId;
+                this.task.productName = productionOrderData.productName;
+
+                this.$store.dispatch("createProductionTask", this.task)
+                    .then(() => {
+                        this.hide();
+                        this.$store.commit("setAlertMessage", "Задача успешно создана");
+                        this.$store.commit("isShowSuccessAlert", true);
+                        this.$store.commit("resetProductionOrderData");
+                    })
+                    .catch(() => {
+                        this.$store.commit("setAlertMessage", "Не удалось создать задачу");
+                        this.$store.commit("isShowErrorAlert", true);
+                    });
             },
 
             onSelectEmployee(employee) {
@@ -116,21 +144,10 @@
                 }
             },
 
-            show(productionOrder) {
+            hide() {
                 this.resetErrors();
 
-                this.task.productionOrderId = productionOrder.id;
-                this.task.productId = productionOrder.productId;
-
-                this.task.productName = `${productionOrder.productName || ''} (${productionOrder.productModel || ''})`;
-
-                this.$store.dispatch("loadEmployees");
-
-                this.isShow = true;
-            },
-
-            hide() {
-                this.isShow = false;
+                this.$store.commit("isShowTaskCreateModal", false);
             },
 
             resetErrors() {

@@ -124,19 +124,10 @@
                       color="primary">
         </v-pagination>
     </v-card>
-
-    <template>
-        <task-create-modal ref="taskCreateModal" @save="createTask"></task-create-modal>
-    </template>
 </template>
+
 <script>
-    import TaskCreateModal from "./modals/TaskCreateModal.vue";
-
     export default {
-        components: {
-            TaskCreateModal
-        },
-
         data() {
             return {
                 term: "",
@@ -211,21 +202,10 @@
                     });
             },
 
-            createTask(newTask) {
-                this.$store.dispatch("createProductionTask", newTask)
-                    .then(() => {
-                        this.$refs.taskCreateModal.hide();
-                        this.$store.commit("setAlertMessage", "Задача успешно создана");
-                        this.$store.commit("isShowSuccessAlert", true);
-                    })
-                    .catch(() => {
-                        this.$store.commit("setAlertMessage", "Не удалось создать задачу");
-                        this.$store.commit("isShowErrorAlert", true);
-                    });
-            },
-
             showTaskCreateModal(productionOrder) {
-                this.$refs.taskCreateModal.show(productionOrder);
+                this.$store.commit("setProductionOrderData", productionOrder);
+
+                this.$store.commit("isShowTaskCreateModal", true);
             },
 
             endProductionOrder(productionOrder) {

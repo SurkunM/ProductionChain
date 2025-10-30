@@ -13,24 +13,17 @@
                           hide-default-footer
                           no-data-text="Список пуст">
 
-                <template v-slot:[`header.fullName`]="{ column }">
+                <template v-slot:[`header.employeeFullName`]="{ column }">
                     {{column.title}}
                 </template>
 
-                <template v-slot:[`header.date`]="{ column }">
+                <template v-slot:[`header.createDate`]="{ column }">
                     {{column.title}}
                 </template>
 
                 <template v-slot:[`item.actions`]="{ item }">
-                    <div>
-                        <template>
-                            <v-btn size="small" color="info" @click="showTaskCreateModal(item)" class="mt-2">Создать задачу</v-btn>
-                        </template>
-
-                        <template>
-                            <v-btn size="small" color="info" @click="completeTask(item)" class="me-2">Заверишть задачу</v-btn>
-                        </template>
-                    </div>
+                    <v-btn size="small" color="info" @click="showTaskCreateModal" class="me-4 mt-2">Выдать задачу</v-btn>
+                    <v-btn size="small" color="error" @click="removeToTaskQueue(item)" class="mt-2">Удалить из очереди</v-btn>
                 </template>
             </v-data-table>
         </template>
@@ -60,26 +53,16 @@
             </v-container>
         </template>
     </v-card>
-
-    <template>
-        <production-task-create-modal ref="productionTaskCreateModal" @save="createTask"></production-task-create-modal>
-    </template>
 </template>
 <script>
-    import ProductionTaskCreateModal from "./modals/TaskCreateModal.vue";
-
     export default {
-        components: {
-            ProductionTaskCreateModal
-        },
-
         data() {
             return {
                 headers: [
                     { value: "index", title: "№", align: 'center' },
-                    { value: "fullName", title: "Сотрудник" },
-                    { value: "date", title: "Дата" },
-                    { value: "actions", title: "" }
+                    { value: "employeeFullName", title: "Сотрудник" },
+                    { value: "createDate", title: "Дата" },
+                    { value: "actions", title: "", width: "35%" }
                 ]
             }
         },
@@ -88,6 +71,8 @@
             if (!this.isAuthorized) {
                 return;
             }
+
+            this.$store.dispatch("loadTaskQueue");
         },
 
         computed: {
@@ -105,7 +90,7 @@
         },
 
         methods: {
-            completeTask(task) {
+            removeToTaskQueue(task) {
                 const parameters = {
                     id: task.id,
                     productionOrderId: task.productionOrderId,
@@ -114,19 +99,20 @@
                     productsCount: task.productsCount
                 };
 
-                this.$store.dispatch("deleteProductionTask", parameters)
-                    .then(() => {
-                        this.$store.commit("setAlertMessage", "Задача успешно завершена.");
-                        this.$store.commit("isShowSuccessAlert", true);
-                    })
-                    .catch(() => {
-                        this.$store.commit("setAlertMessage", "Ошибка! Не удалось завершить задачу.");
-                        this.$store.commit("isShowErrorAlert", true);
-                    });
+                alert("Remove to task queue" + parameters);
+                //this.$store.dispatch("deleteProductionTask", parameters)
+                //    .then(() => {
+                //        this.$store.commit("setAlertMessage", "Задача успешно завершена.");
+                //        this.$store.commit("isShowSuccessAlert", true);
+                //    })
+                //    .catch(() => {
+                //        this.$store.commit("setAlertMessage", "Ошибка! Не удалось завершить задачу.");
+                //        this.$store.commit("isShowErrorAlert", true);
+                //    });
             },
 
-            showTaskCreateModal(productionOrder) {
-                this.$refs.productionTaskCreateModal.show(productionOrder);
+            showTaskCreateModal() {
+                this.$store.commit("isShowTaskCreateModal", true);
             },
 
             showLoginModal() {

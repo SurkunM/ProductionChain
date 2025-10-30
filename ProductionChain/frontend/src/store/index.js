@@ -11,7 +11,6 @@ export default createStore({
 
         tasks: [],
         taskQueue: [],
-        createdTaskData: [],
 
         histories: [],
         productionOrders: [],
@@ -24,6 +23,7 @@ export default createStore({
 
         term: "",
         userData: { userId: 0, userName: "", roles: ["Initial"] },
+        productionOrderData: { id: 0, productId: 0, productName: "" },
 
         pageItemsCount: 0,
         pageNumber: 1,
@@ -82,6 +82,10 @@ export default createStore({
             return state.productionOrders;
         },
 
+        getProductionOrderData(state) {
+            return state.productionOrderData;
+        },
+
         assemblyWarehouseItems(state) {
             return state.assemblyWarehouseItems;
         },
@@ -107,7 +111,7 @@ export default createStore({
         },
 
         isShowLogoutModal(state) {
-            return state.isShowLogoutModal; 
+            return state.isShowLogoutModal;
         },
 
         isShowTaskCreateModal(state) {
@@ -337,10 +341,12 @@ export default createStore({
             state.isShowTaskCreateModal = value;
         },
 
-        setTaskCreatedProductionOrderData(state, productionOrder) {//TODO: Костыль, переделать!
-            state.createdTaskData.productionOrderId = productionOrder.id;
-            state.createdTaskData.productId = productionOrder.productId;
-            state.createdTaskData.productName = `${productionOrder.productName || ''} (${productionOrder.productModel || ''})`;
+        setProductionOrderData(state, productionOrder) {
+            state.productionOrderData = productionOrder;
+        },
+
+        resetProductionOrderData(state) {
+            state.productionOrderData = { id: 0, productId: 0, productName: "" };
         },
 
         setTaskQueue(state, taskQueue) {
@@ -561,12 +567,8 @@ export default createStore({
                 });
         },
 
-        createProductionTask({ state, commit, dispatch }, task) {
+        createProductionTask({ commit, dispatch }, task) {
             commit("setIsLoading", true);
-
-            task.productionOrderId = state.createdTaskData.productionOrderId;
-            task.productId = state.createdTaskData.productId;
-            task.productName = state.createdTaskData.productName;
 
             return axios.post("/api/ProductionAssembly/CreateProductionTask", task)
                 .then(() => {

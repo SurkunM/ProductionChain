@@ -115,15 +115,19 @@
     </v-card>
 
     <template>
-        <login-modal ref="loginModal"></login-modal>
+        <login-modal></login-modal>
     </template>
 
     <template>
-        <logout-modal ref="logoutModal"></logout-modal>
+        <logout-modal></logout-modal>
     </template>
 
     <template>
-        <register-modal ref="registerModal"></register-modal>
+        <register-modal></register-modal>
+    </template>
+
+    <template>
+        <task-create-modal></task-create-modal>
     </template>
 </template>
 
@@ -131,12 +135,14 @@
     import LoginModal from "./components/modals/LoginModal.vue";
     import LogoutModal from "./components/modals/LogoutModal.vue";
     import RegisterModal from "./components/modals/RegisterModal.vue";
+    import TaskCreateModal from "./components/modals/TaskCreateModal.vue";
 
     export default {
         components: {
             LoginModal,
             LogoutModal,
-            RegisterModal
+            RegisterModal,
+            TaskCreateModal
         },
 
         created() {
