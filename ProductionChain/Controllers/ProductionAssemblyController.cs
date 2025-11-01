@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
+using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Notification;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Mapping;
 using ProductionChain.Contracts.QueryParameters;
+using System.Threading.Tasks;
 
 namespace ProductionChain.Controllers;
 
@@ -26,8 +28,10 @@ public class ProductionAssemblyController : ControllerBase
     private readonly DeleteProductionTaskHandler _deleteProductionTaskHandler;
 
     private readonly AddToTaskQueueAndManagersNotificationHandler _addQueueAndNotificationManagerHandler;
-    private readonly RemoveToTaskQueueAndEmployeeNotificationHandler _removeQueueAndNotificationEmployeeHandler;
+    private readonly RemoveEmployeeFromTaskQueueHandler _removeEmployeeFromTaskQueueHandler;
     private readonly GetTaskQueueHandler _getTaskQueueHandler;
+
+    private readonly NotifyEmployeeHandler _notifyEmployeeHandler;
 
     private readonly ILogger<ProductionAssemblyController> _logger;
 
@@ -40,7 +44,9 @@ public class ProductionAssemblyController : ControllerBase
         AddToTaskQueueAndManagersNotificationHandler addToTaskQueueHandler,
 
         DeleteProductionOrderHandler deleteProductionOrderHandler, DeleteProductionTaskHandler deleteProductionTaskHandler,
-        RemoveToTaskQueueAndEmployeeNotificationHandler removeToTaskQueue,
+        RemoveEmployeeFromTaskQueueHandler removeToTaskQueue,
+
+        NotifyEmployeeHandler notifyEmployeeHandler,
 
         ILogger<ProductionAssemblyController> logger)
     {
@@ -60,7 +66,9 @@ public class ProductionAssemblyController : ControllerBase
 
         _deleteProductionOrderHandler = deleteProductionOrderHandler ?? throw new ArgumentNullException(nameof(deleteProductionOrderHandler));
         _deleteProductionTaskHandler = deleteProductionTaskHandler ?? throw new ArgumentNullException(nameof(deleteProductionTaskHandler));
-        _removeQueueAndNotificationEmployeeHandler = removeToTaskQueue ?? throw new ArgumentNullException(nameof(removeToTaskQueue));
+        _removeEmployeeFromTaskQueueHandler = removeToTaskQueue ?? throw new ArgumentNullException(nameof(removeToTaskQueue));
+
+        _notifyEmployeeHandler = notifyEmployeeHandler ?? throw new ArgumentNullException(nameof(notifyEmployeeHandler));
     }
 
     [HttpGet]
@@ -237,21 +245,23 @@ public class ProductionAssemblyController : ControllerBase
 
     [HttpDelete]
     [Authorize]
-    public async Task<ActionResult> RemoveToTaskQueue([FromBody] int employeeId, int taskId)
+    public async Task<IActionResult> RemoveFromTaskQueue([FromBody] int employeeId)
     {
-        if (employeeId < 0 || taskId < 0)
+        if (employeeId <= 0)
         {
             return BadRequest("Передано не корректное значение");
         }
 
-        await _removeQueueAndNotificationEmployeeHandler.HandleAsync(employeeId, taskId);
+        _removeEmployeeFromTaskQueueHandler.Handle(employeeId);
+
+        await _notifyEmployeeHandler.HandleAsync(employeeId);
 
         return NoContent();
     }
 
     [HttpGet]
     [Authorize(Roles = "Admin,Manager")]
-    public ActionResult GetTaskQueue()
+    public IActionResult GetTaskQueue()
     {
         var taskQueueList = _getTaskQueueHandler.GetTaskQueueHandle();
 

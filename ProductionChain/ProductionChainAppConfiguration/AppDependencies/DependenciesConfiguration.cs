@@ -5,6 +5,7 @@ using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
 using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
+using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Notification;
 using ProductionChain.BusinessLogic.Services;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
@@ -63,6 +64,8 @@ public static class DependenciesConfiguration
 
         services.AddTransient<AccountAuthenticationHandler>();
         services.AddTransient<AccountAuthorizationHandler>();
-        services.AddTransient<RemoveToTaskQueueAndEmployeeNotificationHandler>();
+        services.AddTransient<RemoveEmployeeFromTaskQueueHandler>();
+
+        services.AddTransient<NotifyEmployeeHandler>();
     }
 }

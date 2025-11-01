@@ -1,39 +1,46 @@
-﻿using ProductionChain.Contracts.Exceptions;
+﻿using ProductionChain.Contracts.Dto.Shared;
+using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
 
-namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
+namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Notification;
 
-public class RemoveToTaskQueueAndEmployeeNotificationHandler
+public class NotifyEmployeeHandler
 {
-    private readonly ITaskQueueService _taskQueueService;
-
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly INotificationService _notificationService;
 
-    public RemoveToTaskQueueAndEmployeeNotificationHandler(ITaskQueueService taskQueueService, IUnitOfWork unitOfWork, INotificationService notificationService)
+    public NotifyEmployeeHandler(IUnitOfWork unitOfWork, INotificationService notificationService)
     {
-        _taskQueueService = taskQueueService ?? throw new ArgumentNullException(nameof(taskQueueService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
     }
 
     public async Task HandleAsync(int employeeId, int taskId)
     {
-        if (!_taskQueueService.ContainsEmployee(employeeId))
-        {
-            throw new NotFoundException("Сотрудник не найден");
-        }
-
         var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
         var task = await tasksRepository.GetByIdAsync(taskId) ?? throw new NotFoundException("Задача не найдена");
 
-        _taskQueueService.RemoveEmployee(employeeId);
-
         var response = _notificationService.GenerateNotifyEmployeeResponse(task.ToTaskQueueDto());
+
+        await _notificationService.SendEmployeesTaskQueueNotificationAsync(employeeId, response);
+    }
+
+    public async Task HandleAsync(int employeeId)
+    {
+        //var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
+       // var task = await tasksRepository.GetByIdAsync(taskId) ?? throw new NotFoundException("Задача не найдена");
+       var testDto = new TaskQueueDto
+       { 
+           TaskProductName = "Test",
+           ProductCount = 1,
+           CreateDate = DateTime.Now 
+       };
+
+        var response = _notificationService.GenerateNotifyEmployeeResponse(testDto);
 
         await _notificationService.SendEmployeesTaskQueueNotificationAsync(employeeId, response);
     }
