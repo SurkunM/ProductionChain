@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProductionChain.DataAccess;
 
@@ -11,9 +12,11 @@ using ProductionChain.DataAccess;
 namespace ProductionChain.DataAccess.Migrations
 {
     [DbContext(typeof(ProductionChainDbContext))]
-    partial class ProductionChainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251102123700_Employee_Chief_Set_OnDeleteNoAction")]
+    partial class Employee_Chief_Set_OnDeleteNoAction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

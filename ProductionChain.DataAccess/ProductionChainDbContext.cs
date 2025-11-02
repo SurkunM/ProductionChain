@@ -54,7 +54,8 @@ public class ProductionChainDbContext : IdentityDbContext<Account, IdentityRole<
 
             b.HasOne(e => e.Chief)
                 .WithMany(e => e.Subordinates)
-                .HasForeignKey(e => e.ChiefId);
+                .HasForeignKey(e => e.ChiefId)
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Account>(b =>
