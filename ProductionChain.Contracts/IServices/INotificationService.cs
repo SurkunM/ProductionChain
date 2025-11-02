@@ -5,11 +5,13 @@ namespace ProductionChain.Contracts.IServices;
 
 public interface INotificationService
 {
-    Task SendManagersTaskQueueNotificationAsync(NotifyManagersResponse notifyManagersResponse);
+    Task SendManagersTaskQueueNotificationAsync(int? accountId, NotifyManagersResponse notifyManagersResponse);
 
-    Task SendEmployeesTaskQueueNotificationAsync(int employeeId, NotifyEmployeeResponse notifyEmployeeResponse);
+    Task SendEmployeesTaskQueueNotificationAsync(int accountId, NotifyEmployeeResponse notifyEmployeeResponse);
 
     NotifyManagersResponse GenerateNotifyManagersResponse(TaskQueueDto dto);
 
     NotifyEmployeeResponse GenerateNotifyEmployeeResponse(TaskQueueDto dto);
+
+    NotifyEmployeeResponse GenerateNotifyEmployeeResponse();
 }

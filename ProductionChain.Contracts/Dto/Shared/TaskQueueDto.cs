@@ -2,6 +2,8 @@
 
 public class TaskQueueDto
 {
+    public int TaskId { get; set; }
+
     public int EmployeeId { get; set; }
 
     public string EmployeeFullName { get; set; } = string.Empty;

@@ -1,5 +1,4 @@
-﻿using ProductionChain.Contracts.Dto.Shared;
-using ProductionChain.Contracts.Exceptions;
+﻿using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
@@ -31,17 +30,11 @@ public class NotifyEmployeeHandler
 
     public async Task HandleAsync(int employeeId)
     {
-        //var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
-       // var task = await tasksRepository.GetByIdAsync(taskId) ?? throw new NotFoundException("Задача не найдена");
-       var testDto = new TaskQueueDto
-       { 
-           TaskProductName = "Test",
-           ProductCount = 1,
-           CreateDate = DateTime.Now 
-       };
+        var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
+        var employee = await employeeRepository.GetByIdAsync(employeeId) ?? throw new NotFoundException("Задача не найдена");
 
-        var response = _notificationService.GenerateNotifyEmployeeResponse(testDto);
+        var response = _notificationService.GenerateNotifyEmployeeResponse();
 
-        await _notificationService.SendEmployeesTaskQueueNotificationAsync(employeeId, response);
+        await _notificationService.SendEmployeesTaskQueueNotificationAsync(employee.AccountId, response);
     }
 }

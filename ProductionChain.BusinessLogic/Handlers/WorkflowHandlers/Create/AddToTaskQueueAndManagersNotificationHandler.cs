@@ -29,6 +29,7 @@ public class AddToTaskQueueAndManagersNotificationHandler
         }
 
         var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
+
         var employee = await employeeRepository.GetByIdAsync(employeeId) ?? throw new NotFoundException("Сотрудник не найден");
         var employeeDto = employee.ToTaskQueueDto();
 
@@ -36,6 +37,11 @@ public class AddToTaskQueueAndManagersNotificationHandler
 
         var response = _notificationService.GenerateNotifyManagersResponse(employeeDto);
 
-        await _notificationService.SendManagersTaskQueueNotificationAsync(response);
+        if (employee.ChiefId is null)
+        {
+            throw new NotFoundException("У сотрудника не найден руководитель");
+        }
+
+        await _notificationService.SendManagersTaskQueueNotificationAsync(employee.ChiefId, response);
     }
 }

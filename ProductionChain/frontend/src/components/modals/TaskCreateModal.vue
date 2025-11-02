@@ -62,14 +62,6 @@
             };
         },
 
-        created() {
-            this.$store.dispatch("loadEmployees")
-                .catch(() => {
-                    this.$store.commit("setAlertMessage", "Не удалось загрузить список сотрудников.");
-                    this.$store.commit("isShowErrorAlert", true);
-                });
-        },
-
         computed: {
             employees() {
                 return this.$store.getters.employees;
