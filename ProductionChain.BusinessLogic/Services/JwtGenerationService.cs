@@ -46,7 +46,8 @@ public class JwtGenerationService : IJwtGenerationService
         {
             new(ClaimTypes.NameIdentifier, account.Id.ToString()),
             new(ClaimTypes.Name, account.UserName),
-            new("EmployeeId", account.EmployeeId.ToString())
+            new("EmployeeId", account.EmployeeId.ToString()),
+            new("ChiefId", account.Employee.ChiefId?.ToString()?? "")
         };
 
         var roles = await _userManager.GetRolesAsync(account);
