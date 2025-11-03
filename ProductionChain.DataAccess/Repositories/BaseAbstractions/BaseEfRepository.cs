@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductionChain.Contracts.IRepositories;
+using System.Threading.Tasks;
 
 namespace ProductionChain.DataAccess.Repositories.BaseAbstractions;
 
@@ -18,6 +19,13 @@ public class BaseEfRepository<T> : IRepository<T> where T : class
     public Task CreateAsync(T entity)
     {
         return DbSet.AddAsync(entity).AsTask();
+    }
+
+    public async Task<T> CreateAndGetEntityAsync(T entity)
+    {
+        var result = await DbSet.AddAsync(entity).ConfigureAwait(false);
+
+        return result.Entity;
     }
 
     public void Delete(T entity)

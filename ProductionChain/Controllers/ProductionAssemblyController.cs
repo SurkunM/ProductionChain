@@ -192,7 +192,9 @@ public class ProductionAssemblyController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        await _createProductionTaskHandler.HandleAsync(productionTaskRequest);
+        var taskId = await _createProductionTaskHandler.HandleAsync(productionTaskRequest);
+
+        await _notifyEmployeeHandler.HandleAsync(productionTaskRequest.EmployeeId, taskId);
 
         return NoContent();
     }

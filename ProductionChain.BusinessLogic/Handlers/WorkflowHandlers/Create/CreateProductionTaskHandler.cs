@@ -20,7 +20,7 @@ public class CreateProductionTaskHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task HandleAsync(ProductionTaskRequest taskRequest)
+    public async Task<int> HandleAsync(ProductionTaskRequest taskRequest)
     {
         var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
@@ -72,9 +72,11 @@ public class CreateProductionTaskHandler
                 throw new UpdateStateException("При изменении статуса сотрудника и производственного заказа произошла ошибка");
             }
 
-            await tasksRepository.CreateAsync(taskRequest.ToTaskModel(productionOrder, product, employee, DateTime.UtcNow));
+            var task = tasksRepository.CreateAndGetEntityAsync(taskRequest.ToTaskModel(productionOrder, product, employee, DateTime.UtcNow));
 
             await _unitOfWork.SaveAsync();
+
+            return task.Id;
         }
         catch (Exception ex)
         {
