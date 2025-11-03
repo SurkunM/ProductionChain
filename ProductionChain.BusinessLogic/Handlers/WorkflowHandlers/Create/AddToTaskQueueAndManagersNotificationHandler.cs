@@ -31,17 +31,14 @@ public class AddToTaskQueueAndManagersNotificationHandler
         var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
 
         var employee = await employeeRepository.GetByIdAsync(employeeId) ?? throw new NotFoundException("Сотрудник не найден");
+        var employeeChief = employee.Chief ?? throw new NotFoundException("У сотрудника не найден руководитель");
+
         var employeeDto = employee.ToTaskQueueDto();
 
         _taskQueueService.AddEmployee(employeeDto);
 
         var response = _notificationService.GenerateNotifyManagersResponse(employeeDto);
 
-        if (employee.ChiefId is null)
-        {
-            throw new NotFoundException("У сотрудника не найден руководитель");
-        }
-
-        await _notificationService.SendManagersTaskQueueNotificationAsync(employee.ChiefId, response);
+        await _notificationService.SendManagersTaskQueueNotificationAsync(employeeChief.Account?.Id, response);
     }
 }

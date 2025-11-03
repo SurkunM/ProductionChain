@@ -17,14 +17,14 @@ public class SignalRNotificationService : INotificationService
         _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
     }
 
-    public async Task SendManagersTaskQueueNotificationAsync(NotifyManagersResponse notifyManagersResponse)
+    public async Task SendManagersTaskQueueNotificationAsync(int? accountId, NotifyManagersResponse notifyManagersResponse)
     {
-        await _hubContext.Clients.Group(RolesEnum.Manager.ToString()).NotifyManagers(notifyManagersResponse);
+        await _hubContext.Clients.Group($"{RolesEnum.Manager}_{accountId}").NotifyManagers(notifyManagersResponse);
     }
 
-    public async Task SendEmployeesTaskQueueNotificationAsync(int employeeId, NotifyEmployeeResponse notifyEmployeeResponse)
+    public async Task SendEmployeesTaskQueueNotificationAsync(int? accountId, NotifyEmployeeResponse notifyEmployeeResponse)
     {
-        await _hubContext.Clients.User(employeeId.ToString()).NotifyEmployees(notifyEmployeeResponse);
+        await _hubContext.Clients.Group($"{RolesEnum.Employee}_{accountId}").NotifyEmployees(notifyEmployeeResponse);
     }
 
     public NotifyManagersResponse GenerateNotifyManagersResponse(TaskQueueDto dto)
@@ -43,7 +43,16 @@ public class SignalRNotificationService : INotificationService
         return new NotifyEmployeeResponse
         {
             ProductName = dto.TaskProductName,
-            Count = dto.ProductCount
+            Count = dto.ProductCount,
+            HasNewTaskIssued = true
+        };
+    }
+
+    public NotifyEmployeeResponse GenerateNotifyEmployeeResponse()
+    {
+        return new NotifyEmployeeResponse
+        {
+            HasNewTaskIssued = false
         };
     }
 }

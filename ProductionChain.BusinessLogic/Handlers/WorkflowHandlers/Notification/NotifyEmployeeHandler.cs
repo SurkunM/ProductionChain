@@ -35,6 +35,6 @@ public class NotifyEmployeeHandler
 
         var response = _notificationService.GenerateNotifyEmployeeResponse();
 
-        await _notificationService.SendEmployeesTaskQueueNotificationAsync(employee.AccountId, response);
+        await _notificationService.SendEmployeesTaskQueueNotificationAsync(employee.Account?.Id, response);
     }
 }

@@ -7,7 +7,7 @@ public interface INotificationService
 {
     Task SendManagersTaskQueueNotificationAsync(int? accountId, NotifyManagersResponse notifyManagersResponse);
 
-    Task SendEmployeesTaskQueueNotificationAsync(int accountId, NotifyEmployeeResponse notifyEmployeeResponse);
+    Task SendEmployeesTaskQueueNotificationAsync(int? accountId, NotifyEmployeeResponse notifyEmployeeResponse);
 
     NotifyManagersResponse GenerateNotifyManagersResponse(TaskQueueDto dto);
 
