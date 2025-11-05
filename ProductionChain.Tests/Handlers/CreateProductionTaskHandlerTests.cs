@@ -117,7 +117,7 @@ public class CreateProductionTaskHandlerTests
         componentsWarehouseRepositoryMock.Verify(r => r.TakeComponentsByProductId(_taskRequest.ProductId, _taskRequest.ProductsCount), Times.Once);
         productsRepositoryMock.Verify(r => r.GetByIdAsync(_taskRequest.ProductId), Times.Once);
 
-        tasksRepositoryMock.Verify(r => r.CreateAsync(It.IsNotNull<AssemblyProductionTask>()), Times.Once);
+        tasksRepositoryMock.Verify(r => r.CreateAndGetEntityAsync(It.IsNotNull<AssemblyProductionTask>()), Times.Once);
 
         _uowMock.Verify(uow => uow.SaveAsync(), Times.Once);
         _uowMock.Verify(uow => uow.BeginTransaction(), Times.Once);

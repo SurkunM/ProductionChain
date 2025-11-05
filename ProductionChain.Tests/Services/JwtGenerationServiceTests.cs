@@ -81,6 +81,7 @@ public class JwtGenerationServiceTests
         Assert.Equal("2", GetClaimValue(jwtToken, ClaimTypes.NameIdentifier));
         Assert.Equal("UserTestLogin", GetClaimValue(jwtToken, ClaimTypes.Name));
         Assert.Equal("1", GetClaimValue(jwtToken, "EmployeeId"));
+        Assert.Equal(string.Empty, GetClaimValue(jwtToken, "ChiefId"));
 
         var roleClaims = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
 
