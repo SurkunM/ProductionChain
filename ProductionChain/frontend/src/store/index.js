@@ -615,6 +615,19 @@ export default createStore({
             });
         },
 
+        removeFromTaskQueue({ commit, dispatch }, id) {
+            commit("setIsLoading", true);
+
+            return axios.delete("/api/ProductionAssembly/RemoveFromTaskQueue", {
+                headers: { "Content-Type": "application/json" },
+                data: id
+            }).then(() => {
+                dispatch("loadTaskQueue");
+            }).finally(() => {
+                commit("setIsLoading", false);
+            });
+        },
+
         login({ commit, dispatch }, { username, password }) {
             commit("setIsLoading", true);
 
@@ -678,17 +691,25 @@ export default createStore({
                 .withAutomaticReconnect()
                 .build();
 
-            connection.on("NotifyManagers", (response) => {
-                commit("addEmployeeToTaskQueue", response.data);
+            connection.on("NotifyManagers", (response) => {//Оповещять по accounId а не по employeeId!
+                commit("addEmployeeToTaskQueue", response);
+                dispatch("loadTaskQueue");
                 commit("setAlertMessage", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
                 commit("isShowSuccessAlert", true);
             });
 
-            //connection.on("NotifyEmployees", (response) => {
-            //    commit("addTaskQueue", response);
-            //    commit("setAlertMessage", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
-            //    commit("isShowSuccessAlert", true);
-            //});
+            connection.on("NotifyEmployees", (response) => {
+                // commit("addTaskQueue", response);
+
+                if (response.hasNewTaskIssued) {
+                    commit("setAlertMessage", `NotifyEmployees ${response.ProductName}`);
+                    dispatch("loadProductionTasks");
+                } else {
+                    commit("setAlertMessage", "Вы удалены из очереди задач");
+                }
+
+                commit("isShowSuccessAlert", true);
+            });
 
             connection.onclose(() => {
                 commit("setSignalRIsConnected", false);

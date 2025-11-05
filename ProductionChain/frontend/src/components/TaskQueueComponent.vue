@@ -91,24 +91,15 @@
 
         methods: {
             removeToTaskQueue(task) {
-                const parameters = {
-                    id: task.id,
-                    productionOrderId: task.productionOrderId,
-                    employeeId: task.employeeId,
-                    productId: task.productId,
-                    productsCount: task.productsCount
-                };
-
-                alert("Remove to task queue" + parameters);
-                //this.$store.dispatch("deleteProductionTask", parameters)
-                //    .then(() => {
-                //        this.$store.commit("setAlertMessage", "Задача успешно завершена.");
-                //        this.$store.commit("isShowSuccessAlert", true);
-                //    })
-                //    .catch(() => {
-                //        this.$store.commit("setAlertMessage", "Ошибка! Не удалось завершить задачу.");
-                //        this.$store.commit("isShowErrorAlert", true);
-                //    });
+                this.$store.dispatch("removeFromTaskQueue", task.employeeId)
+                    .then(() => {
+                        this.$store.commit("setAlertMessage", "Сотрудник удален из очереди");
+                        this.$store.commit("isShowSuccessAlert", true);
+                    })
+                    .catch(() => {
+                        this.$store.commit("setAlertMessage", "Ошибка! Не удалось удалить сотрудника из очереди");
+                        this.$store.commit("isShowErrorAlert", true);
+                    });
             },
 
             showTaskCreateModal() {
