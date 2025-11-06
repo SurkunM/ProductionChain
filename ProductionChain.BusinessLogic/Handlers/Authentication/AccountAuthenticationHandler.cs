@@ -60,9 +60,5 @@ public class AccountAuthenticationHandler
     public async Task Logout(string token)
     {
         await _signInManager.SignOutAsync();
-
-        //Сделать: доб. в "ConcurrentDictionary<string, DateTime>"  await _jwtGenerationService.AddToBlacklistAsync(token);
-        // проверка (ContainKey) _jwtGenerationService.IsTokenBlacklistedAsync(token)
-        //удаление (TryRemove) _jwtGenerationService.RemoveExpiredTokensAsync()
     }
 }

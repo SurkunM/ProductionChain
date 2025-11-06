@@ -7,7 +7,6 @@ using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Notification;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Mapping;
 using ProductionChain.Contracts.QueryParameters;
-using System.Threading.Tasks;
 
 namespace ProductionChain.Controllers;
 

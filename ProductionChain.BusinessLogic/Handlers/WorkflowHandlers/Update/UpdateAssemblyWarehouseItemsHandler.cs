@@ -34,7 +34,7 @@ public class UpdateAssemblyWarehouseItemsHandler
             {
                 throw new NotFoundException($"Не найден продукт по ProductId: {assemblyWarehouseDto.ProductId}");
             }
-            //TODO: Нужен метод в репозиторий, который будет обновлять каждый items отдельно
+
             assemblyWarehouseRepository.Update(assemblyWarehouseDto.ToAssemblyWarehouseModel(product)); 
 
             await _unitOfWork.SaveAsync();
