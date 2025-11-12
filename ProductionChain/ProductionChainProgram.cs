@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NLog.Web;
 using ProductionChain.BusinessLogic.Hubs;
 using ProductionChain.Contracts.Settings;
 using ProductionChain.Middleware;
@@ -32,6 +33,9 @@ public class ProductionChainProgram
         services.ConfigureProductionChainDIServices();
         services.ConfigureProductionChainDIRepositories();
         services.ConfigureProductionChainDIHandlers();
+
+        builder.Logging.ClearProviders();
+        builder.Host.UseNLog();
 
         var app = builder.Build();
 
