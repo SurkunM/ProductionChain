@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using ProductionChain.DataAccess;
+using ProductionChain.Model.BasicEntities;
+using System.Security.Claims;
 using System.Text;
 
 namespace ProductionChain.ProductionChainAppConfiguration.AppAuthentication;
@@ -46,6 +50,25 @@ public static class JwtBearerConfiguration
                     return Task.CompletedTask;
                 }
             };
+        });
+    }
+
+    public static void ConfigureProductionChainIdentity(this IServiceCollection services)
+    {
+        services.AddIdentity<Account, IdentityRole<int>>(options =>
+        {
+            options.Password.RequiredLength = 6;
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+        })
+        .AddEntityFrameworkStores<ProductionChainDbContext>()
+        .AddDefaultTokenProviders();
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
         });
     }
 }

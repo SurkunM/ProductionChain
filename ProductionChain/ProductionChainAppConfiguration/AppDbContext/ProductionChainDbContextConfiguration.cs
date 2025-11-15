@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ProductionChain.DataAccess;
-using ProductionChain.Model.BasicEntities;
-using System.Security.Claims;
 
 namespace ProductionChain.ProductionChainAppConfiguration.AppDbContext;
 
@@ -18,25 +15,6 @@ public static class ProductionChainDbContextConfiguration
                 .UseSqlServer(connectionString)
                 .UseLazyLoadingProxies();
         }, ServiceLifetime.Scoped, ServiceLifetime.Transient);
-    }
-
-    public static void ConfigureProductionChainIdentity(this IServiceCollection services)
-    {
-        services.AddIdentity<Account, IdentityRole<int>>(options =>
-        {
-            options.Password.RequiredLength = 6;
-            options.Password.RequireDigit = false;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireNonAlphanumeric = false;
-        })
-        .AddEntityFrameworkStores<ProductionChainDbContext>()
-        .AddDefaultTokenProviders();
-
-        services.Configure<IdentityOptions>(options =>
-        {
-            options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
-        });
     }
 
     public static async Task InitializeProductionChainDbAsync(this WebApplication app)
