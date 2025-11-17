@@ -1,7 +1,7 @@
 ﻿using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.IServices;
 
-namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
+namespace ProductionChain.BusinessLogic.Handlers.Workflow.Get;
 
 public class GetTaskQueueHandler
 {

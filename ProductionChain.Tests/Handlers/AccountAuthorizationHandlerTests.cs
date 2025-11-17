@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
-using ProductionChain.BusinessLogic.Handlers.Authorization;
+using ProductionChain.BusinessLogic.Handlers.Identity;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;

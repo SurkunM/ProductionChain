@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Notification;
+using ProductionChain.BusinessLogic.Handlers.Workflow.Create;
+using ProductionChain.BusinessLogic.Handlers.Workflow.Delete;
+using ProductionChain.BusinessLogic.Handlers.Workflow.Get;
+using ProductionChain.BusinessLogic.Handlers.Workflow.Notification;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Mapping;
 using ProductionChain.Contracts.QueryParameters;

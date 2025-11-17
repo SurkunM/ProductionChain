@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProductionChain.BusinessLogic.Handlers.Authorization;
+using ProductionChain.BusinessLogic.Handlers.Identity;
 using ProductionChain.Contracts.Dto.Requests;
 
 namespace ProductionChain.Controllers;

@@ -5,7 +5,7 @@ using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
 
-namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
+namespace ProductionChain.BusinessLogic.Handlers.Workflow.Update;
 
 public class UpdateAssemblyWarehouseItemsHandler
 {

@@ -6,7 +6,7 @@ using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
 using ProductionChain.Model.Enums;
 
-namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
+namespace ProductionChain.BusinessLogic.Handlers.Workflow.Delete;
 
 public class DeleteProductionTaskHandler
 {

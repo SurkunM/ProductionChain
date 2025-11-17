@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
+using ProductionChain.BusinessLogic.Handlers.Basic;
 using ProductionChain.Contracts.QueryParameters;
 
 namespace ProductionChain.Controllers;

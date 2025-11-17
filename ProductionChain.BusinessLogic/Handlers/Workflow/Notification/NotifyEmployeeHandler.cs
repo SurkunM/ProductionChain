@@ -4,7 +4,7 @@ using ProductionChain.Contracts.IServices;
 using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
 
-namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Notification;
+namespace ProductionChain.BusinessLogic.Handlers.Workflow.Notification;
 
 public class NotifyEmployeeHandler
 {

@@ -7,7 +7,7 @@ using ProductionChain.Contracts.IUnitOfWork;
 using ProductionChain.Contracts.Mapping;
 using ProductionChain.Model.BasicEntities;
 
-namespace ProductionChain.BusinessLogic.Handlers.Authorization;
+namespace ProductionChain.BusinessLogic.Handlers.Identity;
 
 public class AccountAuthorizationHandler
 {

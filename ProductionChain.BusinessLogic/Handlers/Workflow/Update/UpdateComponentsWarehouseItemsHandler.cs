@@ -5,7 +5,7 @@ using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IUnitOfWork;
 
-namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Update;
+namespace ProductionChain.BusinessLogic.Handlers.Workflow.Update;
 
 public class UpdateComponentsWarehouseItemsHandler
 {

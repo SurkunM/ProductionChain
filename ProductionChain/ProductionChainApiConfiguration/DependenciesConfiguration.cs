@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ProductionChain.BusinessLogic.Handlers.Authentication;
-using ProductionChain.BusinessLogic.Handlers.Authorization;
-using ProductionChain.BusinessLogic.Handlers.BasicHandlers;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Create;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
-using ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Notification;
+using ProductionChain.BusinessLogic.Handlers.Basic;
+using ProductionChain.BusinessLogic.Handlers.Identity;
+using ProductionChain.BusinessLogic.Handlers.Workflow.Create;
+using ProductionChain.BusinessLogic.Handlers.Workflow.Delete;
+using ProductionChain.BusinessLogic.Handlers.Workflow.Get;
+using ProductionChain.BusinessLogic.Handlers.Workflow.Notification;
 using ProductionChain.BusinessLogic.Services;
 using ProductionChain.Contracts.IRepositories;
 using ProductionChain.Contracts.IServices;

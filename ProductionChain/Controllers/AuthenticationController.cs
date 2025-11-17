@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ProductionChain.BusinessLogic.Handlers.Authentication;
+using ProductionChain.BusinessLogic.Handlers.Identity;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Dto.Responses;
-using ProductionChain.Contracts.Mapping;
-using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain.Controllers;
 
@@ -15,7 +12,7 @@ public class AuthenticationController : ControllerBase
 {
     private readonly AccountAuthenticationHandler _loginHandler;
 
-    public AuthenticationController(UserManager<Account> userManager, RoleManager<IdentityRole<int>> roleManager, AccountAuthenticationHandler loginHandler)
+    public AuthenticationController(AccountAuthenticationHandler loginHandler)
     {
         _loginHandler = loginHandler ?? throw new ArgumentNullException(nameof(loginHandler));
     }

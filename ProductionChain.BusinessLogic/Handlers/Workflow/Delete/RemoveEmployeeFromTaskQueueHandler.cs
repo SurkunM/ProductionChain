@@ -1,7 +1,7 @@
 ﻿using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IServices;
 
-namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Delete;
+namespace ProductionChain.BusinessLogic.Handlers.Workflow.Delete;
 
 public class RemoveEmployeeFromTaskQueueHandler
 {

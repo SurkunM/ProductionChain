@@ -6,7 +6,7 @@ using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IServices;
 using ProductionChain.Model.BasicEntities;
 
-namespace ProductionChain.BusinessLogic.Handlers.Authentication;
+namespace ProductionChain.BusinessLogic.Handlers.Identity;
 
 public class AccountAuthenticationHandler
 {

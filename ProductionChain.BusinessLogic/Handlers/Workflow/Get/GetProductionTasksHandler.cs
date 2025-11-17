@@ -5,7 +5,7 @@ using ProductionChain.Contracts.QueryParameters;
 using ProductionChain.Contracts.ResponsesPages;
 using ProductionChain.Model.Enums;
 
-namespace ProductionChain.BusinessLogic.Handlers.WorkflowHandlers.Get;
+namespace ProductionChain.BusinessLogic.Handlers.Workflow.Get;
 
 public class GetProductionTasksHandler
 {
