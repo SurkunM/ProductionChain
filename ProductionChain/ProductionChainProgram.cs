@@ -3,10 +3,7 @@ using NLog.Web;
 using ProductionChain.BusinessLogic.Hubs;
 using ProductionChain.Contracts.Settings;
 using ProductionChain.Middleware;
-using ProductionChain.ProductionChainAppConfiguration.AppAuthentication;
-using ProductionChain.ProductionChainAppConfiguration.AppDbContext;
-using ProductionChain.ProductionChainAppConfiguration.AppDependencies;
-using ProductionChain.ProductionChainAppConfiguration.AppInfrastructure;
+using ProductionChain.ProductionChainApiConfiguration;
 
 namespace ProductionChain;
 

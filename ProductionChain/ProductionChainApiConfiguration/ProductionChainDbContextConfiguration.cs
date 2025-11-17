@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductionChain.DataAccess;
 
-namespace ProductionChain.ProductionChainAppConfiguration.AppDbContext;
+namespace ProductionChain.ProductionChainApiConfiguration;
 
 public static class ProductionChainDbContextConfiguration
 {

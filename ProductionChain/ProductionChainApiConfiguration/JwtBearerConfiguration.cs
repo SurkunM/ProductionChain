@@ -6,7 +6,7 @@ using ProductionChain.Model.BasicEntities;
 using System.Security.Claims;
 using System.Text;
 
-namespace ProductionChain.ProductionChainAppConfiguration.AppAuthentication;
+namespace ProductionChain.ProductionChainApiConfiguration;
 
 public static class JwtBearerConfiguration
 {

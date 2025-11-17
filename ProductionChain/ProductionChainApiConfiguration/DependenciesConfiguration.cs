@@ -14,7 +14,7 @@ using ProductionChain.DataAccess;
 using ProductionChain.DataAccess.Repositories;
 using ProductionChain.DataAccess.UnitOfWork;
 
-namespace ProductionChain.ProductionChainAppConfiguration.AppDependencies;
+namespace ProductionChain.ProductionChainApiConfiguration;
 
 public static class DependenciesConfiguration
 {

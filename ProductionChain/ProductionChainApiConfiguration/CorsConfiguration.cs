@@ -1,4 +1,4 @@
-﻿namespace ProductionChain.ProductionChainAppConfiguration.AppInfrastructure;
+﻿namespace ProductionChain.ProductionChainApiConfiguration;
 
 public static class CorsConfiguration
 {
