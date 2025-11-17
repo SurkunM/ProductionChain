@@ -57,7 +57,7 @@ public class AccountAuthenticationHandler
         };
     }
 
-    public async Task Logout(string token)
+    public async Task Logout()
     {
         await _signInManager.SignOutAsync();
     }

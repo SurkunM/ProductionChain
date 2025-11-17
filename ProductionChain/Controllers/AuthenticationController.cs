@@ -33,9 +33,7 @@ public class AuthenticationController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Logout()
     {
-        var token = HttpContext.GetBearerToken();
-
-        await _loginHandler.Logout(token);
+        await _loginHandler.Logout();
 
         return Ok();
     }
