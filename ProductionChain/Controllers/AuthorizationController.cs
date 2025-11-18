@@ -18,7 +18,7 @@ public class AuthorizationController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,Manager")]
-    public async Task<IActionResult> AccountRegister(AuthAccountRegisterRequest accountRegisterRequest)
+    public async Task<IActionResult> AccountRegister(AccountRegisterRequest accountRegisterRequest)
     {
         await _accountAuthorizationHandlers.HandleAsync(accountRegisterRequest);
 

@@ -3,7 +3,7 @@ using ProductionChain.DataAccess;
 
 namespace ProductionChain.ProductionChainApiConfiguration;
 
-public static class ProductionChainDbContextConfiguration
+public static class DbContextConfiguration
 {
     public static void ConfigureProductionChainDbContext(this IServiceCollection services, string? connectionString)
     {
