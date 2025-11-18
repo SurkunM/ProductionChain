@@ -2,7 +2,7 @@
 
 namespace ProductionChain.Contracts.Dto.Responses;
 
-public class AuthenticationLoginResponse
+public class AccountLoginResponse
 {
     public required string Token { get; set; }
 

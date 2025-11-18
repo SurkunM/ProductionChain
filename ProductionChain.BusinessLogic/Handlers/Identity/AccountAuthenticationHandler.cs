@@ -23,7 +23,7 @@ public class AccountAuthenticationHandler
         _jwtGenerationService = jwtGenerationService ?? throw new ArgumentNullException(nameof(jwtGenerationService));
     }
 
-    public async Task<AuthenticationLoginResponse> HandleAsync(AuthenticationLoginRequest loginRequest)
+    public async Task<AccountLoginResponse> HandleAsync(AccountLoginRequest loginRequest)
     {
         var account = await _userManager.FindByNameAsync(loginRequest.UserLogin);
 
@@ -50,7 +50,7 @@ public class AccountAuthenticationHandler
             Roles = roles.ToList()
         };
 
-        return new AuthenticationLoginResponse
+        return new AccountLoginResponse
         {
             Token = token,
             UserData = employeeData

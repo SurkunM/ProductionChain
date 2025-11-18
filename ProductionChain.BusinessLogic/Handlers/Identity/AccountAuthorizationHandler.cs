@@ -24,7 +24,7 @@ public class AccountAuthorizationHandler
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task HandleAsync(AuthAccountRegisterRequest accountRegisterRequest)
+    public async Task HandleAsync(AccountRegisterRequest accountRegisterRequest)
     {
         var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
 

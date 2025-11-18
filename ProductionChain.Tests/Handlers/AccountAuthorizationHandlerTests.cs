@@ -25,7 +25,7 @@ public class AccountAuthorizationHandlerTests
 
     private readonly Employee _employee;
 
-    private readonly AuthAccountRegisterRequest _authAccountRegisterRequest;
+    private readonly AccountRegisterRequest _authAccountRegisterRequest;
 
     public AccountAuthorizationHandlerTests()
     {
@@ -54,7 +54,7 @@ public class AccountAuthorizationHandlerTests
             UserName = "User1"
         };
 
-        _authAccountRegisterRequest = new AuthAccountRegisterRequest
+        _authAccountRegisterRequest = new AccountRegisterRequest
         {
             EmployeeId = _employee.Id,
             Login = "User1",

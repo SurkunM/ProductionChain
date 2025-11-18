@@ -78,7 +78,7 @@ public static class MappingExtensions
         };
     }
 
-    public static Account ToAccountModel(this AuthAccountRegisterRequest accountRegisterRequest, Employee employee)
+    public static Account ToAccountModel(this AccountRegisterRequest accountRegisterRequest, Employee employee)
     {
         return new Account
         {

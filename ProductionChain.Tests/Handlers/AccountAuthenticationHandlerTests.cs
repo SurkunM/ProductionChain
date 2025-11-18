@@ -22,7 +22,7 @@ public class AccountAuthenticationHandlerTests
 
     private readonly Account _account;
 
-    private readonly AuthenticationLoginRequest _authenticationLoginRequest;
+    private readonly AccountLoginRequest _authenticationLoginRequest;
 
     public AccountAuthenticationHandlerTests()
     {
@@ -58,7 +58,7 @@ public class AccountAuthenticationHandlerTests
             }
         };
 
-        _authenticationLoginRequest = new AuthenticationLoginRequest
+        _authenticationLoginRequest = new AccountLoginRequest
         {
             UserLogin = "User1",
             Password = "User1Password"

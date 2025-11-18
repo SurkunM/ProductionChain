@@ -1,6 +1,6 @@
 ﻿namespace ProductionChain.Contracts.Dto.Requests;
 
-public class AuthAccountRegisterRequest
+public class AccountRegisterRequest
 {
     public int EmployeeId { get; set; }
 

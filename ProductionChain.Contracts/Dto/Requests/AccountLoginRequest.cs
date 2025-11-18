@@ -1,6 +1,6 @@
 ﻿namespace ProductionChain.Contracts.Dto.Requests;
 
-public class AuthenticationLoginRequest
+public class AccountLoginRequest
 {
     public required string UserLogin { get; set; }
 
