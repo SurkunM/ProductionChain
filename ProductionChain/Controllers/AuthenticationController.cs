@@ -21,16 +21,16 @@ public class AuthenticationController : ControllerBase
     [AllowAnonymous]
     public async Task<AccountLoginResponse> Login(AccountLoginRequest loginRequest)
     {
-        var result = await _loginHandler.HandleAsync(loginRequest);
+        var result = await _loginHandler.LoginAsync(loginRequest);
 
         return result;
     }
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
-        await _loginHandler.Logout();
+        _loginHandler.Logout();
 
         return Ok();
     }

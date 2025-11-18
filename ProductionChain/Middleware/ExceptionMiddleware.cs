@@ -29,7 +29,7 @@ public class ExceptionMiddleware
         var (statusCode, message) = exception switch
         {
             NotFoundException => (StatusCodes.Status404NotFound, exception.Message),
-            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, exception.Message),
+            InvalidCredentialsException => (StatusCodes.Status401Unauthorized, exception.Message),
             ForbiddenException => (StatusCodes.Status403Forbidden, exception.Message),
             InvalidStateException => (StatusCodes.Status409Conflict, exception.Message),
             InsufficientComponentsException => (StatusCodes.Status400BadRequest, exception.Message),

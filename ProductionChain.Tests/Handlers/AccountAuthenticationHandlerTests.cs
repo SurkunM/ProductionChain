@@ -75,7 +75,7 @@ public class AccountAuthenticationHandlerTests
 
         _jwtGenerationService.Setup(jwtGS => jwtGS.GenerateTokenAsync(_account)).ReturnsAsync("token");
 
-        var result = await _accountAuthenticationHandler.HandleAsync(_authenticationLoginRequest);
+        var result = await _accountAuthenticationHandler.LoginAsync(_authenticationLoginRequest);
 
         Assert.NotNull(result);
         Assert.Equal("token", result.Token);
@@ -95,7 +95,7 @@ public class AccountAuthenticationHandlerTests
     {
         _userManager.Setup(um => um.FindByNameAsync(_authenticationLoginRequest.UserLogin)).ReturnsAsync((Account)null!);
 
-        await Assert.ThrowsAsync<NotFoundException>(() => _accountAuthenticationHandler.HandleAsync(_authenticationLoginRequest));
+        await Assert.ThrowsAsync<NotFoundException>(() => _accountAuthenticationHandler.LoginAsync(_authenticationLoginRequest));
 
         _userManager.Verify(um => um.FindByNameAsync(_authenticationLoginRequest.UserLogin), Times.Once);
         _userManager.Verify(sm => sm.CheckPasswordAsync(_account, _authenticationLoginRequest.Password), Times.Never);
@@ -110,7 +110,7 @@ public class AccountAuthenticationHandlerTests
         _userManager.Setup(um => um.FindByNameAsync(_authenticationLoginRequest.UserLogin)).ReturnsAsync(_account);
         _userManager.Setup(sm => sm.CheckPasswordAsync(_account, _authenticationLoginRequest.Password)).ReturnsAsync(false);
 
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _accountAuthenticationHandler.HandleAsync(_authenticationLoginRequest));
+        await Assert.ThrowsAsync<InvalidCredentialsException>(() => _accountAuthenticationHandler.LoginAsync(_authenticationLoginRequest));
 
         _userManager.Verify(um => um.FindByNameAsync(_authenticationLoginRequest.UserLogin), Times.Once);
         _userManager.Verify(sm => sm.CheckPasswordAsync(_account, _authenticationLoginRequest.Password), Times.Once);

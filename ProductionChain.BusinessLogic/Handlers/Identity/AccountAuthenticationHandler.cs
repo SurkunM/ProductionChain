@@ -23,7 +23,7 @@ public class AccountAuthenticationHandler
         _jwtGenerationService = jwtGenerationService ?? throw new ArgumentNullException(nameof(jwtGenerationService));
     }
 
-    public async Task<AccountLoginResponse> HandleAsync(AccountLoginRequest loginRequest)
+    public async Task<AccountLoginResponse> LoginAsync(AccountLoginRequest loginRequest)
     {
         var account = await _userManager.FindByNameAsync(loginRequest.UserLogin);
 
@@ -36,7 +36,7 @@ public class AccountAuthenticationHandler
 
         if (!result)
         {
-            throw new UnauthorizedAccessException("Не удалось авторизоваться");
+            throw new InvalidCredentialsException("Не удалось авторизоваться");
         }
 
         var token = await _jwtGenerationService.GenerateTokenAsync(account);
@@ -47,7 +47,7 @@ public class AccountAuthenticationHandler
             UserId = account.EmployeeId,
             UserName = $"{account.Employee.LastName} {account.Employee.FirstName[0]}. " +
             $"{(account.Employee.MiddleName is null ? " " : account.Employee.MiddleName[0].ToString() + ".")}",
-            Roles = roles.ToList()
+            Roles = roles
         };
 
         return new AccountLoginResponse
@@ -57,8 +57,8 @@ public class AccountAuthenticationHandler
         };
     }
 
-    public async Task Logout()
+    public void Logout()
     {
-        await _signInManager.SignOutAsync();
+        _signInManager.SignOutAsync();
     }
 }

@@ -32,15 +32,7 @@ public class AccountAuthorizationHandler
         {
             _unitOfWork.BeginTransaction();
 
-            var employee = await employeeRepository.GetByIdAsync(accountRegisterRequest.EmployeeId);
-
-            if (employee is null)
-            {
-                _logger.LogError("Сотрудник по id:{employeeId} не найден.", accountRegisterRequest.EmployeeId);
-
-                throw new NotFoundException("Сотрудник не найден.");
-            }
-
+            var employee = await employeeRepository.GetByIdAsync(accountRegisterRequest.EmployeeId) ?? throw new NotFoundException("Сотрудник не найден.");
             var account = accountRegisterRequest.ToAccountModel(employee);
 
             var result = await _userManager.CreateAsync(account, accountRegisterRequest.Password);
