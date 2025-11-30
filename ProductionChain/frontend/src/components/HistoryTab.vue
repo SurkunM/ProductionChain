@@ -1,12 +1,5 @@
 ﻿<template>
-    <v-card title="История"
-            flat>
-        <v-progress-linear v-if="isLoading"
-                           indeterminate
-                           color="primary"
-                           height="4">
-        </v-progress-linear>
-
+    <v-card title="История" flat>
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"

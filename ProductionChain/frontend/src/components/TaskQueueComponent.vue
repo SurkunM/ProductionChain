@@ -1,16 +1,10 @@
 ﻿<template>
-    <v-card title="Очередь на получение задач"
-            flat>
-        <v-progress-linear v-if="isLoading"
-                           indeterminate
-                           color="primary"
-                           height="4">
-        </v-progress-linear>
-
+    <v-card title="Очередь на получение задач" flat>
         <template v-if="isAuthorized">
             <v-data-table :headers="headers"
                           :items="taskQueue"
                           hide-default-footer
+                          :loading="isLoading"
                           no-data-text="Список пуст">
 
                 <template v-slot:[`header.employeeFullName`]="{ column }">

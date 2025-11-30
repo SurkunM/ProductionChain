@@ -1,12 +1,5 @@
 ﻿<template>
-    <v-card title="Очередь производства"
-            flat>
-        <v-progress-linear v-if="isLoading"
-                           indeterminate
-                           color="primary"
-                           height="4">
-        </v-progress-linear>
-
+    <v-card title="Очередь производства" flat>
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
@@ -36,6 +29,7 @@
         <template v-if="isAuthorized">
             <v-data-table :headers="headers"
                           :items="productionOrders"
+                          :loading="isLoading"
                           hide-default-footer
                           :items-per-page="itemsPerPage"
                           no-data-text="Список пуст">

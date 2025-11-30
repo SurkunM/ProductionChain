@@ -11,10 +11,17 @@
 
             <v-form @submit.prevent="submitForm(productionOrderData)">
                 <v-card-text>
-                    <div class="mb-2">
-                        <span class="text-h6 font-weight-bold ms-1">Изделие: </span>
-                        <span class="text-h5"> {{ task.productName }} </span>
-                    </div>
+                    <v-select v-model="selectedProductionOrderId"
+                              :items="productionOrders"
+                              :item-props="productionOrderProps"
+                              @update:model-value="onSelectProductionOrder"
+                              label="Номер производсвтенного заказа">
+                    </v-select>
+
+                    <v-text-field v-model.trim="productionOrderData.productName"
+                                  label="Изделие"
+                                  autocomplete="off">
+                    </v-text-field>
 
                     <v-text-field v-model.trim="task.productsCount"
                                   label="Количество"
@@ -58,8 +65,14 @@
                     productName: "",
                     count: "",
                     employee: ""
-                }
+                },
+
+                selectedProductionOrderId: {id :1}
             };
+        },
+
+        mounted() {
+            this.selectedProductionOrderId.id = this.productionOrderData.id
         },
 
         computed: {
@@ -69,6 +82,10 @@
 
             isShow() {
                 return this.$store.getters.isShowTaskCreateModal;
+            },
+
+            productionOrders() {
+                return this.$store.getters.productionOrders;
             },
 
             productionOrderData() {
@@ -134,6 +151,16 @@
                     title: `${employee.lastName} ${employee.firstName || ""} ${employee.middleName || " "}`,
                     subtitle: employee.status,
                 }
+            },
+
+            productionOrderProps(item) {
+                return {
+                    title: item.id
+                }
+            },
+
+            onSelectProductionOrder(item) {
+                this.selectedProductionOrderId.id = item.id;
             },
 
             hide() {

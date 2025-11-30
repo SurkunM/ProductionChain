@@ -1,12 +1,5 @@
 ﻿<template>
-    <v-card title="Задачи"
-            flat>
-        <v-progress-linear v-if="isLoading"
-                           indeterminate
-                           color="primary"
-                           height="4">
-        </v-progress-linear>
-
+    <v-card title="Задачи" flat>
         <template v-slot:text>
             <v-text-field v-model="term"
                           label="Найти"
@@ -37,6 +30,7 @@
             <v-data-table :headers="headers"
                           :items="tasks"
                           hide-default-footer
+                          :loading="isLoading"
                           :items-per-page="itemsPerPage"
                           no-data-text="Список пуст">
 

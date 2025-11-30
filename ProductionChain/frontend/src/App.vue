@@ -2,7 +2,8 @@
     <v-card id="app">
         <v-layout>
             <v-app-bar>
-                <h3 class="ms-3"> {{ userData.userName }} </h3>
+                <v-app-bar-nav-icon @click="drawer=!drawer" size="x-large"></v-app-bar-nav-icon>
+                <v-toolbar-title>{{ userData.userName }}</v-toolbar-title>
             </v-app-bar>
 
             <v-snackbar v-model="isShowSuccessAlert"
@@ -20,7 +21,7 @@
                 {{getAlertText}}
             </v-snackbar>
 
-            <v-navigation-drawer>
+            <v-navigation-drawer v-model="drawer">
                 <v-list density="compact"
                         nav>
                     <v-list-item v-show="isManagerOrAdmin(userData.roles)"
@@ -143,6 +144,12 @@
             LogoutModal,
             RegisterModal,
             TaskCreateModal
+        },
+
+        data() {
+            return {
+                drawer: true
+            };
         },
 
         created() {

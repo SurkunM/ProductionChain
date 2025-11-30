@@ -34,8 +34,7 @@
 
             <v-progress-linear v-if="isLoading"
                                indeterminate
-                               color="primary"
-                               height="4">
+                               color="primary">
             </v-progress-linear>
 
             <v-row class="mt-5">
