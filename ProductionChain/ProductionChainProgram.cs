@@ -21,7 +21,7 @@ public class ProductionChainProgram
         services.AddAuthorizationBuilder();
 
         services.ConfigureProductionChainJwtBearer(builder.Configuration);
-        services.ConfigureProductionChainCors();
+        //services.ConfigureProductionChainCors();
 
         builder.Services.AddControllersWithViews();
         builder.Services.AddSignalR();
@@ -48,7 +48,7 @@ public class ProductionChainProgram
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
-        app.UseCors("VueFrontend");
+        //app.UseCors("VueFrontend");
 
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseRouting();
