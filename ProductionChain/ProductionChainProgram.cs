@@ -24,7 +24,9 @@ public class ProductionChainProgram
 
         builder.Services.AddControllersWithViews();
         builder.Services.AddSignalR();
+
         builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+        builder.Services.Configure<AdminSettings>(builder.Configuration.GetSection("AdminSettings"));
 
         services.ConfigureProductionChainDIServices();
         services.ConfigureProductionChainDIRepositories();

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using ProductionChain.Contracts.Settings;
 using ProductionChain.DataAccess;
 using ProductionChain.Model.BasicEntities;
 using ProductionChain.Model.Enums;
@@ -15,11 +17,15 @@ public class DbInitializer
 
     private readonly UserManager<Account> _userManager;
 
-    public DbInitializer(ProductionChainDbContext dbContext, RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager)
+    private readonly IOptions<AdminSettings> _adminOptions;
+
+    public DbInitializer(ProductionChainDbContext dbContext, IOptions<AdminSettings> adminOptions,
+        RoleManager<IdentityRole<int>> roleManager, UserManager<Account> userManager)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        _adminOptions = adminOptions ?? throw new ArgumentNullException(nameof(adminOptions));
     }
 
     public async Task Initialize()
@@ -62,13 +68,20 @@ public class DbInitializer
 
     private async Task SeedAdminAccount()
     {
+        var adminSettings = _adminOptions.Value;
+
+        if (string.IsNullOrEmpty(adminSettings?.DefaultPassword))
+        {
+            throw new Exception("Пароль администратора не настроен в конфигурации");
+        }
+
         var adminAccount = new Account
         {
-            UserName = "Admin",
-            Employee = CreateEmployee("Admin", "Admin", "Admin", EmployeePositionType.None, EmployeeStatusType.None)
+            UserName = adminSettings.UserName,
+            Employee = CreateEmployee(adminSettings.FirstName, adminSettings.LastName, adminSettings.MiddleName, EmployeePositionType.None, EmployeeStatusType.None)
         };
 
-        var result = await _userManager.CreateAsync(adminAccount, "Admin123");
+        var result = await _userManager.CreateAsync(adminAccount, adminSettings.DefaultPassword);
 
         if (!result.Succeeded)
         {
@@ -91,10 +104,10 @@ public class DbInitializer
 
         _dbContext.Employees.AddRange(employee1, employee2, employee3, employee4, employee5, employee6);
 
-        var product1 = CreateProduct("БП 1000", "0.01");
-        var product2 = CreateProduct("БП 2000", "0.12");
-        var product3 = CreateProduct("БП 3000", "0.03");
-        var product4 = CreateProduct("ИПС 1000", "0.1");
+        var product1 = CreateProduct("Изделие_1", "0.01");
+        var product2 = CreateProduct("Изделие_2", "0.12");
+        var product3 = CreateProduct("Изделие_3", "0.03");
+        var product4 = CreateProduct("Изделие_4", "0.1");
 
         var order1 = CreateOrder("OOO T1", product1, 500);
         var order2 = CreateOrder("OOO T1", product2, 100);
@@ -144,7 +157,7 @@ public class DbInitializer
             component7, component8, component9, component10, component11, component12, component13, component14, component15, component16);
     }
 
-    private static Employee CreateEmployee(string lastName, string firstName, string middleName, EmployeePositionType positionType, EmployeeStatusType employeeStatus)
+    private static Employee CreateEmployee(string lastName, string firstName, string? middleName, EmployeePositionType positionType, EmployeeStatusType employeeStatus)
     {
         return new Employee()
         {
