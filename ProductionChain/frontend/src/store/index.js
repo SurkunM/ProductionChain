@@ -683,7 +683,7 @@ export default createStore({
             }
 
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl("https://localhost:44303/TaskQueueNotificationHub", {
+                .withUrl("https://my-pet-project.ru/TaskQueueNotificationHub", {
                     accessTokenFactory: () => {
                         return localStorage.getItem("authToken");
                     }
