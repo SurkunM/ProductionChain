@@ -75,10 +75,12 @@ public class DbInitializer
             throw new Exception("Пароль администратора не настроен в конфигурации");
         }
 
+        var adminEmployee = CreateEmployee(adminSettings.FirstName, adminSettings.LastName, adminSettings.MiddleName, EmployeePositionType.Administrator, EmployeeStatusType.None);
+
         var adminAccount = new Account
         {
             UserName = adminSettings.UserName,
-            Employee = CreateEmployee(adminSettings.FirstName, adminSettings.LastName, adminSettings.MiddleName, EmployeePositionType.None, EmployeeStatusType.None)
+            Employee = adminEmployee
         };
 
         var result = await _userManager.CreateAsync(adminAccount, adminSettings.DefaultPassword);
@@ -87,6 +89,9 @@ public class DbInitializer
         {
             throw new Exception("Не удалось создать аккаунт Admin");
         }
+
+        adminEmployee.AccountId = adminAccount.Id;
+        adminEmployee.Account = adminAccount;
 
         await _userManager.AddToRoleAsync(adminAccount, RolesEnum.Admin.ToString());
     }

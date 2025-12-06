@@ -7,5 +7,6 @@ public enum EmployeePositionType
     AssemblyREA = 2,
     TechnicianQA = 3,
     Packer = 4,
-    Manager = 5
+    Manager = 5,
+    Administrator = 6
 }

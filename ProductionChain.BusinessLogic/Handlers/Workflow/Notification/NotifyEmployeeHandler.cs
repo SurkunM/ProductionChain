@@ -21,7 +21,7 @@ public class NotifyEmployeeHandler
     public async Task HandleAsync(int employeeId, int taskId)
     {
         var tasksRepository = _unitOfWork.GetRepository<IAssemblyProductionTasksRepository>();
-        var task = await tasksRepository.GetByIdAsync(taskId) ?? throw new NotFoundException("Задача не найдена");
+        var task = await tasksRepository.GetByIdAsync(taskId) ?? throw new NotificationException("Ошибка при попытке оповестить сотрудника. Задача не найдена");
 
         var response = _notificationService.GenerateNotifyEmployeeResponse(task.ToTaskQueueDto());
 
@@ -31,7 +31,7 @@ public class NotifyEmployeeHandler
     public async Task HandleAsync(int employeeId)
     {
         var employeeRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
-        var employee = await employeeRepository.GetByIdAsync(employeeId) ?? throw new NotFoundException("Задача не найдена");
+        var employee = await employeeRepository.GetByIdAsync(employeeId) ?? throw new NotificationException("Ошибка при попытке оповестить сотрудника. Задача не найдена");
 
         var response = _notificationService.GenerateNotifyEmployeeResponse();
 

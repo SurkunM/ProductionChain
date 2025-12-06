@@ -76,7 +76,7 @@ public class CreateProductionTaskHandler
 
             await _unitOfWork.SaveAsync();
 
-            return task.Id;
+            return task.Result.Id;
         }
         catch (Exception ex)
         {

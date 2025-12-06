@@ -27,6 +27,8 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
     {
         var queryDbSet = DbSet.AsNoTracking();
 
+        queryDbSet = queryDbSet.Where(e => e.Position != EmployeePositionType.Administrator);
+
         if (!string.IsNullOrEmpty(queryParameters.Term))
         {
             queryParameters.Term = queryParameters.Term.Trim();
@@ -95,6 +97,7 @@ public class EmployeesRepository : BaseEfRepository<Employee>, IEmployeesReposit
         }
 
         employee.Account = account;
+        employee.AccountId = account.Id;
 
         return true;
     }
