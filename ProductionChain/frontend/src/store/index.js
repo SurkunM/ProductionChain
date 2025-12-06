@@ -2,6 +2,35 @@ import * as signalR from "@microsoft/signalr";
 import axios from "axios";
 import { createStore } from "vuex";
 
+const getUserData = () => {
+    const data = localStorage.getItem("userData");
+
+    if ( data === "undefined" || data === "null") {
+        return null;
+    }
+
+    return JSON.parse(data);
+};
+
+const initializeAuthState = () => {
+    const token = localStorage.getItem("authToken");
+    const savedUserData = getUserData();
+
+    if (token && savedUserData) {
+        return {
+            isAuthorized: true,
+            userData: savedUserData
+        };
+    }
+
+    return {
+        isAuthorized: false,
+        userData: { userId: 0, userName: "", roles: ["Initial"] }
+    };
+};
+
+const { isAuthorized, userData } = initializeAuthState();
+
 export default createStore({
     state: {
         employees: [],
@@ -19,11 +48,10 @@ export default createStore({
         componentsWarehouseItems: [],
 
         isLoading: false,
-        isAuthorized: false,
+        isAuthorized,
+        userData,
 
         term: "",
-        userData: { userId: 0, userName: "", roles: ["Initial"] },
-        productionOrderData: { id: 0, productId: 0, productName: "" },
 
         pageItemsCount: 0,
         pageNumber: 1,
@@ -80,10 +108,6 @@ export default createStore({
 
         productionOrders(state) {
             return state.productionOrders;
-        },
-
-        getProductionOrderData(state) {
-            return state.productionOrderData;
         },
 
         assemblyWarehouseItems(state) {
@@ -339,14 +363,6 @@ export default createStore({
 
         isShowTaskCreateModal(state, value) {
             state.isShowTaskCreateModal = value;
-        },
-
-        setProductionOrderData(state, productionOrder) {
-            state.productionOrderData = productionOrder;
-        },
-
-        resetProductionOrderData(state) {
-            state.productionOrderData = { id: 0, productId: 0, productName: "" };
         },
 
         setTaskQueue(state, taskQueue) {
@@ -642,6 +658,8 @@ export default createStore({
                 localStorage.setItem("authToken", response.data.token);
                 axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
 
+                localStorage.setItem("userData", JSON.stringify(response.data.userData));
+
                 dispatch("startSignalRConnection");
                 commit("setUser", response.data.userData);
                 commit("setIsAuthorized", true);
@@ -661,6 +679,8 @@ export default createStore({
         clearAuthData({ commit }) {
             localStorage.removeItem("authToken");
             delete axios.defaults.headers.common["Authorization"];
+
+            localStorage.removeItem("userData");
 
             commit("setUser", { userId: 0, userName: "", roles: ["Initial"] });
             commit("setIsAuthorized", false);

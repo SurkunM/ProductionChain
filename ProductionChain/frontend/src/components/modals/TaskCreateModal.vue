@@ -1,5 +1,5 @@
 ﻿<template>
-    <v-dialog v-model="isShow" persistent max-width="600px">
+    <v-dialog v-model="isShow" @keydown.esc="hide" persistent max-width="600px">
         <v-card>
             <v-toolbar dark color="primary">
                 <v-toolbar-title>Создание задачи</v-toolbar-title>
@@ -9,18 +9,17 @@
                 </v-btn>
             </v-toolbar>
 
-            <v-form @submit.prevent="submitForm(productionOrderData)">
+            <v-form @submit.prevent="submitForm()">
                 <v-card-text>
-                    <v-select v-model="selectedProductionOrderId"
-                              :items="productionOrders"
+                    <v-select :items="productionOrders"
                               :item-props="productionOrderProps"
                               @update:model-value="onSelectProductionOrder"
                               label="Номер производсвтенного заказа">
                     </v-select>
 
-                    <v-text-field v-model.trim="productionOrderData.productName"
+                    <v-text-field v-model.trim="task.productName"
                                   label="Изделие"
-                                  autocomplete="off">
+                                  readonly>
                     </v-text-field>
 
                     <v-text-field v-model.trim="task.productsCount"
@@ -65,14 +64,8 @@
                     productName: "",
                     count: "",
                     employee: ""
-                },
-
-                selectedProductionOrderId: {id :1}
+                }
             };
-        },
-
-        mounted() {
-            this.selectedProductionOrderId.id = this.productionOrderData.id
         },
 
         computed: {
@@ -86,10 +79,6 @@
 
             productionOrders() {
                 return this.$store.getters.productionOrders;
-            },
-
-            productionOrderData() {
-                return this.$store.getters.getProductionOrderData;
             }
         },
 
@@ -120,21 +109,16 @@
                 }
             },
 
-            submitForm(productionOrderData) {
+            submitForm() {
                 if (!this.checkEditingFieldsIsvalid(this.task)) {
                     return;
                 }
-
-                this.task.productionOrderId = productionOrderData.id;
-                this.task.productId = productionOrderData.productId;
-                this.task.productName = productionOrderData.productName;
 
                 this.$store.dispatch("createProductionTask", this.task)
                     .then(() => {
                         this.hide();
                         this.$store.commit("setAlertMessage", "Задача успешно создана");
                         this.$store.commit("isShowSuccessAlert", true);
-                        this.$store.commit("resetProductionOrderData");
                     })
                     .catch(() => {
                         this.$store.commit("setAlertMessage", "Не удалось создать задачу");
@@ -160,11 +144,16 @@
             },
 
             onSelectProductionOrder(item) {
-                this.selectedProductionOrderId.id = item.id;
+                this.task.id = item.id;
+                this.task.productId = item.productId;
+                this.task.productName = item.productName;
+                this.task.productionOrderId = item.id;
+                this.task.productId = item.productId;
             },
 
             hide() {
                 this.resetErrors();
+                this.resetFields();
 
                 this.$store.commit("isShowTaskCreateModal", false);
             },
@@ -174,6 +163,18 @@
                     count: "",
                     employee: ""
                 };
+            },
+
+            resetFields() {
+                this.task = {
+                    id: 0,
+                    productName: "",
+                    productsCount: "",
+                    productId: 0,
+                    productionOrderId: 0,
+                    employeeId: 0,
+                    employee: null
+                }
             }
         },
 

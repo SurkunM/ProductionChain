@@ -78,7 +78,7 @@
 
                 <template v-slot:[`item.actions`]="{ item }">
                     <template v-if="item.completedCount < item.totalCount">
-                        <v-btn size="small" color="info" @click="showTaskCreateModal(item)" class="mt-2">Создать задачу</v-btn>
+                        <v-btn size="small" color="info" @click="showTaskCreateModal()" class="mt-2">Создать задачу</v-btn>
                     </template>
 
                     <v-btn size="small" color="error" @click="endProductionOrder(item)" class="my-2">Завершить заказ</v-btn>
@@ -196,9 +196,7 @@
                     });
             },
 
-            showTaskCreateModal(productionOrder) {
-                this.$store.commit("setProductionOrderData", productionOrder);
-
+            showTaskCreateModal() {
                 this.$store.dispatch("loadEmployees")
                     .catch(() => {
                         this.$store.commit("setAlertMessage", "Не удалось загрузить список сотрудников.");

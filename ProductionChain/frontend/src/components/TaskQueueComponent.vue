@@ -96,7 +96,10 @@
                     });
             },
 
-            showTaskCreateModal() {
+            showTaskCreateModal() {//Нужно задать сотрудника!
+                this.$store.dispatch("loadEmployees");
+                this.$store.dispatch("loadProductionOrders");
+
                 this.$store.commit("isShowTaskCreateModal", true);
             },
 
