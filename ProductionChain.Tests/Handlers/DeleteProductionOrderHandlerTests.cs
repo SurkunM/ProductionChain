@@ -69,13 +69,9 @@ public class DeleteProductionOrderHandlerTests
         var ordersRepositoryMock = new Mock<IOrdersRepository>();
         ordersRepositoryMock.Setup(r => r.SetAvailableProductsCount(It.IsAny<int>(), _productionOrder.CompletedProductsCount));
         ordersRepositoryMock.Setup(r => r.GetByIdAsync(_productionOrder.Id)).ReturnsAsync(_order);
-        ordersRepositoryMock.Setup(r => r.UpdateOrderStatus(It.IsAny<int>(), ProgressStatusType.Done));
+        ordersRepositoryMock.Setup(r => r.UpdateOrderStatus(It.IsAny<int>(), ProgressStatusType.Done));       
 
-        var assemblyWarehouseRepositoryMok = new Mock<IAssemblyProductionWarehouseRepository>();
-        assemblyWarehouseRepositoryMok.Setup(r => r.AddWarehouseItems(It.IsAny<int>(), _productionOrder.CompletedProductsCount)).Returns(true);
-
-        _uowMock.Setup(uow => uow.GetRepository<IOrdersRepository>()).Returns(ordersRepositoryMock.Object);
-        _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionWarehouseRepository>()).Returns(assemblyWarehouseRepositoryMok.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IOrdersRepository>()).Returns(ordersRepositoryMock.Object);    
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
 
         await _deleteProductionOrderHandler.HandleAsync(_productionOrder.Id);
@@ -86,8 +82,6 @@ public class DeleteProductionOrderHandlerTests
 
         ordersRepositoryMock.Verify(r => r.SetAvailableProductsCount(It.IsAny<int>(), _productionOrder.CompletedProductsCount), Times.Once);
         ordersRepositoryMock.Verify(r => r.UpdateOrderStatus(It.IsAny<int>(), ProgressStatusType.Done), Times.Once);
-
-        assemblyWarehouseRepositoryMok.Verify(r => r.AddWarehouseItems(It.IsAny<int>(), _productionOrder.CompletedProductsCount), Times.Once);
 
         _uowMock.Verify(uow => uow.SaveAsync(), Times.Once);
     }

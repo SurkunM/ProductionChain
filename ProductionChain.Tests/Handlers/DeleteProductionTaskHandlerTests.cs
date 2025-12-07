@@ -96,10 +96,14 @@ public class DeleteProductionTaskHandlerTests
         var historiesRepositoryMock = new Mock<IProductionHistoryRepository>();
         historiesRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<ProductionHistory>()));
 
+        var assemblyWarehouseRepositoryMok = new Mock<IAssemblyProductionWarehouseRepository>();
+        assemblyWarehouseRepositoryMok.Setup(r => r.AddWarehouseItems(_taskRequest.ProductId, _taskRequest.ProductsCount)).Returns(true);
+
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionTasksRepository>()).Returns(tasksRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionOrdersRepository>()).Returns(productionOrdersRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IEmployeesRepository>()).Returns(employeesRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IProductionHistoryRepository>()).Returns(historiesRepositoryMock.Object);
+        _uowMock.Setup(uow => uow.GetRepository<IAssemblyProductionWarehouseRepository>()).Returns(assemblyWarehouseRepositoryMok.Object);
 
         await _deleteProductionTaskHandler.HandleAsync(_taskRequest);
 
@@ -112,6 +116,8 @@ public class DeleteProductionTaskHandlerTests
 
         employeesRepositoryMock.Verify(r => r.UpdateEmployeeStatus(_taskRequest.EmployeeId, It.IsAny<EmployeeStatusType>()), Times.Once);
         historiesRepositoryMock.Verify(r => r.CreateAsync(It.IsAny<ProductionHistory>()), Times.Once);
+
+        assemblyWarehouseRepositoryMok.Verify(r => r.AddWarehouseItems(It.IsAny<int>(), _taskRequest.ProductsCount), Times.Once);
 
         _uowMock.Verify(uow => uow.SaveAsync(), Times.Once);
     }
