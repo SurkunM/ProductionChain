@@ -26,6 +26,7 @@ public class DeleteProductionTaskHandler
         var employeesRepository = _unitOfWork.GetRepository<IEmployeesRepository>();
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
         var historiesRepository = _unitOfWork.GetRepository<IProductionHistoryRepository>();
+        var assemblyWarehouseRepository = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
 
         try
         {
@@ -58,6 +59,15 @@ public class DeleteProductionTaskHandler
                 _logger.LogError("Не удалось найди задачу по переданному id={id}", taskRequest.Id);
 
                 throw new NotFoundException("Не удалось найди задачу");
+            }
+
+            success = assemblyWarehouseRepository.AddWarehouseItems(taskRequest.ProductId, taskRequest.ProductsCount);
+
+            if (!success)
+            {
+                _logger.LogError("При добавлении собранной продукции в склад ГП произошла ошибка.");
+
+                throw new NotFoundException("Продукт не найден в сладе, обновление данных не выполнено");
             }
 
             tasksRepository.SetTaskEndTime(taskRequest.Id);

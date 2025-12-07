@@ -22,7 +22,6 @@ public class DeleteProductionOrderHandler
     {
         var productionOrdersRepository = _unitOfWork.GetRepository<IAssemblyProductionOrdersRepository>();
         var ordersRepository = _unitOfWork.GetRepository<IOrdersRepository>();
-        var assemblyWarehouseRepository = _unitOfWork.GetRepository<IAssemblyProductionWarehouseRepository>();
 
         try
         {
@@ -53,15 +52,6 @@ public class DeleteProductionOrderHandler
             else
             {
                 ordersRepository.UpdateOrderStatus(productionOrder.OrderId, ProgressStatusType.Pending);
-            }
-
-            var success = assemblyWarehouseRepository.AddWarehouseItems(productionOrder.ProductId, productionOrder.CompletedProductsCount);
-
-            if (!success)
-            {
-                _logger.LogError("При добавлении собранной продукции в склад ГП произошла ошибка.");
-
-                throw new NotFoundException("Продукт не найден в сладе, обновление данных не выполнено");
             }
 
             productionOrdersRepository.Delete(productionOrder);
