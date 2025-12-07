@@ -722,7 +722,7 @@ export default createStore({
                 // commit("addTaskQueue", response);
 
                 if (response.hasNewTaskIssued) {
-                    commit("setAlertMessage", `NotifyEmployees ${response.ProductName}`);
+                    commit("setAlertMessage", `Выдана задача: ${response.productName}`);
                     dispatch("loadProductionTasks");
                 } else {
                     commit("setAlertMessage", "Вы удалены из очереди задач");

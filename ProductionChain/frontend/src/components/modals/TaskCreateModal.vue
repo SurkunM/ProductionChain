@@ -144,7 +144,6 @@
             },
 
             onSelectProductionOrder(item) {
-                this.task.id = item.id;
                 this.task.productId = item.productId;
                 this.task.productName = item.productName;
                 this.task.productionOrderId = item.id;
