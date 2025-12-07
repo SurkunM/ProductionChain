@@ -82,6 +82,14 @@ public class CreateProductionTaskHandlerTests
     [Fact]
     public async Task Should_Successfully_ProcessAllSteps_And_SaveChanges()
     {
+        var result = new AssemblyProductionTask
+        {
+            Id = 1,
+            ProductionOrder = _productionOrder,
+            Product = _product,
+            Employee = _employee
+        };
+
         var productionOrdersRepositoryMock = new Mock<IAssemblyProductionOrdersRepository>();
         productionOrdersRepositoryMock.Setup(r => r.GetByIdAsync(_taskRequest.ProductionOrderId)).ReturnsAsync(_productionOrder);
         productionOrdersRepositoryMock.Setup(r => r.UpdateProductionOrderStatus(_taskRequest.ProductionOrderId)).Returns(true);
@@ -98,6 +106,7 @@ public class CreateProductionTaskHandlerTests
         componentsWarehouseRepositoryMock.Setup(r => r.TakeComponentsByProductId(_taskRequest.ProductId, _taskRequest.ProductsCount)).Returns(true);
 
         var tasksRepositoryMock = new Mock<IAssemblyProductionTasksRepository>();
+        tasksRepositoryMock.Setup(r => r.CreateAndGetEntityAsync(It.IsNotNull<AssemblyProductionTask>())).ReturnsAsync(result);
 
         _uowMock.Setup(uow => uow.GetRepository<IProductsRepository>()).Returns(productsRepositoryMock.Object);
         _uowMock.Setup(uow => uow.GetRepository<IEmployeesRepository>()).Returns(employeesRepositoryMock.Object);
