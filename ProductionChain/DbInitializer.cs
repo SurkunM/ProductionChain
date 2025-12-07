@@ -98,8 +98,8 @@ public class DbInitializer
 
     private void SeedBaseData()
     {
-        var employee1 = CreateEmployee("Васильев", "Василий", "Васильевич", EmployeePositionType.AssemblyREA, EmployeeStatusType.Available);
-        var employee2 = CreateEmployee("Александров", "Александр", "Александрович", EmployeePositionType.AssemblyREA, EmployeeStatusType.Available);
+        var employee1 = CreateEmployee("Васильев", "Василий", "Васильевич", EmployeePositionType.Manager, EmployeeStatusType.Available);
+        var employee2 = CreateEmployee("Александров", "Александр", "Александрович", EmployeePositionType.Manager, EmployeeStatusType.Available);
 
         var employee3 = CreateEmployee("Иванов", "Иван", "Иванович", EmployeePositionType.AssemblyREA, EmployeeStatusType.Available);
         var employee4 = CreateEmployee("Степанов", "Степан", "Степанович", EmployeePositionType.AssemblyREA, EmployeeStatusType.Available);
