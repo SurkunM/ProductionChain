@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductionChain.BusinessLogic.Attributes;
 using ProductionChain.BusinessLogic.Handlers.Identity;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Dto.Responses;
@@ -28,9 +29,10 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public IActionResult Logout()
+    [ExtractTokenAndUserId]
+    public IActionResult Logout(string token, int accountId)
     {
-        _loginHandler.Logout();
+        _loginHandler.Logout(token, accountId);
 
         return Ok();
     }
