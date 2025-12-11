@@ -24,6 +24,8 @@ public class AccountAuthenticationHandlerTests
 
     private readonly AccountLoginRequest _authenticationLoginRequest;
 
+    private readonly Mock<ITokenBlacklistService> _tokenBlacklistService;
+
     public AccountAuthenticationHandlerTests()
     {
         var store = new Mock<IUserStore<Account>>();
@@ -41,8 +43,10 @@ public class AccountAuthenticationHandlerTests
         );
 
         _jwtGenerationService = new Mock<IJwtGenerationService>();
+        _tokenBlacklistService = new Mock<ITokenBlacklistService>();
 
-        _accountAuthenticationHandler = new AccountAuthenticationHandler(_userManager.Object, _signInManager, _jwtGenerationService.Object);
+        _accountAuthenticationHandler = new AccountAuthenticationHandler(_userManager.Object, _signInManager,
+            _jwtGenerationService.Object, _tokenBlacklistService.Object);
 
         _account = new Account
         {
