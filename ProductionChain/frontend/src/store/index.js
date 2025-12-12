@@ -5,7 +5,7 @@ import { createStore } from "vuex";
 const getUserData = () => {
     const data = localStorage.getItem("userData");
 
-    if ( data === "undefined" || data === "null") {
+    if (data === "undefined" || data === "null") {
         return null;
     }
 
@@ -188,7 +188,7 @@ export default createStore({
                 }
 
                 if (e.position === "AssemblyREA") {
-                    e.positionMap = "Монтажник РЭА";
+                    e.positionMap = "Рабочий";
                 }
                 else if (e.position === "SolderPCB") {
                     e.positionMap = "Пайщик";
@@ -433,10 +433,9 @@ export default createStore({
                 commit("setResponseItemsIndex", response.data.products);
                 commit("setProducts", response.data.products);
                 commit("setPageItemsCount", response.data.totalCount);
-            })
-                .finally(() => {
-                    commit("setIsLoading", false);
-                });
+            }).finally(() => {
+                commit("setIsLoading", false);
+            });
         },
 
         loadOrders({ commit, state }) {
@@ -676,11 +675,15 @@ export default createStore({
                 });
         },
 
-        clearAuthData({ commit }) {
-            localStorage.removeItem("authToken");
-            delete axios.defaults.headers.common["Authorization"];
+        clearAuthData({ state, commit }) {
+            if (!state.isAuthorized) {
+                return;
+            }
 
+            localStorage.removeItem("authToken");
             localStorage.removeItem("userData");
+
+            delete axios.defaults.headers.common["Authorization"];
 
             commit("setUser", { userId: 0, userName: "", roles: ["Initial"] });
             commit("setIsAuthorized", false);
@@ -711,7 +714,7 @@ export default createStore({
                 .withAutomaticReconnect()
                 .build();
 
-            connection.on("NotifyManagers", (response) => {//Оповещять по accounId а не по employeeId!
+            connection.on("NotifyManagers", (response) => {
                 commit("addEmployeeToTaskQueue", response);
                 dispatch("loadTaskQueue");
                 commit("setAlertMessage", `Сотрудик ${response.fullName} добавлен в очередь на получени задчи.`);
@@ -719,8 +722,6 @@ export default createStore({
             });
 
             connection.on("NotifyEmployees", (response) => {
-                // commit("addTaskQueue", response);
-
                 if (response.hasNewTaskIssued) {
                     commit("setAlertMessage", `Выдана задача: ${response.productName}`);
                     dispatch("loadProductionTasks");

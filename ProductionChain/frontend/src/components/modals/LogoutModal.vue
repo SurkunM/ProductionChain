@@ -15,10 +15,10 @@
                 Вы действительно хотите выйти?
             </v-card-text>
 
-            <v-card-actions>
+            <v-card-actions class="me-2">
                 <v-spacer></v-spacer>
-                <v-btn color="success" @click="logout">Выйти</v-btn>
-                <v-btn color="error" @click="hide">Отмена</v-btn>
+                <v-btn color="error" variant="flat" @click="hide">Отмена</v-btn>
+                <v-btn color="primary" variant="flat" @click="logout">Выйти</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

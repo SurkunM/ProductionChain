@@ -43,10 +43,10 @@
                               prepend-icon="mdi-account-key"></v-select>
                 </v-card-text>
 
-                <v-card-actions>
+                <v-card-actions class="mb-2 me-2">
                     <v-spacer></v-spacer>
-                    <v-btn color="error" @click="hide">Отменить</v-btn>
-                    <v-btn color="primary" type="submit">Создать</v-btn>
+                    <v-btn color="error" variant="flat" @click="hide">Отменить</v-btn>
+                    <v-btn color="primary" variant="flat" type="submit">Создать</v-btn>
                 </v-card-actions>
             </v-form>
         </v-card>

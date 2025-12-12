@@ -148,6 +148,7 @@
                     .catch(error => {
                         if (error.status === 401) {
                             this.$store.commit("setAlertMessage", "Вы не авторизованы");
+                            this.$store.dispatch("clearAuthData");
                             this.$store.commit("isShowErrorAlert", true);
                         } else {
                             this.$store.commit("setAlertMessage", "Не удалось загрузить список собранных изделий");

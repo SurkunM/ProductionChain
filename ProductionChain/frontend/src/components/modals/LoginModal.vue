@@ -27,8 +27,8 @@
 
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" variant="flat" type="submit">Вход</v-btn>
                         <v-btn color="error" variant="flat" @click="hide">Закрыть</v-btn>
+                        <v-btn color="primary" variant="flat" type="submit">Вход</v-btn>
                     </v-card-actions>
                 </v-form>
             </v-card-text>

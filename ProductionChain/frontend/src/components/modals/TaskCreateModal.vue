@@ -36,10 +36,10 @@
                     </v-select>
                 </v-card-text>
 
-                <v-card-actions>
+                <v-card-actions class="me-2 mb-2">
                     <v-spacer></v-spacer>
-                    <v-btn color="info" type="submit">Создать</v-btn>
-                    <v-btn color="error" @click="hide">Отменить</v-btn>
+                    <v-btn color="error" variant="flat" @click="hide">Отменить</v-btn>
+                    <v-btn color="info" variant="flat" type="submit">Создать</v-btn>
                 </v-card-actions>
             </v-form>
         </v-card>

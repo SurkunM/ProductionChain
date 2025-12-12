@@ -165,6 +165,7 @@
                     .catch(error => {
                         if (error.status === 401) {
                             this.$store.commit("setAlertMessage", "Ошибка! Вы не авторизованы.");
+                            this.$store.dispatch("clearAuthData");
                             this.$store.commit("isShowErrorAlert", true);
                         }
                         else if (error.status === 403) {

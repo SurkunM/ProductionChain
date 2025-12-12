@@ -184,6 +184,7 @@
                         if (error.status === 401) {
                             this.$store.commit("setAlertMessage", "Вы не авторизованы");
                             this.$store.commit("isShowErrorAlert", true);
+                            this.$store.dispatch("clearAuthData");
                         }
                         else if (error.status === 403) {
                             this.$store.commit("setAlertMessage", "У вас нет прав для получения данной информации");
