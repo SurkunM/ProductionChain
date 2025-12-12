@@ -107,4 +107,15 @@ public static class MappingExtensions
             CreateDate = DateTime.UtcNow
         };
     }
+
+    public static EmployeeData ToEmployeeDataResponse(this Account account, IList<string> roles)
+    {
+        return new EmployeeData
+        {
+            UserId = account.EmployeeId,
+            UserName = $"{account.Employee.LastName} {account.Employee.FirstName[0]}. " +
+            $"{(account.Employee.MiddleName is null ? " " : account.Employee.MiddleName[0].ToString() + ".")}",
+            Roles = roles
+        };
+    }
 }

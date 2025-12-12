@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ProductionChain.Contracts.Dto.Requests;
 using ProductionChain.Contracts.Dto.Responses;
-using ProductionChain.Contracts.Dto.Shared;
 using ProductionChain.Contracts.Exceptions;
 using ProductionChain.Contracts.IServices;
+using ProductionChain.Contracts.Mapping;
 using ProductionChain.Model.BasicEntities;
 
 namespace ProductionChain.BusinessLogic.Handlers.Identity;
@@ -12,53 +12,42 @@ public class AccountAuthenticationHandler
 {
     private readonly UserManager<Account> _userManager;
 
-    private readonly SignInManager<Account> _signInManager;
-
     private readonly IJwtGenerationService _jwtGenerationService;
 
-    public AccountAuthenticationHandler(UserManager<Account> userManager, SignInManager<Account> signInManager, IJwtGenerationService jwtGenerationService)
+    private readonly ITokenBlacklistService _tokenBlacklistService;
+
+    public AccountAuthenticationHandler(UserManager<Account> userManager, SignInManager<Account> signInManager,
+        IJwtGenerationService jwtGenerationService, ITokenBlacklistService tokenBlacklistService)
     {
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
-        _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
         _jwtGenerationService = jwtGenerationService ?? throw new ArgumentNullException(nameof(jwtGenerationService));
+        _tokenBlacklistService = tokenBlacklistService ?? throw new ArgumentNullException(nameof(tokenBlacklistService));
     }
 
     public async Task<AccountLoginResponse> LoginAsync(AccountLoginRequest loginRequest)
     {
-        var account = await _userManager.FindByNameAsync(loginRequest.UserLogin);
-
-        if (account is null)
-        {
-            throw new NotFoundException("Сотрудник под таким логином не зарегистрирован");
-        }
-
+        var account = await _userManager.FindByNameAsync(loginRequest.UserLogin) ?? throw new NotFoundException("Сотрудник под таким логином не зарегистрирован");
         var result = await _userManager.CheckPasswordAsync(account, loginRequest.Password);
 
         if (!result)
         {
-            throw new InvalidCredentialsException("Не удалось авторизоваться");
+            throw new InvalidCredentialsException("Не верный логин или пароль");
         }
 
         var token = await _jwtGenerationService.GenerateTokenAsync(account);
-        var roles = await _userManager.GetRolesAsync(account);
+        await _tokenBlacklistService.MarkTokenAsActiveAsync(account.Id, token);
 
-        var employeeData = new EmployeeData//может перенести в метод в employeeRepository
-        {
-            UserId = account.EmployeeId,
-            UserName = $"{account.Employee.LastName} {account.Employee.FirstName[0]}. " +
-            $"{(account.Employee.MiddleName is null ? " " : account.Employee.MiddleName[0].ToString() + ".")}",
-            Roles = roles
-        };
+        var roles = await _userManager.GetRolesAsync(account);
 
         return new AccountLoginResponse
         {
             Token = token,
-            UserData = employeeData
+            UserData = account.ToEmployeeDataResponse(roles)
         };
     }
 
-    public void Logout()
+    public void Logout(string token, int accountId)
     {
-        _signInManager.SignOutAsync();
+        _tokenBlacklistService.BlacklistTokenAsync(token, accountId);
     }
 }

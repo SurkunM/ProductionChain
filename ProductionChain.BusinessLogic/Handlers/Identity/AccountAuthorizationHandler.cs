@@ -43,7 +43,7 @@ public class AccountAuthorizationHandler
 
                 _logger.LogError("При создании аккаунта произошла ошибка. Errors: {errors}.", errors);
 
-                throw new AccountNotCreatedException("Аккаунт не создан.");//Сделать более информативнее
+                throw new AccountNotCreatedException("Аккаунт не создан.");
             }
 
             await _userManager.AddToRoleAsync(account, accountRegisterRequest.Role);

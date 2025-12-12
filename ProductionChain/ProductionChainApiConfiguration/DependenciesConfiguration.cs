@@ -25,6 +25,8 @@ public static class DependenciesConfiguration
         services.AddTransient<INotificationService, SignalRNotificationService>();
         services.AddTransient<IUnitOfWork, UnitOfWork>();
         services.AddTransient<IJwtGenerationService, JwtGenerationService>();
+        services.AddTransient<ITokenBlacklistService, TokenBlacklistService>();
+
         services.AddSingleton<ITaskQueueService, TaskQueueService>();
     }
 
