@@ -2,11 +2,11 @@
 
 public interface ITokenBlacklistService
 {
-    Task<bool> IsTokenBlacklistedAsync(string token);
+    bool IsTokenBlacklistedAsync(string token);
 
-    Task BlacklistTokenAsync(string token, int accountId);
+    void SetBlacklistTokenAsync(string token, int accountId);
 
-    Task MarkTokenAsActiveAsync(int accountId, string token);
+    //Task MarkTokenAsActiveAsync(int accountId, string token);
 
-    Task CleanupExpiredTokensAsync();
+    //Task CleanupExpiredTokensAsync();
 }

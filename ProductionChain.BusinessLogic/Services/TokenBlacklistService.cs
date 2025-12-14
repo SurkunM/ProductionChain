@@ -1,26 +1,43 @@
-﻿using ProductionChain.Contracts.IServices;
+﻿using Microsoft.Extensions.Caching.Memory;
+using ProductionChain.Contracts.IServices;
+using ProductionChain.Contracts.Settings;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ProductionChain.BusinessLogic.Services;
 
 public class TokenBlacklistService : ITokenBlacklistService
 {
-    public Task BlacklistTokenAsync(string token, int accountId)
+    private readonly IMemoryCache _cache;
+
+    private readonly JwtSettings _settings;
+
+    public TokenBlacklistService(IMemoryCache cache, JwtSettings settings)
     {
-        return Task.FromResult(0);
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    public Task CleanupExpiredTokensAsync()
+    public void SetBlacklistTokenAsync(string token, int accountId)
     {
-        return Task.FromResult(0);
+        var hash = ComputeTokenHash(token);
+        var expiry = TimeSpan.FromHours(_settings.ExpiryHours);
+
+        _cache.Set(hash, accountId, expiry);
     }
 
-    public Task<bool> IsTokenBlacklistedAsync(string token)
+    public bool IsTokenBlacklistedAsync(string token)
     {
-        return Task.FromResult(false);
+        var hash = ComputeTokenHash(token);
+        var blackListToken = _cache.Get(hash);
+
+        return blackListToken is not null;
     }
 
-    public Task MarkTokenAsActiveAsync(int accountId, string token)
+    private static string ComputeTokenHash(string token)
     {
-        return Task.FromResult(0);
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+
+        return Convert.ToBase64String(hash);
     }
 }

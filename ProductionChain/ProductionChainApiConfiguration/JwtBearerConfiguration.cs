@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using ProductionChain.Contracts.IServices;
 using ProductionChain.DataAccess;
 using ProductionChain.Model.BasicEntities;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
@@ -45,6 +47,22 @@ public static class JwtBearerConfiguration
                         path.StartsWithSegments("/TaskQueueNotificationHub"))
                     {
                         context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                },
+
+                OnTokenValidated = context =>
+                {
+                    if (context.SecurityToken is JwtSecurityToken jwtToken)
+                    {
+                        var token = jwtToken.RawData;
+                        var blacklistService = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklistService>();
+
+                        if (blacklistService.IsTokenBlacklistedAsync(token))
+                        {
+                            context.Fail("Токен удален");
+                        }
                     }
 
                     return Task.CompletedTask;

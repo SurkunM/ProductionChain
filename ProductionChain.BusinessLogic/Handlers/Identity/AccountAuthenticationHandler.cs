@@ -35,7 +35,6 @@ public class AccountAuthenticationHandler
         }
 
         var token = await _jwtGenerationService.GenerateTokenAsync(account);
-        await _tokenBlacklistService.MarkTokenAsActiveAsync(account.Id, token);
 
         var roles = await _userManager.GetRolesAsync(account);
 
@@ -48,6 +47,6 @@ public class AccountAuthenticationHandler
 
     public void Logout(string token, int accountId)
     {
-        _tokenBlacklistService.BlacklistTokenAsync(token, accountId);
+        _tokenBlacklistService.SetBlacklistTokenAsync(token, accountId);
     }
 }
